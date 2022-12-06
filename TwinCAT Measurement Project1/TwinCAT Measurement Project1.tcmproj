@@ -6,7 +6,4 @@
     <Name>TwinCAT Measurement Project1</Name>
     <RootNamespace>TwinCAT Measurement Project1</RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="Z:\F\Project\00_2019 IPB_19021 TSI\04_程序\new\IPB_19021_TSI_Project\TwinCAT Measurement Project1\Scope YT Project.tcscopex" />
-  </ItemGroup>
 </Project>
