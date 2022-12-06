@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="AOI_HeatBase" Id="{b91647b6-7044-4a11-9382-4d7cb2750de3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_HeatBase
+VAR_INPUT
+	Enable: BOOL;
+	Reset: BOOL;
+	PV: REAL;
+	SV: REAL;
+	HighLimit: REAL;
+	LowLimit: REAL;
+	MaxLimit: REAL;
+	Kp: REAL:=0.8;
+	Ki: REAL:=1;
+	Kd: REAL:=5;
+END_VAR
+VAR_OUTPUT
+	Active: BOOL;
+	Error: BOOL;
+	ErrorID: INT;	
+END_VAR
+VAR
+    blinkAct: blink;
+	tonLow: Ton;
+	tonHigh: Ton;	
+	iDiff: INT;
+	arDiff: ARRAY[0..255] OF REAL;
+	i: INT;
+	n: INT;
+	tonSample: Ton;
+	rAverageDiff: REAL;
+	rSumDiff: REAL;
+	j: INT;
+	iAct: INT;
+	iPID: INT;
+	arM: ARRAY[0..255] OF REAL;
+
+	arPV: ARRAY[0..255] OF REAL;
+	Mi: REAL;
+	MX:REAL;
+	Kc: INT:=8;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+IF PV < SV AND NOT ErrorID.0 AND NOT ErrorID.1 THEN
+	Active:=TRUE;
+ELSE 
+	Active:=FALSE;
+END_IF	  
+*)
+
+tonHigh(IN:=(PV> SV+HighLimit) , PT:= T#3S, Q=> , ET=> );
+IF tonHigh.Q THEN
+	Error:=TRUE;
+	ErrorID.0:=TRUE;
+END_IF
+
+IF PV>MaxLimit THEN
+	Error:=TRUE;        
+	ErrorID.1:=TRUE;		
+END_IF       
+
+tonLow(IN:=(PV < SV-Lowlimit) , PT:= T#3S, Q=> , ET=> );
+IF tonLow.Q THEN
+	Error:=TRUE;     
+	ErrorID.2:=TRUE;	  
+END_IF
+
+IF Reset THEN
+	Error:=FALSE;
+	ErrorID:=0;
+END_IF
+
+CASE iDiff OF
+	0:
+	  IF Enable THEN
+		  iDiff:=1;
+	  END_IF
+	1:  
+	  IF SV>0 THEN
+		  IF PV < SV-SV*0.05 THEN
+			 iDiff:=100; 
+		  END_IF
+		  IF PV > SV-SV*0.05 AND NOT ErrorID.0 AND NOT ErrorID.1 THEN
+			 rSumDiff:=0;		  
+			 iDiff:=10;
+		  END_IF
+	  END_IF 
+	10:
+	  arDiff[i]:=SV-PV;
+	  IF ABS(arDiff[i]>SV) THEN
+		  arDiff[i]:=0;
+	  END_IF
+	  rSumDiff:=rSumDiff+arDiff[i];
+	  (*
+	  IF i = Kc THEN
+	     rSumDiff:= 0;
+	     FOR j:=0 TO Kc DO
+		     rSumDiff:= rSumDiff+ arDiff[j];
+			 rAverageDiff:=rSumDiff/Kc;
+	     END_FOR
+	  END_IF  
+	  *)
+	  iDiff:=20;
+	 
+    20: 
+      arM[0]:=Kp*arDiff[i];
+      arM[1]:= Ki*rSumDiff;
+	  IF arM[1]>1900 THEN
+		 arM[1]:=1900;
+	  END_IF
+	  IF arM[1]<-1900 THEN
+		 arM[1]:=-1900;
+	  END_IF
+	  
+	  IF i=0 THEN
+         arM[2]:=Kd*(arDiff[i]-arDiff[Kc]);
+	  ELSE
+	     arM[2]:=Kd*(arDiff[i]-arDiff[i-1]);
+	  END_IF 
+	  arM[2]:=arM[2];
+
+	  arM[3]:= (arM[0]+arM[1]+arM[2])*100;
+	  IF ARM[3]>1800 THEN
+		 ARM[3]:=1800;
+		 ELSE IF ARM[3]<200 THEN
+			     ARM[3]:=200;
+		      END_IF
+	  END_IF	
+	  iDiff:=30;
+	  
+	30:  
+	  Active:=TRUE;
+	  tonSample(IN:= TRUE, PT:= REAL_TO_TIME(arM[3]), Q=> , ET=> );
+	  IF tonSample.Q THEN
+		  tonSample(IN:= FALSE, PT:= REAL_TO_TIME(arM[3]), Q=> , ET=> );
+		  Active:=FALSE;
+		  iDiff:=40;
+	  END_IF
+	40:
+	  Active:=FALSE;
+	  tonSample(IN:= TRUE, PT:= REAL_TO_TIME(2000-arM[3]), Q=> , ET=> );
+	  IF tonSample.Q THEN
+		  tonSample(IN:= FALSE, PT:= REAL_TO_TIME(2000-arM[3]), Q=> , ET=> );
+		  Active:=FALSE;
+		  iDiff:=50;
+	  END_IF
+
+	50:  
+	  i:=i+1;
+	  IF i>Kc THEN
+		  i:=0;  
+	  END_IF	   
+	  iDiff:=0;
+	  
+	100: 
+		IF PV < SV-SV*0.05 AND NOT ErrorID.0 AND NOT ErrorID.1 THEN
+			Active:=TRUE;
+		ELSE 
+			Active:=FALSE;
+			iDiff:=0;
+		END_IF	  
+	  	 
+END_CASE
+
+CASE iAct OF 
+	0:iAct:=0;
+	
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_HeatBase">
+      <LineId Id="293" Count="0" />
+      <LineId Id="274" Count="3" />
+      <LineId Id="272" Count="1" />
+      <LineId Id="294" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="44" Count="2" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="35" Count="1" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="47" Count="1" />
+      <LineId Id="73" Count="2" />
+      <LineId Id="506" Count="3" />
+      <LineId Id="466" Count="0" />
+      <LineId Id="287" Count="3" />
+      <LineId Id="386" Count="0" />
+      <LineId Id="291" Count="1" />
+      <LineId Id="280" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="84" Count="1" />
+      <LineId Id="87" Count="1" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="334" Count="0" />
+      <LineId Id="124" Count="3" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="335" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="338" Count="0" />
+      <LineId Id="340" Count="2" />
+      <LineId Id="426" Count="0" />
+      <LineId Id="344" Count="0" />
+      <LineId Id="339" Count="0" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="222" Count="1" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="263" Count="0" />
+      <LineId Id="224" Count="0" />
+      <LineId Id="264" Count="1" />
+      <LineId Id="268" Count="2" />
+      <LineId Id="225" Count="4" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="254" Count="5" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="251" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="114" Count="2" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="233" Count="0" />
+      <LineId Id="246" Count="4" />
+      <LineId Id="234" Count="1" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="282" Count="0" />
+      <LineId Id="281" Count="0" />
+      <LineId Id="283" Count="0" />
+      <LineId Id="285" Count="0" />
+      <LineId Id="284" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

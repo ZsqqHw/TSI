@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_EM_Cmd" Id="{03795bef-c327-4108-84d1-97909f931550}">
+    <Declaration><![CDATA[TYPE UDT_EM_Cmd :
+STRUCT
+	Mode: DINT;
+	Enable: BOOL;
+	Disable: BOOL;
+	StartExecution: bool;
+	PrepareExecution: BOOL;
+	Abort: BOOL;
+	Stop: BOOL;
+	FaultReset: BOOL;
+	Home: BOOL;
+	Pause: BOOL;
+	CycleInStandby: BOOL;
+	ResumeFromPause: BOOL;
+	ResumeFromCycleInStandby: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

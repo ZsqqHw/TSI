@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_MS300Input" Id="{3a88f42a-f1f6-4821-b1f8-6565005ed4ad}">
+    <Declaration><![CDATA[TYPE UDT_MS300Input :
+STRUCT
+  Enable: BOOL;
+  Start: BOOL;
+  Stop: BOOL;
+  Reset: BOOL;
+  Vel: INT:=10;
+  Acc: LREAL:=100;
+  Dec: LREAL:=100;
+  Jerk: LREAL;
+
+  RatioNum: LREAL:=1;
+  RatioDen: UINT:=1;
+	SwitchOn: BOOL;
+	EnableVoltage: BOOL;
+	QuickStop: BOOL;
+	EnableOp: BOOL;
+	Operation:BOOL;
+	FaultReset: BOOL;
+	Halt: BOOL;
+
+  
+  
+  
+  
+  
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

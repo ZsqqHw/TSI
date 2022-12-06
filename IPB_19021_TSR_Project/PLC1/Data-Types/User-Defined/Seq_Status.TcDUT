@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="Seq_Status" Id="{290dedf9-e230-4130-9172-1fc8f79979fa}">
+    <Declaration><![CDATA[TYPE Seq_Status :
+(
+	Seq_Starting:=110,
+	Seq_Resetting:=10,
+	Seq_Stopping:=900,
+	Seq_ClearingDone,
+	Seq_StartingDone,
+	Seq_StoppingDone:=1000,
+	Seq_AbortingDone,
+	Seq_SuspendingDone,
+	Seq_ResettingDone:=100
+)INT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

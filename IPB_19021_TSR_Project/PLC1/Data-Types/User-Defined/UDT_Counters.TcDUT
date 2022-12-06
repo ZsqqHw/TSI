@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Counters" Id="{55fa26f3-bd2e-430b-bf14-1b4df7972df1}">
+    <Declaration><![CDATA[TYPE UDT_Counters :
+STRUCT
+	ID: DINT; //当前药品ID
+	Quantity: DINT;//当前站需要数的数量
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

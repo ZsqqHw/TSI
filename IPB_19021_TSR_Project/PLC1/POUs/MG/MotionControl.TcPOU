@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="MotionControl" Id="{d670da2f-9d1e-46e5-a21b-32dcf6934f65}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MotionControl
+VAR
+
+	arAOI_RealAxisAdmin: ARRAY[1..64] OF AOI_AxisAdmin;
+	arAOI_VirtualAxisAdmin: ARRAY[1..64] OF AOI_AxisAdmin;
+	arAOI_MS300Admin: ARRAY[1..1] OF AOI_MS300Admin;
+	i: INT;
+	MC_CamIn_Follower1: MC_CamIn;
+	lrSlaveOffset: LREAL;
+	lrMasterOffset: LREAL;
+	MC_CamOut_Follower1: mc_camOUT;
+	iCamID: MC_CAM_ID:=1;
+
+	MC_CamTableSelect_Follower1: MC_CamTableSelect;
+	CamTableFollower1: MC_CAM_REF;
+	CamTableIDFollower1: MC_CAM_ID;
+	table1: ARRAY[1..2] OF MC_MotionFunctionPoint; (*用于定义电子凸轮表中的关键点*)
+	MC_CamIn_Follower2: MC_CamIn;
+	MC_CamOut_Follower2: mc_camOUT;
+	MC_CamTableSelect_Follower2: MC_CamTableSelect;
+	iCamIDFollower2: MC_CAM_ID;
+	iCamID2: MC_CAM_ID:=2;
+	iCamID1: MC_CAM_ID:=1;
+	MC_CamIn_Follower3: MC_CamIn;
+	iCamID3: MC_CAM_ID;
+	MC_CamOut_Follower3: mc_camOUT;
+	MC_CamTableSelect_Follower3: MC_CamTableSelect;
+	
+	Vis_VirtualAxisRef:REFERENCE TO  UDT_AXisadmin;
+	Vis_VirtualAxisNoRef: INT:=1;
+	Vis_RealAxisRef:REFERENCE TO UDT_AXisadmin;
+	Vis_RealAxisNoRef: INT:=1;
+	xtest: BOOL;
+	j: INT;
+	rtestSpeed: LREAL;
+	rSeepView: LREAL;
+	btesetEnble: BOOL;
+	bTesetMoveAbs: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i:=1 TO 64 DO 
+	arAOI_RealAxisAdmin[i](Admin:= arRealAxisAdmin[i],enable:=HMI_AxisView[i].Enable,JogN:=HMI_AxisView[i].JogN,jogP:=HMI_AxisView[i].JogP
+    ,MoveAbsolute:=HMI_AxisView[i].MoveAbs,MoveRealtive:=HMI_AxisView[i].MoveReal);
+	arAOI_VirtualAxisAdmin[i](Admin:= arVirtualAxisAdmin[i]);
+	arRealAxisAdmin[i].i.JogVel:=30;
+	
+	HMI_AxisView[i].ActPos:=arRealAxisAdmin[i].o.ActPos;
+	HMI_AxisView[i].Homed:=arRealAxisAdmin[i].o.Homed;
+	HMI_AxisView[i].Active:=NOT arRealAxisAdmin[i].o.StandStill;
+END_FOR
+
+Vis_RealAxisRef REF= arRealAxisAdmin[Vis_RealAxisNoRef];
+Vis_VirtualAxisRef REF= arVirtualAxisAdmin[Vis_VirtualAxisNoRef];
+
+arAOI_MS300Admin[1](admin:= arMS300Admin[1]);
+
+
+TestBelt();
+
+]]></ST>
+    </Implementation>
+    <Action Name="TestBelt" Id="{f3dc0263-5403-4294-96c8-e9ae47d8c95e}">
+      <Implementation>
+        <ST><![CDATA[arVirtualAxisAdmin[2].i.Vel:=rtestSpeed;
+arVirtualAxisAdmin[2].i.Acc:=20000;
+arVirtualAxisAdmin[2].i.Dec:=20000;
+arVirtualAxisAdmin[2].i.Pos:=3300;
+rSeepView:=arVirtualAxisAdmin[2].o.ActVel;
+arVirtualAxisAdmin[2].i.Enable:=btesetEnble;
+arVirtualAxisAdmin[2].i.MoveAbs:=bTesetMoveAbs;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="MotionControl">
+      <LineId Id="5" Count="0" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="384" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="336" Count="0" />
+      <LineId Id="424" Count="0" />
+      <LineId Id="337" Count="1" />
+      <LineId Id="373" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="224" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="374" Count="0" />
+      <LineId Id="300" Count="1" />
+      <LineId Id="297" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="258" Count="0" />
+      <LineId Id="190" Count="0" />
+    </LineIds>
+    <LineIds Name="MotionControl.TestBelt">
+      <LineId Id="1" Count="0" />
+      <LineId Id="3" Count="2" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

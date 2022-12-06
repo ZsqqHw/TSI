@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <Task Name="IOTask" Id="{b9569337-dc3d-410a-80bd-61ee280b1fb4}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>2000</CycleTime>
+    <Priority>8</Priority>
+    <PouCall>
+      <Name>IO_Mapping</Name>
+    </PouCall>
+    <TaskFBGuid>{b87b5d23-2e57-4245-ac9c-f199f193e457}</TaskFBGuid>
+    <Fb_init>{44f8d6ee-02ff-4077-a601-4e24dea064b7}</Fb_init>
+    <Fb_exit>{3e7a6357-3061-4adb-a6e6-22c3657d9a14}</Fb_exit>
+    <CycleUpdate>{c76baf9b-931e-46bf-b4d8-8fd142a76e4a}</CycleUpdate>
+    <PostCycleUpdate>{446efd6d-76c7-4045-8407-b3f31cd3a790}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

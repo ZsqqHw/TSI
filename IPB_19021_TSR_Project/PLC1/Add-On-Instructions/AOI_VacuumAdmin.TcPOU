@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="AOI_VacuumAdmin" Id="{1858a371-e382-42ef-9193-81567ae00b66}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_VacuumAdmin
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR_IN_OUT
+	admin: UDT_VacuumAdmin;
+END_VAR
+
+VAR
+	ftVacuum: F_trig;
+	tonBlow: TON;
+	tonCheck: TON;	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF admin.i.ActiveIN THEN
+	admin.o.ValveIn:=TRUE;
+	ELSE 
+	admin.o.ValveIn:=FALSE;
+END_IF
+
+ftVacuum(CLK:=admin.o.ValveIn , Q=> );
+IF ftVacuum.Q THEN
+   admin.o.ValveOut:=TRUE;
+END_IF
+IF tonBlow.Q THEN
+   admin.o.ValveOut:=FALSE;
+END_IF
+
+tonBlow(IN:=admin.o.ValveOut, PT:=DINT_TO_TIME(admin.i.BlowTime) , Q=> , ET=> );
+tonCheck(IN:=admin.o.ValveIn AND NOT admin.i.reset , PT:=DINT_TO_TIME(admin.i.CheckTime)  , Q=> , ET=> );
+
+IF tonCheck.Q AND NOT admin.i.Sensor THEN
+	admin.o.Error :=TRUE;
+END_IF
+
+IF admin.i.reset THEN
+   admin.o.Error :=FALSE;
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_VacuumAdmin">
+      <LineId Id="9" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="16" Count="1" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="50" Count="3" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="56" Count="1" />
+      <LineId Id="49" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

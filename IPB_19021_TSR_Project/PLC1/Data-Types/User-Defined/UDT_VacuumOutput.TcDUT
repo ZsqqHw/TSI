@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_VacuumOutput" Id="{acd11ac0-d31e-4484-b8e4-59618e576c13}">
+    <Declaration><![CDATA[TYPE UDT_VacuumOutput :
+STRUCT
+	ValveIn: BOOL;
+	ValveOut: BOOL;
+	Error: BOOL;
+	ErrorID: DINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

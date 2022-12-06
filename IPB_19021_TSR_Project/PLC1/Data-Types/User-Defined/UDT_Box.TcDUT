@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <DUT Name="UDT_Box" Id="{80b31a66-438a-4fac-b9d1-a7b27a6e500c}">
+    <Declaration><![CDATA[TYPE UDT_Box :
+STRUCT
+	PrintData: STRING(23);
+	PrintRequest: BOOL;
+    amount: DINT;
+	Valid :BOOL;
+	Drop: BOOL;
+	Cut: BOOL;
+	Check1: BOOL;
+	Check2: BOOL;
+	Seal1: BOOL;
+	Seal2: BOOL;
+	Transfer: BOOL;
+	Pick: BOOL;
+	Reject: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

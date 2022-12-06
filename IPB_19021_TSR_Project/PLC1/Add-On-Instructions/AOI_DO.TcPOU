@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="AOI_DO" Id="{2a2adbd1-5365-40d2-9a23-ffd34a0a8e34}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_DO
+VAR_INPUT
+	ON: BOOL;
+	OFF: BOOL;
+	NAME: STRING := 'Not use';
+	VALUE: BOOL;
+END_VAR
+VAR_OUTPUT
+	LINK: BOOL;
+	R_TRIG: BOOL;
+	F_TRIG: BOOL;
+END_VAR
+VAR
+	rtON: R_TRIG;
+	rtOFF: R_TRIG;
+	rtValue: R_TRIG;
+	ftValue: F_TRIG;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[LINK:=  (ON OR  VALUE)   AND NOT OFF; 
+
+rtValue(CLK:=VALUE);
+ftValue(CLK:=VALUE);
+R_TRIG:=rtValue.Q;
+F_TRIG:=ftValue.Q;
+rtON(CLK:=ON);
+(*
+IF rtON.Q THEN
+	OFF:=FALSE;
+	On:=TRUE;
+END_IF
+rtOFF(CLK:=OFF);
+IF rtOFF.Q THEN
+	ON:=FALSE;
+	OFF:=TRUE;
+END_IF
+*)
+IF on AND off THEN
+	ON:=FALSE;
+	OFF:=FALSE;	
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_DO">
+      <LineId Id="47" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="4" Count="4" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="11" Count="5" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="17" Count="3" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

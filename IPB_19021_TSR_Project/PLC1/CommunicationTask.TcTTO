@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <Task Name="CommunicationTask" Id="{9f66a828-ff72-4176-b07f-8639f7549bc5}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>10000</CycleTime>
+    <Priority>16</Priority>
+    <PouCall>
+      <Name>EtherCatStates</Name>
+    </PouCall>
+    <PouCall>
+      <Name>Socket</Name>
+    </PouCall>
+    <TaskFBGuid>{1e48e0aa-2e1a-46bb-92f3-912953f9d1d1}</TaskFBGuid>
+    <Fb_init>{3562db48-2245-4d62-8d77-e452aa5368bd}</Fb_init>
+    <Fb_exit>{f2d7d6b7-3fc8-41e3-831f-4d1ff2c243a1}</Fb_exit>
+    <CycleUpdate>{a6fe20ef-4bb0-4a99-aade-a6c91fe087e2}</CycleUpdate>
+    <PostCycleUpdate>{363b602f-5da7-4428-9d73-dba108487cfc}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

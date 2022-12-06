@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="AOI_CylinderAdmin" Id="{4163de3b-aae8-4b75-852a-b5be4cbd0661}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_CylinderAdmin
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	ActInTime: DINT;
+	ActOutTime: DINT;
+END_VAR
+VAR
+	TON_InCheck: TON;
+	TON_OutCheck: TON;
+	rtOUT: R_trig;
+    rtIn: R_trig;
+END_VAR
+VAR_IN_OUT
+	Admin: UDT_CylinderAdmin;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF admin.i.mode=0 THEN
+   IF admin.i.HmiIN THEN
+	  admin.o.ValveIn:=TRUE;
+	  admin.o.ValveOut:=FALSE;
+   END_IF
+   IF admin.i.HmiOUT THEN
+	  admin.o.ValveIn:=FALSE;
+	  admin.o.ValveOut:=TRUE;
+   END_IF
+END_IF
+IF admin.i.mode=1 THEN
+   IF admin.i.ActiveIn THEN
+	  admin.o.ValveIn:=TRUE;
+	  admin.o.ValveOut:=FALSE;
+   END_IF
+   IF admin.i.ActiveOut THEN
+	  admin.o.ValveIn:=FALSE;
+	  admin.o.ValveOut:=TRUE;
+   END_IF
+   IF NOT admin.i.ActiveIn AND NOT admin.i.ActiveOut  THEN
+	  admin.o.ValveIn:=FALSE;
+	  admin.o.ValveOut:=FALSE;
+   END_IF
+END_IF
+
+TON_InCheck(IN:=admin.o.ValveIn AND NOT admin.i.Reset , PT:=DINT_TO_TIME(admin.i.CheckTime) , Q=> , ET=> );
+TON_OutCheck(IN:=admin.o.ValveOut AND NOT admin.i.Reset, PT:=DINT_TO_TIME(admin.i.CheckTime) , Q=> , ET=> );
+IF ton_incheck.Q AND NOT admin.i.InSensor THEN
+   admin.o.Error:=TRUE;
+END_IF
+IF Ton_OutCheck.Q AND NOT admin.i.OutSensor THEN 
+   admin.o.Error:=TRUE;
+END_IF
+IF admin.i.Reset THEN
+   admin.o.Error:=FALSE;
+END_IF
+
+IF rtOUT.Q  AND NOT admin.o.Error THEN
+   ActOutTime:=TIME_TO_DINT(TON_OutCheck.ET);
+END_IF
+
+IF rtIN.Q  AND NOT admin.o.Error THEN
+   ActInTime:=TIME_TO_DINT(TON_InCheck.ET);
+END_IF
+
+rtOUT(CLK:= admin.i.OutSensor , Q=> );
+rtIn(CLK:=  admin.i.InSensor, Q=> );]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_CylinderAdmin">
+      <LineId Id="9" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="18" Count="2" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="22" Count="8" />
+      <LineId Id="73" Count="1" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="54" Count="4" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="49" Count="1" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="96" Count="1" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="98" Count="1" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="38" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

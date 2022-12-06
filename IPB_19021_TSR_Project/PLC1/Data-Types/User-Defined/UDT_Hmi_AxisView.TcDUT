@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Hmi_AxisView" Id="{2a32e8f5-5896-4aee-b2e1-ba7da420fe0f}">
+    <Declaration><![CDATA[TYPE UDT_Hmi_AxisView :
+STRUCT
+	 Enable: BOOL;
+	 JogP: BOOL;
+	 JogN: BOOL;
+	 MoveReal: BOOL;
+	 MoveAbs: BOOL;
+	 ActPos: LREAL;
+	 Homed: BOOL;
+	 Active: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

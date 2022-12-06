@@ -1,0 +1,902 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="Socket" Id="{7e84310f-93f3-4b07-a568-04fd6b0a1c40}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Socket
+VAR
+	arSocketListen: ARRAY[1..8] OF FB_SocketListen;
+	arSocketAccept: ARRAY[1..8] OF FB_SocketAccept;	
+	
+	arSocketConnect: ARRAY[1..8] OF FB_SocketConnect;
+	arSocketReceive: ARRAY[1..8] OF FB_SocketReceive;
+    arSocketSend: ARRAY[1..8] OF FB_SocketSend;	
+	arSocketClose: ARRAY[1..8] OF FB_SocketClose;	
+		
+	arListen: ARRAY[1..8] OF BOOL;
+	arhlistener: ARRAY[1..8] OF  T_HSOCKET;
+
+	wReceiveDataBuffer: ARRAY[0..127] OF WORD;
+	wSendDataBuffer: ARRAY[0..127] OF WORD;	
+	
+	wReceiveData: ARRAY[0..127] OF WORD;
+	wSendData: ARRAY[0..127] OF WORD;
+	wNullData: ARRAY[0..127] OF WORD;
+	
+	pbyReceiveData: ARRAY [0..255] OF BYTE;;
+	pbySendData: ARRAY [0..255] OF BYTE;;
+ 
+	byReceiveData: ARRAY [0..255] OF BYTE;;
+	bySendData: ARRAY [0..255] OF BYTE;	
+	
+	byPrint:  ARRAY [0..MAX_STRING_LENGTH] OF BYTE;
+	byPrintAuto:  ARRAY [0..MAX_STRING_LENGTH] OF BYTE;
+	byPrintUser:  ARRAY [0..MAX_STRING_LENGTH] OF BYTE;
+	
+	iSocket: ARRAY[1..8] OF INT;
+	arConnectExecute: ARRAY[1..8] OF BOOL;
+	arConnectError: ARRAY[1..8] OF BOOL;
+	arConnectErrId: ARRAY[1..8] OF UDINT;
+	arConnectBusy: ARRAY[1..8] OF BOOL;
+		
+	arReceiveExecute: ARRAY[1..8] OF BOOL;
+	arReceiveError: ARRAY[1..8] OF BOOL;
+	arReceiveErrId: ARRAY[1..8] OF UDINT;
+	arReceiveBusy: ARRAY[1..8] OF BOOL;
+		
+	arCloseExecute: ARRAY[1..8] OF BOOL;
+	arCloseError: ARRAY[1..8] OF BOOL;
+	arCloseErrId: ARRAY[1..8] OF UDINT;
+	arCloseBusy: ARRAY[1..8] OF BOOL;
+	arhSocket: ARRAY[1..8] OF T_HSOCKET;
+	
+	arSendExecute: ARRAY[1..8] OF BOOL;
+
+	
+	arSendError: ARRAY[1..8] OF BOOL;
+	arSendErrId: ARRAY[1..8] OF UDINT;
+	arSendBusy: ARRAY[1..8] OF BOOL;
+	arTon: ARRAY [1..8] OF Ton;
+	arBlink: ARRAY[1..8] OF BLINK;
+	
+	testString: STRING:='1';
+	byteString: BYTE;
+	pS: POINTER TO STRING;
+
+	arAccept: ARRAY[1..8] OF bool;
+	arListenBusy: ARRAY[1..8] OF bool;
+	arAcceptBusy: ARRAY[1..8] OF bool;
+	arListenError: ARRAY[1..8] OF bool;
+	arAcceptError: ARRAY[1..8] OF bool;
+
+	
+	
+	byPrintSend: ARRAY [0..MAX_STRING_LENGTH] OF BYTE;
+	byPrintReceive: ARRAY [0..MAX_STRING_LENGTH] OF BYTE;
+
+
+	iPPReceive: INT;
+	diReceiveData: DINT;
+	iPPSend: INT;
+	iPPAccept: INT;
+
+	
+	tonFS: TON;
+	
+	pReceiveString: POINTER TO STRING;
+	wSendCnt: WORD;
+	
+	
+	sTestSting: STRING(255);
+	arrtestBytearr: ARRAY [0..MAX_STRING_LENGTH] OF BYTE;
+	arrToBytearr: ARRAY [0..MAX_STRING_LENGTH] OF BYTE;
+	sToBytearrString: T_MaxString;
+	sAutoPrintData: STRING(22);
+	sTestPrintData: STRING(22);
+	bDebugFlag: DINT;
+	sTestData: STRING;
+	iLen: UINT;
+	rViewPrintPos: REAL;
+	rPrintPosBuffer: REAL;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//TCP1_Client();
+TCP2_Server();
+pReceiveString:=ADR(pbyReceiveData);
+HMI_PrinterReceiveData:=pReceiveString^;
+sTestSting:=BYTEARR_TO_MAXSTRING(in:= arrtestBytearr);
+arrToBytearr:=MAXSTRING_TO_BYTEARR(in:= sToBytearrString);
+]]></ST>
+    </Implementation>
+    <Action Name="TCP1_Client" Id="{878c632a-644b-496b-a0b0-e840ef3f30b4}">
+      <Implementation>
+        <ST><![CDATA[(*
+arSocketConnect[1](
+	sSrvNetId:= , 
+	sRemoteHost:= '192.168.1.199', 
+	nRemotePort:= 3000, 
+	bExecute:= arConnectExecute[1] , 
+	tTimeout:= T#10S, 
+	bBusy=> arConnectBusy[1], 
+	bError=> arConnectError[1], 
+	nErrId=> arConnectErrId[1], 
+	hSocket=> arhSocket[1]);
+		
+arBlink[1](TimeH:= 1000, TimeL:= 2000, OUT=> );
+	
+arSocketReceive[1](
+	sSrvNetId:= , 
+	hSocket:=  arhSocket[1], 
+	cbLen:= 255, 
+	pDest:= ADR(ReceiveData[1]), 
+	bExecute:= arReceiveExecute[1], 
+	tTimeout:= T#1S, 
+	bBusy=> arReceiveBusy[1], 
+	bError=> arReceiveError[1], 
+	nErrId=> arReceiveErrId[1], 
+	nRecBytes=> );
+
+arSocketSend[1](
+	sSrvNetId:= , 
+	hSocket:= arhSocket[1], 
+	cbLen:=  255, 
+	pSrc:= ADR(SendData[1]), 
+	bExecute:= arSendExecute[1], 
+	tTimeout:= T#1S, 
+	bBusy=> arSendBusy[1], 
+	bError=> arSendError[1], 
+	nErrId=> arSendErrId[1]);	
+	
+	
+arSocketClose[1](
+	sSrvNetId:= , 
+	hSocket:=  arhSocket[1], 
+	bExecute:= arCloseExecute[1], 
+	tTimeout:= T#1S, 
+	bBusy=>  arCloseBusy[1], 
+	bError=> arCloseError[1], 
+	nErrId=> arCloseErrId[1]);
+
+
+
+	
+CASE iSocket[1] OF 
+0:  
+    MEMSET(destAddr:= ADR(arhSocket[1]), fillByte:= 0, n:= SIZEOF(arhSocket[1]));  
+	arConnectExecute[1]:=FALSE;	
+    iSocket[1]:=1;
+	
+1:  
+	iSocket[1]:=2;
+		
+2:
+    arConnectExecute[1]:=TRUE;	
+    IF arConnectBusy[1] THEN
+	   arConnectExecute[1]:=FALSE;	
+       iSocket[1]:=3;
+	END_IF	
+	
+3:  
+	iSocket[1]:=4;
+	
+4:	
+    IF arhSocket[1].handle<>0 THEN
+       iSocket[1]:=10;
+	ELSE IF arConnectError[1] THEN
+		    iSocket[1]:=0;
+		 END_IF
+	END_IF
+
+
+	   
+10:
+    arReceiveExecute[1]:=TRUE;
+	iSocket[1]:=11;
+	
+11:
+	   arReceiveExecute[1]:=FALSE;
+	   iSocket[1]:=12;
+12:
+	IF NOT arReceiveError[1] AND NOT arReceiveBusy[1] THEN
+	   iSocket[1]:=13;
+	   ELSE IF arReceiveError[1] THEN
+	           iSocket[1]:=90; 
+            END_IF  
+	END_IF 	
+	
+13:	
+	   iSocket[1]:=20;
+	
+20:
+	arSendExecute[1]:=TRUE; 
+	iSocket[1]:=21;
+
+
+21:	 
+	   arSendExecute[1]:=FALSE;
+	   iSocket[1]:=22;
+	
+22:
+	IF NOT arSendError[1] AND NOT arSendBusy[1]  THEN
+	   iSocket[1]:=23;
+	   ELSE IF arSendError[1] THEN
+	           iSocket[1]:=90;
+	        END_IF
+	END_IF 
+       		   
+23:
+	   iSocket[1]:=10;
+
+
+90: 
+    arConnectExecute[1]:=FALSE;  
+    arSendExecute[1]:=FALSE;
+    arReceiveExecute[1]:=FALSE;
+	arCloseExecute[1]:=TRUE;
+	iSocket[1]:=91;
+
+91: 
+	   iSocket[1]:=92;
+
+92:
+	   arCloseExecute[1]:=FALSE;
+	   iSocket[1]:=0;
+
+END_CASE
+*)]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="TCP2_Server" Id="{96dbe25d-dcf9-4b64-aeb7-adfecb578df0}">
+      <Implementation>
+        <ST><![CDATA[tonFS(IN:= TRUE, PT:= T#60S, Q=> , ET=> );
+
+arSocketListen[2](
+	sSrvNetId:= , 
+	sLocalHost:= '192.168.1.10', 
+	nLocalPort:= 6853, 
+	bExecute:= arListen[2] OR tonFS.Q , 
+	tTimeout:=, 
+	bBusy=> arListenBusy[2], 
+	bError=> arListenError[2], 
+	nErrId=> , 
+	hListener=> arhlistener[2]);
+	
+	
+arSocketAccept[2](
+	sSrvNetId:= , 
+	hListener:= arhlistener[2], 
+	bExecute:= arAccept[2], 
+	tTimeout:= , 
+	bAccepted=> , 
+	bBusy=> arAcceptBusy[2], 
+	bError=> arAcceptError[2], 
+	nErrId=> , 
+	hSocket=> arhSocket[2]);	
+	
+arSocketReceive[2](
+	sSrvNetId:= , 
+	hSocket:=  arhSocket[2], 
+	cbLen:= 255, 
+	pDest:= ADR(wReceiveDataBuffer), 
+	bExecute:= arReceiveExecute[2], 
+	tTimeout:= T#1S, 
+	bBusy=> arReceiveBusy[2], 
+	bError=> arReceiveError[2], 
+	nErrId=> arReceiveErrId[2], 
+	nRecBytes=> );
+
+arSocketSend[2](
+	sSrvNetId:= , 
+	hSocket:= arhSocket[2], 
+	cbLen:=  255, 
+	pSrc:= ADR(wSendDataBuffer), 
+	bExecute:= arSendExecute[2], 
+	tTimeout:= T#1S, 
+	bBusy=> arSendBusy[2], 
+	bError=> arSendError[2], 
+	nErrId=> arSendErrId[2]);	
+	
+	
+arSocketClose[2](
+	sSrvNetId:= , 
+	hSocket:=  arhSocket[2], 
+	bExecute:= arCloseExecute[2], 
+	tTimeout:= T#1S, 
+	bBusy=>  arCloseBusy[2], 
+	bError=> arCloseError[2], 
+	nErrId=> arCloseErrId[2]);	
+	
+	
+rViewPrintPos:= arRealAxisAdmin[48].o.ActPos- rPrintPosBuffer;
+	
+CASE iPPAccept OF 
+0:  
+    MEMSET(destAddr:= ADR(wReceiveData), fillByte:= 0, n:= SIZEOF(wReceiveData));
+    MEMSET(destAddr:= ADR(arhSocket[2]), fillByte:= 0, n:= SIZEOF(arhSocket[2]));  		
+    iPPAccept:=1;	
+1: 	
+    IF arhlistener[2].handle<>0 THEN
+       iPPAccept:=2;
+	END_IF
+2:	
+	arTon[2](IN:= TRUE, PT:= T#100MS, Q=> , ET=> );	
+	IF arTon[2].Q THEN
+	   arTon[2](IN:= FALSE, PT:= T#100MS, Q=> , ET=> );	
+	   iPPAccept:=10;
+	END_IF
+	   
+10: arAccept[2]:=TRUE;	
+    iPPAccept:=11;
+	
+11:
+	arTon[2](IN:= TRUE, PT:= T#100MS, Q=> , ET=> );	
+	IF arTon[2].Q THEN
+	   arTon[2](IN:= FALSE, PT:= T#100MS, Q=> , ET=> );	
+	   iPPAccept:=12;
+	END_IF
+	
+12:	
+    IF arhSocket[2].handle<>0 THEN
+       iPPAccept:=20;
+	   ELSE 
+	   arAccept[2]:=FALSE;
+	   iPPAccept:=1;
+	END_IF
+
+20:
+    HMI_PrinterConnected:=TRUE;
+    iPPReceive:=10;
+	iPPAccept:=100;
+
+
+90:  
+    
+    HMI_PrinterConnected:=FALSE;
+	arAccept[2]:=FALSE;
+    arSendExecute[2]:=FALSE;
+    arReceiveExecute[2]:=FALSE;
+	arCloseExecute[2]:=TRUE;
+	iPPAccept:=91;
+
+91: 
+	arTon[2](IN:= TRUE, PT:= T#100MS, Q=> , ET=> );	
+	IF arTon[2].Q THEN
+	   arTon[2](IN:= FALSE, PT:= T#100MS, Q=> , ET=> );	
+	   iPPAccept:=92;
+	END_IF
+	
+92:
+	arCloseExecute[2]:=FALSE;
+	iPPAccept:=0;
+END_CASE
+	
+CASE iPPReceive OF
+	10: 
+	    MEMSET(destAddr:= ADR(wReceiveDataBuffer), fillByte:= 0, n:= SIZEOF(wReceiveDataBuffer));
+	    arReceiveExecute[2]:=FALSE;
+		iPPReceive:=11;
+		
+	11:
+        arTon[3](IN:= TRUE, PT:= T#100MS, Q=> , ET=> );	
+		IF arTon[3].Q THEN
+		   arTon[3](IN:= FALSE, PT:= T#100MS, Q=> , ET=> );	
+		   iPPReceive:=20;
+		END_IF
+		
+	20:	
+	    arReceiveExecute[2]:=TRUE;
+		iPPReceive:=21;
+		
+	21:
+        arTon[3](IN:= TRUE, PT:= T#1000MS, Q=> , ET=> );	
+		IF arTon[3].Q THEN
+		   arTon[3](IN:= FALSE, PT:= T#1000MS, Q=> , ET=> );	
+		   iPPReceive:=30;
+		END_IF		
+		
+	30: 
+        diReceiveData:=MEMCMP(pBuf1:=ADR(wReceiveDataBuffer) , pBuf2:=ADR(wNullData) , n:=SIZEOF(wNullData));
+        IF 	diReceiveData<>0 THEN
+		    MEMSET(destAddr:= ADR(wReceiveData), fillByte:= 0, n:= SIZEOF(wReceiveData));
+		    wReceiveData:=wReceiveDataBuffer;
+			pbyReceiveData[0]:=WORD_TO_BYTE(wReceiveDataBuffer[5]);
+			pbyReceiveData[1]:=WORD_TO_BYTE(wReceiveDataBuffer[6]);
+			pbyReceiveData[2]:=WORD_TO_BYTE(wReceiveDataBuffer[7]);
+			pbyReceiveData[3]:=WORD_TO_BYTE(wReceiveDataBuffer[8]);
+			pbyReceiveData[4]:=WORD_TO_BYTE(wReceiveDataBuffer[9]);
+			pbyReceiveData[5]:=WORD_TO_BYTE(wReceiveDataBuffer[10]);
+			pbyReceiveData[6]:=WORD_TO_BYTE(wReceiveDataBuffer[11]);
+			pbyReceiveData[7]:=WORD_TO_BYTE(wReceiveDataBuffer[12]);
+			pbyReceiveData[8]:=WORD_TO_BYTE(wReceiveDataBuffer[13]);
+			pbyReceiveData[9]:=WORD_TO_BYTE(wReceiveDataBuffer[14]);
+			pbyReceiveData[10]:=WORD_TO_BYTE(wReceiveDataBuffer[15]);
+			pbyReceiveData[11]:=WORD_TO_BYTE(wReceiveDataBuffer[16]);
+			pbyReceiveData[12]:=WORD_TO_BYTE(wReceiveDataBuffer[17]);
+			pbyReceiveData[13]:=WORD_TO_BYTE(wReceiveDataBuffer[18]);
+			pbyReceiveData[14]:=WORD_TO_BYTE(wReceiveDataBuffer[19]);
+			pbyReceiveData[15]:=WORD_TO_BYTE(wReceiveDataBuffer[20]);
+			pbyReceiveData[16]:=WORD_TO_BYTE(wReceiveDataBuffer[21]);
+			pbyReceiveData[17]:=WORD_TO_BYTE(wReceiveDataBuffer[22]);
+			pbyReceiveData[18]:=WORD_TO_BYTE(wReceiveDataBuffer[23]);
+			pbyReceiveData[19]:=WORD_TO_BYTE(wReceiveDataBuffer[24]);
+			pbyReceiveData[20]:=WORD_TO_BYTE(wReceiveDataBuffer[25]);
+			pbyReceiveData[21]:=WORD_TO_BYTE(wReceiveDataBuffer[26]);
+			pbyReceiveData[22]:=WORD_TO_BYTE(wReceiveDataBuffer[27]);			
+	    END_IF
+		iPPReceive:=10;
+	    IF arSocketReceive[2].bError THEN
+		   iPPReceive:=0;
+		   iPPAccept:=90;
+		END_IF
+		
+END_CASE
+
+CASE iPPSend OF
+	0:  IF HMI_PrinterConnected  AND glb_Un02Box.Box[HMI_PrintNo].PrintRequest AND wReceiveData[0]<>0 THEN
+		   iPPSend:=10;
+		ELSE IF HMI_PrinterConnected AND wReceiveData[0]<>0 AND  HMI_PrinterTest THEN
+                iPPSend:=200;
+			 END_IF	
+	    END_IF
+	10:
+	   MEMSET(destAddr:= ADR(byPrintUser), fillByte:= 0, n:= SIZEOF(byPrintUser));
+	   MEMSET(destAddr:= ADR(wSendDataBuffer), fillByte:= 0, n:= SIZEOF(wSendDataBuffer));
+	   MEMSET(destAddr:= ADR(sAutoPrintData), fillByte:= 0, n:= SIZEOF(sAutoPrintData));
+	   iLen:=INT_TO_UINT(LEN(glb_Un02Box.Box[HMI_PrintNo].PrintData));
+	   MEMCPY(ADR(sAutoPrintData),ADR(glb_Un02Box.Box[HMI_PrintNo].PrintData),ilen);
+	   IF NOT bDebugFlag.0 THEN
+	   iPPSend:=11;
+	   END_IF
+	11:
+	   byPrintUser:=MAXSTRING_TO_BYTEARR(sAutoPrintData);
+	   IF NOT bDebugFlag.1 THEN
+	   iPPSend:=20;
+       END_IF
+	
+	   
+	20:		
+        wSendDataBuffer[0]:= 35;
+		iPPSend:=30;
+	30: 	
+	    wSendCnt:=wSendCnt+1;
+	    IF wSendCnt>200 THEN
+		   wSendCnt:=1;
+		END_IF	
+		
+		wSendDataBuffer[1]:=0;
+		wSendDataBuffer[2]:=wSendCnt;
+		wSendDataBuffer[3]:=0;
+		wSendDataBuffer[4]:=44;
+		wSendDataBuffer[5]:=BYTE_TO_WORD(byPrintUser[0]);
+		wSendDataBuffer[6]:=BYTE_TO_WORD(byPrintUser[1]);
+		wSendDataBuffer[7]:=BYTE_TO_WORD(byPrintUser[2]);
+		wSendDataBuffer[8]:=BYTE_TO_WORD(byPrintUser[3]);
+		wSendDataBuffer[9]:=BYTE_TO_WORD(byPrintUser[4]);
+		wSendDataBuffer[10]:=BYTE_TO_WORD(byPrintUser[5]);
+		wSendDataBuffer[11]:=BYTE_TO_WORD(byPrintUser[6]);
+		wSendDataBuffer[12]:=BYTE_TO_WORD(byPrintUser[7]);
+		wSendDataBuffer[13]:=BYTE_TO_WORD(byPrintUser[8]);
+		wSendDataBuffer[14]:=BYTE_TO_WORD(byPrintUser[9]);
+		wSendDataBuffer[15]:=BYTE_TO_WORD(byPrintUser[10]);
+		wSendDataBuffer[16]:=BYTE_TO_WORD(byPrintUser[11]);
+		wSendDataBuffer[17]:=BYTE_TO_WORD(byPrintUser[12]);
+		wSendDataBuffer[18]:=BYTE_TO_WORD(byPrintUser[13]);
+		wSendDataBuffer[19]:=BYTE_TO_WORD(byPrintUser[14]);
+		wSendDataBuffer[20]:=BYTE_TO_WORD(byPrintUser[15]);
+		wSendDataBuffer[21]:=BYTE_TO_WORD(byPrintUser[16]);
+		wSendDataBuffer[22]:=BYTE_TO_WORD(byPrintUser[17]);
+		wSendDataBuffer[23]:=BYTE_TO_WORD(byPrintUser[18]);
+		wSendDataBuffer[24]:=BYTE_TO_WORD(byPrintUser[19]);
+		wSendDataBuffer[25]:=BYTE_TO_WORD(byPrintUser[20]);
+        wSendDataBuffer[26]:=BYTE_TO_WORD(byPrintUser[21]);	
+		arSendExecute[2]:=FALSE;		
+		iPPSend:=31;
+		
+		
+    31:		
+	    arTon[4](IN:= TRUE, PT:= T#100MS, Q=> , ET=> );	
+		IF arTon[4].Q THEN
+		   arTon[4](IN:= FALSE, PT:= T#100MS, Q=> , ET=> );	
+		   iPPSend:=40;
+		END_IF	
+    40:
+        arSendExecute[2]:=TRUE;
+		iPPSend:=41;	
+    41:
+	    arTon[4](IN:= TRUE, PT:= T#10S, Q=> , ET=> );	
+		IF arTon[4].Q THEN
+		   arTon[4](IN:= FALSE, PT:= T#10S, Q=> , ET=> );	
+		   iPPSend:=50;
+		END_IF
+		
+	50:	
+	    arTon[4](IN:= TRUE, PT:= DINT_TO_TIME(HMI_PrintMaxTime*1000), Q=> , ET=> );	
+	    IF wReceiveData[2]=wSendCnt  THEN
+		   arTon[4](IN:= FALSE, PT:= DINT_TO_TIME(HMI_PrintMaxTime*1000), Q=> , ET=> );
+		   iPPSend:=60;
+		   ELSE IF arTon[4].Q THEN
+				   arTon[4](IN:= FALSE, PT:= DINT_TO_TIME(HMI_PrintMaxTime*1000), Q=> , ET=> );
+				   iPPSend:=51;
+		   END_IF
+		END_IF
+    51: 
+	    HMI_PrinterFault:=TRUE;
+	    iPPSend:=52;
+	52: IF NOT HMI_PrinterFault THEN
+		   iPPSend:=60;
+	    END_IF
+    60:
+	
+	    glb_Un02Box.Box[HMI_PrintNo].PrintRequest:= FALSE;
+		arSendExecute[2]:=FALSE;
+	    iPPSend:=0;	
+
+		
+	200: 
+		MEMSET(destAddr:= ADR(byPrint), fillByte:= 0, n:= SIZEOF(byPrint));
+		MEMSET(destAddr:= ADR(wSendDataBuffer), fillByte:= 0, n:= SIZEOF(wSendDataBuffer));
+	    MEMSET(destAddr:= ADR(sTestPrintData), fillByte:= 0, n:= SIZEOF(sTestPrintData));
+	    iLen:=INT_TO_UINT(LEN(HMI_PrinterTestData));
+	    MEMCPY(ADR(sTestPrintData),ADR(HMI_PrinterTestData),ilen);		
+	    byPrint:=MAXSTRING_TO_BYTEARR(sTestPrintData);	
+		
+		iPPSend:=210;	
+		
+    210:
+		wSendDataBuffer[0]:= 35;
+		iPPSend:=220;
+		
+	220:	
+	    wSendCnt:=wSendCnt+1;
+	    IF wSendCnt>200 THEN
+		   wSendCnt:=1;
+		END_IF
+	
+		wSendDataBuffer[1]:=0;
+		wSendDataBuffer[2]:=wSendCnt;
+		wSendDataBuffer[3]:=0;
+		wSendDataBuffer[4]:=44;
+		wSendDataBuffer[5]:=BYTE_TO_WORD(byPrint[0]);
+		wSendDataBuffer[6]:=BYTE_TO_WORD(byPrint[1]);
+		wSendDataBuffer[7]:=BYTE_TO_WORD(byPrint[2]);
+		wSendDataBuffer[8]:=BYTE_TO_WORD(byPrint[3]);
+		wSendDataBuffer[9]:=BYTE_TO_WORD(byPrint[4]);
+		wSendDataBuffer[10]:=BYTE_TO_WORD(byPrint[5]);
+		wSendDataBuffer[11]:=BYTE_TO_WORD(byPrint[6]);
+		wSendDataBuffer[12]:=BYTE_TO_WORD(byPrint[7]);
+		wSendDataBuffer[13]:=BYTE_TO_WORD(byPrint[8]);
+		wSendDataBuffer[14]:=BYTE_TO_WORD(byPrint[9]);
+		wSendDataBuffer[15]:=BYTE_TO_WORD(byPrint[10]);
+		wSendDataBuffer[16]:=BYTE_TO_WORD(byPrint[11]);
+		wSendDataBuffer[17]:=BYTE_TO_WORD(byPrint[12]);
+		wSendDataBuffer[18]:=BYTE_TO_WORD(byPrint[13]);
+		wSendDataBuffer[19]:=BYTE_TO_WORD(byPrint[14]);
+		wSendDataBuffer[20]:=BYTE_TO_WORD(byPrint[15]);
+		wSendDataBuffer[21]:=BYTE_TO_WORD(byPrint[16]);
+		wSendDataBuffer[22]:=BYTE_TO_WORD(byPrint[17]);
+		wSendDataBuffer[23]:=BYTE_TO_WORD(byPrint[18]);
+		wSendDataBuffer[24]:=BYTE_TO_WORD(byPrint[19]);
+		wSendDataBuffer[25]:=BYTE_TO_WORD(byPrint[20]);
+        wSendDataBuffer[26]:=BYTE_TO_WORD(byPrint[21]);
+
+		
+		arSendExecute[2]:=FALSE;
+		iPPSend:=221;
+		
+    221:		
+	    arTon[4](IN:= TRUE, PT:= T#1000MS, Q=> , ET=> );	
+		IF arTon[4].Q THEN
+		   arTon[4](IN:= FALSE, PT:= T#1000MS, Q=> , ET=> );	
+		   iPPSend:=230;
+		END_IF	
+    230:
+        arSendExecute[2]:=TRUE;
+		iPPSend:=231;			
+
+    231:
+	    arTon[4](IN:= TRUE, PT:= T#1000MS, Q=> , ET=> );	
+		IF arTon[4].Q THEN
+		   arTon[4](IN:= FALSE, PT:= T#1000MS, Q=> , ET=> );	
+		   iPPSend:=240;
+		END_IF
+		
+	240:
+	    arTon[4](IN:= TRUE, PT:= DINT_TO_TIME(HMI_PrintMaxTime*1000), Q=> , ET=> );	
+	    IF wReceiveData[2]=wSendCnt  THEN
+		   arTon[4](IN:= FALSE, PT:= DINT_TO_TIME(HMI_PrintMaxTime*1000), Q=> , ET=> );
+		   iPPSend:=0; 
+		   arSendExecute[2]:=FALSE;
+		   ELSE IF arTon[4].Q THEN
+			    arTon[4](IN:= FALSE, PT:= DINT_TO_TIME(HMI_PrintMaxTime*1000), Q=> , ET=> );
+				iPPSend:=241;
+		   END_IF	   
+		END_IF		
+		
+		
+	241: HMI_PrinterFault:=TRUE;
+	     arSendExecute[2]:=FALSE;
+         iPPSend:=0;	
+		
+END_CASE
+]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="Socket">
+      <LineId Id="112" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="305" Count="0" />
+      <LineId Id="307" Count="0" />
+      <LineId Id="310" Count="0" />
+    </LineIds>
+    <LineIds Name="Socket.TCP1_Client">
+      <LineId Id="298" Count="0" />
+      <LineId Id="45" Count="8" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="258" Count="0" />
+      <LineId Id="261" Count="0" />
+      <LineId Id="24" Count="9" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="100" Count="8" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="98" Count="1" />
+      <LineId Id="71" Count="6" />
+      <LineId Id="67" Count="3" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="281" Count="0" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="282" Count="0" />
+      <LineId Id="279" Count="0" />
+      <LineId Id="285" Count="1" />
+      <LineId Id="280" Count="0" />
+      <LineId Id="194" Count="0" />
+      <LineId Id="267" Count="1" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="269" Count="0" />
+      <LineId Id="266" Count="0" />
+      <LineId Id="271" Count="0" />
+      <LineId Id="198" Count="1" />
+      <LineId Id="195" Count="0" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="273" Count="3" />
+      <LineId Id="278" Count="0" />
+      <LineId Id="277" Count="0" />
+      <LineId Id="272" Count="0" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="157" Count="1" />
+      <LineId Id="200" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="295" Count="0" />
+      <LineId Id="165" Count="1" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="189" Count="1" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="178" Count="2" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="293" Count="0" />
+      <LineId Id="137" Count="1" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="191" Count="1" />
+      <LineId Id="292" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="183" Count="0" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="123" Count="1" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="36" Count="0" />
+    </LineIds>
+    <LineIds Name="Socket.TCP2_Server">
+      <LineId Id="632" Count="1" />
+      <LineId Id="2" Count="8" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="23" Count="8" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="34" Count="30" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="722" Count="2" />
+      <LineId Id="68" Count="1" />
+      <LineId Id="523" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="241" Count="1" />
+      <LineId Id="229" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="471" Count="3" />
+      <LineId Id="236" Count="0" />
+      <LineId Id="101" Count="1" />
+      <LineId Id="247" Count="1" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="475" Count="3" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="479" Count="0" />
+      <LineId Id="215" Count="2" />
+      <LineId Id="243" Count="0" />
+      <LineId Id="249" Count="0" />
+      <LineId Id="244" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="223" Count="1" />
+      <LineId Id="480" Count="0" />
+      <LineId Id="344" Count="1" />
+      <LineId Id="156" Count="2" />
+      <LineId Id="522" Count="0" />
+      <LineId Id="481" Count="0" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="160" Count="5" />
+      <LineId Id="482" Count="3" />
+      <LineId Id="170" Count="4" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="290" Count="0" />
+      <LineId Id="292" Count="0" />
+      <LineId Id="310" Count="0" />
+      <LineId Id="294" Count="0" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="298" Count="0" />
+      <LineId Id="295" Count="0" />
+      <LineId Id="299" Count="1" />
+      <LineId Id="305" Count="0" />
+      <LineId Id="307" Count="0" />
+      <LineId Id="306" Count="0" />
+      <LineId Id="308" Count="0" />
+      <LineId Id="301" Count="1" />
+      <LineId Id="309" Count="0" />
+      <LineId Id="311" Count="5" />
+      <LineId Id="303" Count="0" />
+      <LineId Id="317" Count="1" />
+      <LineId Id="322" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="427" Count="0" />
+      <LineId Id="319" Count="0" />
+      <LineId Id="606" Count="22" />
+      <LineId Id="320" Count="0" />
+      <LineId Id="304" Count="0" />
+      <LineId Id="346" Count="1" />
+      <LineId Id="349" Count="0" />
+      <LineId Id="348" Count="0" />
+      <LineId Id="486" Count="0" />
+      <LineId Id="293" Count="0" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="323" Count="0" />
+      <LineId Id="328" Count="0" />
+      <LineId Id="489" Count="0" />
+      <LineId Id="524" Count="2" />
+      <LineId Id="490" Count="0" />
+      <LineId Id="488" Count="0" />
+      <LineId Id="466" Count="0" />
+      <LineId Id="470" Count="0" />
+      <LineId Id="715" Count="0" />
+      <LineId Id="713" Count="1" />
+      <LineId Id="696" Count="0" />
+      <LineId Id="698" Count="0" />
+      <LineId Id="701" Count="0" />
+      <LineId Id="458" Count="0" />
+      <LineId Id="697" Count="0" />
+      <LineId Id="702" Count="0" />
+      <LineId Id="340" Count="0" />
+      <LineId Id="703" Count="1" />
+      <LineId Id="699" Count="0" />
+      <LineId Id="329" Count="0" />
+      <LineId Id="655" Count="0" />
+      <LineId Id="410" Count="0" />
+      <LineId Id="397" Count="0" />
+      <LineId Id="644" Count="2" />
+      <LineId Id="643" Count="0" />
+      <LineId Id="647" Count="0" />
+      <LineId Id="355" Count="0" />
+      <LineId Id="389" Count="0" />
+      <LineId Id="468" Count="1" />
+      <LineId Id="390" Count="2" />
+      <LineId Id="351" Count="0" />
+      <LineId Id="409" Count="0" />
+      <LineId Id="428" Count="6" />
+      <LineId Id="447" Count="9" />
+      <LineId Id="371" Count="0" />
+      <LineId Id="360" Count="0" />
+      <LineId Id="491" Count="6" />
+      <LineId Id="415" Count="0" />
+      <LineId Id="499" Count="1" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="502" Count="0" />
+      <LineId Id="504" Count="3" />
+      <LineId Id="503" Count="0" />
+      <LineId Id="689" Count="0" />
+      <LineId Id="508" Count="0" />
+      <LineId Id="650" Count="1" />
+      <LineId Id="510" Count="1" />
+      <LineId Id="658" Count="1" />
+      <LineId Id="661" Count="0" />
+      <LineId Id="660" Count="0" />
+      <LineId Id="501" Count="0" />
+      <LineId Id="513" Count="0" />
+      <LineId Id="663" Count="0" />
+      <LineId Id="662" Count="0" />
+      <LineId Id="692" Count="2" />
+      <LineId Id="514" Count="0" />
+      <LineId Id="691" Count="0" />
+      <LineId Id="519" Count="0" />
+      <LineId Id="649" Count="0" />
+      <LineId Id="516" Count="0" />
+      <LineId Id="521" Count="0" />
+      <LineId Id="517" Count="0" />
+      <LineId Id="418" Count="0" />
+      <LineId Id="527" Count="1" />
+      <LineId Id="719" Count="1" />
+      <LineId Id="716" Count="0" />
+      <LineId Id="529" Count="0" />
+      <LineId Id="721" Count="0" />
+      <LineId Id="520" Count="0" />
+      <LineId Id="531" Count="0" />
+      <LineId Id="530" Count="0" />
+      <LineId Id="654" Count="0" />
+      <LineId Id="539" Count="0" />
+      <LineId Id="541" Count="0" />
+      <LineId Id="540" Count="0" />
+      <LineId Id="640" Count="2" />
+      <LineId Id="638" Count="1" />
+      <LineId Id="542" Count="25" />
+      <LineId Id="572" Count="1" />
+      <LineId Id="568" Count="0" />
+      <LineId Id="417" Count="0" />
+      <LineId Id="584" Count="0" />
+      <LineId Id="576" Count="7" />
+      <LineId Id="574" Count="0" />
+      <LineId Id="585" Count="0" />
+      <LineId Id="671" Count="4" />
+      <LineId Id="669" Count="1" />
+      <LineId Id="586" Count="0" />
+      <LineId Id="601" Count="0" />
+      <LineId Id="594" Count="0" />
+      <LineId Id="605" Count="0" />
+      <LineId Id="595" Count="0" />
+      <LineId Id="648" Count="0" />
+      <LineId Id="678" Count="0" />
+      <LineId Id="680" Count="0" />
+      <LineId Id="682" Count="0" />
+      <LineId Id="681" Count="0" />
+      <LineId Id="575" Count="0" />
+      <LineId Id="665" Count="0" />
+      <LineId Id="685" Count="0" />
+      <LineId Id="667" Count="0" />
+      <LineId Id="686" Count="0" />
+      <LineId Id="668" Count="0" />
+      <LineId Id="596" Count="0" />
+      <LineId Id="326" Count="0" />
+      <LineId Id="695" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

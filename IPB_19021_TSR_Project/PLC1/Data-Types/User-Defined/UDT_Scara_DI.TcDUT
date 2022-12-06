@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Scara_DI" Id="{5e00d4f6-af56-437c-a1b2-7c4008185a9b}">
+    <Declaration><![CDATA[TYPE UDT_Scara_DI :
+STRUCT
+	Shutdown: BOOL;
+	Estop: BOOL;
+	Auto: BOOL;
+	T2: BOOL;
+	Start: BOOL;
+	Hold: BOOL;
+	Unhold: BOOL;
+	Ready: BOOL;
+	Stop: BOOL;
+	Reset: BOOL;
+	ProFaultClear: BOOL;
+	ProPick: BOOL;
+	ProDepart: BOOL;
+	ProPut: BOOL;
+	FuctionReset: BOOL;
+	LoopRun: BOOL;
+	LoopStop: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

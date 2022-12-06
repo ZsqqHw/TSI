@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="DebugPro" Id="{c4a6157d-ce42-435e-9082-66b05b73bcc0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM DebugPro
+VAR
+    MC_MoveAbsolute_Axis: ARRAY[1..8] OF MC_MoveAbsolute ;
+	MC_MoveAdditive_Axis: ARRAY[1..8] OF MC_MoveAdditive;
+	MC_MoveRelative_Axis: array[1..8] of MC_MoveRelative;
+	iDebug: INT;
+	iDebugCyc: INT;
+	tonDebug: Ton;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[MC_MoveAbsolute_Axis[1](
+	Axis:= arRealAxisAdmin[47].Axis, 
+	Execute:= , 
+	Position:= , 
+	Velocity:= 10, 
+	Acceleration:= 10, 
+	Deceleration:= 10, 
+	Jerk:= 10000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+
+MC_MoveAbsolute_Axis[2](
+	Axis:= arRealAxisAdmin[47].Axis, 
+	Execute:= , 
+	Position:= , 
+	Velocity:= 100, 
+	Acceleration:= 1000, 
+	Deceleration:= 1000, 
+	Jerk:= 10000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );	
+	
+MC_MoveAdditive_Axis[1](
+	Axis:= arRealAxisAdmin[47].Axis, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= 10, 
+	Acceleration:= 100, 
+	Deceleration:= 100, 
+	Jerk:= 10000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+
+MC_MoveAdditive_Axis[2](
+	Axis:= arRealAxisAdmin[47].Axis, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= 10, 
+	Acceleration:= 100, 
+	Deceleration:= 100, 
+	Jerk:= 10000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+		
+MC_MoveRelative_Axis[1](
+	Axis:= arRealAxisAdmin[47].Axis, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= 10, 
+	Acceleration:= 100, 
+	Deceleration:= 100, 
+	Jerk:= 10000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );	
+	
+MC_MoveRelative_Axis[2](
+	Axis:= arRealAxisAdmin[47].Axis, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= 10, 
+	Acceleration:= 100, 
+	Deceleration:= 100, 
+	Jerk:= 10000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );	
+	
+CASE iDebug OF
+	
+10: MC_MoveAbsolute_Axis[1].Position:=100;
+    MC_MoveAbsolute_Axis[1].Execute:=TRUE;
+	IF MC_MoveAbsolute_Axis[1].Active THEN
+	   MC_MoveAbsolute_Axis[1].Execute:=FALSE;
+       iDebug:=20;
+	END_IF
+20:
+    MC_MoveAbsolute_Axis[2].Position:=200;
+    MC_MoveAbsolute_Axis[2].Execute:=TRUE;
+	IF MC_MoveAbsolute_Axis[2].Active THEN
+	   MC_MoveAbsolute_Axis[2].Execute:=FALSE;
+	   iDebug:=iDebugCyc;
+	END_IF
+		
+100: MC_MoveAdditive_Axis[1].Distance:=100;
+    MC_MoveAdditive_Axis[1].Execute:=TRUE;
+	IF MC_MoveAdditive_Axis[1].Active THEN
+	   MC_MoveAdditive_Axis[1].Execute:=FALSE;
+       iDebug:=200;
+	END_IF
+200:
+    MC_MoveAdditive_Axis[2].Distance:=100;
+    MC_MoveAdditive_Axis[2].Execute:=TRUE;
+	IF MC_MoveAdditive_Axis[2].Active THEN
+	   MC_MoveAdditive_Axis[2].Execute:=FALSE;
+	   iDebug:=iDebugCyc;
+	END_IF	
+	
+	
+1000: MC_MoveRelative_Axis[1].Distance:=100;
+    MC_MoveRelative_Axis[1].Execute:=TRUE;
+	IF MC_MoveRelative_Axis[1].Active THEN
+	   MC_MoveRelative_Axis[1].Execute:=FALSE;
+       iDebug:=1100;
+	END_IF
+	
+1100: 
+     tonDebug(IN:= TRUE, PT:= T#1S, Q=> , ET=> );
+	 IF tonDebug.Q THEN
+		 tonDebug(IN:= FALSE, PT:= T#1S, Q=> , ET=> ); 
+		 iDebug:=2000;
+	 END_IF
+
+	
+2000:
+    MC_MoveRelative_Axis[2].Distance:=100;
+    MC_MoveRelative_Axis[2].Execute:=TRUE;
+	IF MC_MoveRelative_Axis[2].Active THEN
+	   MC_MoveRelative_Axis[2].Execute:=FALSE;
+	   iDebug:=iDebugCyc;
+	END_IF		
+END_CASE	]]></ST>
+    </Implementation>
+    <LineIds Name="DebugPro">
+      <LineId Id="10" Count="14" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="26" Count="15" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="62" Count="14" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="80" Count="14" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="114" Count="14" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="132" Count="14" />
+      <LineId Id="130" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="52" Count="1" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="98" Count="11" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="147" Count="1" />
+      <LineId Id="150" Count="5" />
+      <LineId Id="162" Count="1" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="156" Count="5" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="44" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_EL3312" Id="{85f050a5-37a9-488e-bf7d-f9bb1991aebb}">
+    <Declaration><![CDATA[TYPE UDT_EL3312 :
+STRUCT
+	Status: INT;
+	Value: INT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

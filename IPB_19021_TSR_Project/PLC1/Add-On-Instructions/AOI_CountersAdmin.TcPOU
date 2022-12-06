@@ -1,0 +1,401 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="AOI_CountersAdmin" Id="{c9f10a5c-022c-49bf-bdab-f98c0a987401}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_CountersAdmin
+VAR_INPUT
+	Enable: BOOL; //启用
+	Execute: BOOL; //数粒信号
+	Reset: bool; //重置
+    In_Total: DINT; //计划生产总数
+	Quantity: DINT;
+	Clear: BOOL;//清除故障
+	SkipAlarm: BOOL;
+	CheckTime: DINT;
+    CheckCnt: BOOL;
+	ManualCnt: BOOL;
+END_VAR
+VAR_OUTPUT
+	DropVibrator_Wrk: BOOL;//落料启动
+	CircleVibrator_Wrk: BOOL;//圆震启动
+	LineVibrator_Wrk: BOOL;//直震启动
+	Warning: BOOL;	
+	Busy: BOOL;//数粒中
+	Error: BOOL; //报警
+	ErrorID: DINT;//报警代码;	
+	InitDone: BOOL;//初始化完成
+	Out_Total: DINT;//实际生产数量
+	Complete: BOOL; //生产完成
+	CntUp: DINT;
+	ProcessTime : DINT;//
+	Speed: REAL;
+END_VAR
+VAR
+	iAxisAct: INT;	
+	tonHighCheck: TON;
+	tonLowCheck: TON;
+	tonLackCheck: TON;
+	tonWatchDog: TON;
+	tonProcess: TON;
+	tonEnable: TON;
+	rt_Exe: R_TRIG;	
+	aoi_DropSensor: AOI_Sensoradmin;
+	aoi_LowSensor: AOI_Sensoradmin;
+	aoi_HighSensor: AOI_Sensoradmin;	
+	lrPosAdd: LREAL;
+	rt_Clear: R_TRIG; 
+	rt_Drop: R_TRIG;
+	rtLowCheck: R_trig;
+	toncheck: TON;
+	diLastTargetCnt: DINT;
+	QuantityBuffer: DINT;
+	tonDropDelay: Ton;
+	diCheckFaultCnt: DINT;
+	diFaultCnt: ARRAY[0..64] OF dint;
+	i: INT;
+END_VAR
+VAR_IN_OUT
+	Axis: UDT_AxisAdmin;//数粒伺服
+	DropSensor: UDT_SensorAdmin;//缺料检测
+	LowSensor: UDT_SensorAdmin;//低料位检测
+	HighSensor: UDT_SensorAdmin;//高料位检测
+	Cylinder: UDT_CylinderAdmin;//
+	DropFlag: BOOL;//
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[rt_Exe(CLK:=Execute , Q=> );
+rt_Drop(CLK:= DropSensor.o.Value, Q=> );
+tonEnable(IN:= Enable, PT:= T#3S, Q=> , ET=> );
+IF NOT Enable THEN		
+	DropVibrator_Wrk:=FALSE;//震动盘启动
+	CircleVibrator_Wrk:=FALSE;
+	LineVibrator_Wrk:=FALSE;	
+END_IF
+
+IF Enable THEN
+   IF NOT HighSensor.o.Value  AND NOT Complete THEN
+	  DropVibrator_Wrk:=TRUE;//落料震动盘启动
+	  ELSE
+	  DropVibrator_Wrk:=FALSE;//
+   END_IF
+   IF NOT LowSensor.o.Value AND NOT Complete  THEN	  
+	   CircleVibrator_Wrk:=TRUE;//圆震动盘启动
+	   ELSE
+	   CircleVibrator_Wrk:=FALSE;	   
+   END_IF	
+   CircleVibrator_Wrk:= TRUE;
+   LineVibrator_Wrk:= TRUE;//直震动盘启动常开
+ELSE
+   DropVibrator_Wrk:=FALSE;
+   LineVibrator_Wrk:= FALSE;
+   CircleVibrator_Wrk:= FALSE;
+END_IF
+
+IF reset THEN
+	Complete:=FALSE;
+	Out_Total:=0;
+END_IF
+
+rt_Clear(CLK:= Clear, Q=> );
+IF rt_Clear.Q THEN
+   Error:=FALSE;
+END_IF
+
+IF Enable AND Quantity=0 THEN
+	IF DropFlag THEN
+	   DropFlag:=FALSE;
+	END_IF
+END_IF
+
+CASE iAxisAct OF
+	0: 
+        Busy:=FALSE;
+		IF Out_Total<In_Total AND Quantity<>0 AND tonEnable.Q THEN
+		   QuantityBuffer:=Quantity;
+		   iAxisAct:=10;
+		ELSE IF Out_Total=In_Total THEN
+				Complete:=TRUE;
+		     END_IF
+		END_IF
+
+	10:
+	    IF QuantityBuffer>20 THEN
+		   QuantityBuffer:=QuantityBuffer-20;
+		   iAxisAct:=11;
+		ELSE
+           iAxisAct:=12;   
+	    END_IF
+	   
+	11:
+	    Busy:=TRUE;
+		CntUp:=0;
+	    lrPosAdd:=20*360/24; 
+		diLastTargetCnt:=20;
+	    Axis.i.Pos:=lrPosAdd;
+		iAxisAct:=20;
+		
+	12: 
+	    Busy:=TRUE;
+		CntUp:=0;
+	    lrPosAdd:=QuantityBuffer*360/24; 
+		diLastTargetCnt:=QuantityBuffer;
+		QuantityBuffer:=0;
+	    Axis.i.Pos:=lrPosAdd;
+		iAxisAct:=20;
+	    
+	20:
+	    Axis.i.MoveAdd:=TRUE;
+	    tonProcess(IN:=TRUE , PT:=T#100S , Q=> , ET=> );
+	    ProcessTime:= TIME_TO_DINT(tonProcess.ET);
+		IF Axis.o.CmdDone OR Axis.o.Error THEN
+		   Axis.i.MoveAdd:=FALSE;
+		   iAxisAct:=30;
+		   tonProcess(IN:=FALSE , PT:=T#100S , Q=> , ET=> );
+		   Speed:=1000/DINT_TO_REAL(ProcessTime);
+		END_IF
+	30:
+		toncheck(IN:= TRUE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );
+		
+	    IF NOT SkipAlarm AND toncheck.Q AND CntUp<1  THEN
+		   Error:=TRUE;
+		END_IF
+		IF NOT CheckCnt AND toncheck.Q AND CntUp <> diLastTargetCnt THEN
+		   Error:=TRUE;
+		END_IF
+		
+		IF toncheck.Q AND CntUp <> diLastTargetCnt THEN
+		   diCheckFaultCnt:=diCheckFaultCnt+1;
+		   diFaultCnt[i]:=CntUp;
+		   i:=i+1;
+		   IF i>60 THEN
+			   i:=0;
+		   END_IF
+		END_IF
+		
+		
+		IF (SkipAlarm AND CheckCnt)OR toncheck.Q THEN
+		   toncheck(IN:= FALSE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );
+           iAxisAct:=100;
+		END_IF
+		
+	100:	
+	    Busy:=FALSE;
+		IF NOT Cylinder.i.OutSensor AND NOT Cylinder.i.InSensor THEN
+		   Cylinder.i.ActiveIn:=TRUE;
+		   Cylinder.i.ActiveOut:=FALSE;
+		END_IF
+		
+		IF DropFlag AND NOT Error THEN
+		   IF Cylinder.i.OutSensor THEN
+		      iAxisAct:=110;
+           END_IF	
+		   IF Cylinder.i.InSensor THEN
+		      iAxisAct:=120;
+           END_IF	
+		END_IF		
+		IF Error AND rt_Drop.Q THEN
+		   iAxisAct:=101;
+		END_IF
+		
+		IF Reset THEN
+		   iAxisAct:=0;
+        END_IF
+		
+	101:	
+		Axis.i.Pos:=360/24;
+	    Axis.i.MoveAdd:=TRUE;
+		IF Axis.o.CmdDone OR Axis.o.Error THEN
+		   Axis.i.MoveAdd:=FALSE;
+		   iAxisAct:=102;
+		END_IF		
+	102:
+	    tonDropDelay(IN:= TRUE, PT:= T#1S, Q=> , ET=> );
+		IF tonDropDelay.Q THEN
+			tonDropDelay(IN:= FALSE, PT:= T#1S, Q=> , ET=> );
+			iAxisAct:=100;
+		END_IF
+		
+	110: 
+	    Cylinder.i.ActiveIn:=TRUE;
+		Cylinder.i.ActiveOut:=FALSE;
+		IF Cylinder.i.InSensor THEN
+			iAxisAct:=200;
+		END_IF
+		
+	120:
+	    Cylinder.i.ActiveIn:=FALSE;
+		Cylinder.i.ActiveOut:=TRUE;
+		IF Cylinder.i.OutSensor THEN
+			iAxisAct:=200;
+		END_IF	
+	200:
+	    IF QuantityBuffer=0 THEN
+		   iAxisAct:=300;
+		ELSE 
+		   iAxisAct:=10;
+		END_IF
+	
+	300:
+	    Out_Total:=Out_Total+1; 
+        DropFlag:=FALSE;
+	    iAxisAct:=0;
+	
+END_CASE
+
+tonHighCheck(IN:= NOT HighSensor.o.Value AND Enable AND Quantity<>0 , PT:=T#15S , Q=> , ET=> );
+tonLowCheck(IN:= NOT LowSensor.o.Value  AND Enable, PT:=T#5S , Q=> , ET=> );
+rtLowCheck(CLK:= LowSensor.o.Value, Q=> );
+
+IF rtLowCheck.Q THEN
+   CntUp:=CntUp+1;
+END_IF
+
+Warning:= tonHighCheck.Q AND NOT Error ;
+
+aoi_DropSensor(Admin:= DropSensor);
+aoi_HighSensor(Admin:= HighSensor);
+aoi_LowSensor(Admin:= LowSensor);]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_CountersAdmin">
+      <LineId Id="328" Count="0" />
+      <LineId Id="1999" Count="0" />
+      <LineId Id="1704" Count="0" />
+      <LineId Id="462" Count="0" />
+      <LineId Id="458" Count="3" />
+      <LineId Id="438" Count="0" />
+      <LineId Id="409" Count="0" />
+      <LineId Id="539" Count="0" />
+      <LineId Id="410" Count="0" />
+      <LineId Id="601" Count="0" />
+      <LineId Id="604" Count="0" />
+      <LineId Id="551" Count="0" />
+      <LineId Id="690" Count="0" />
+      <LineId Id="610" Count="0" />
+      <LineId Id="605" Count="0" />
+      <LineId Id="607" Count="0" />
+      <LineId Id="606" Count="0" />
+      <LineId Id="1603" Count="0" />
+      <LineId Id="412" Count="0" />
+      <LineId Id="1651" Count="0" />
+      <LineId Id="1653" Count="1" />
+      <LineId Id="1652" Count="0" />
+      <LineId Id="427" Count="0" />
+      <LineId Id="1427" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="559" Count="0" />
+      <LineId Id="562" Count="0" />
+      <LineId Id="560" Count="0" />
+      <LineId Id="1598" Count="3" />
+      <LineId Id="870" Count="0" />
+      <LineId Id="1602" Count="0" />
+      <LineId Id="1538" Count="3" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="1815" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="1237" Count="1" />
+      <LineId Id="1379" Count="0" />
+      <LineId Id="1878" Count="0" />
+      <LineId Id="1388" Count="0" />
+      <LineId Id="1390" Count="0" />
+      <LineId Id="1394" Count="0" />
+      <LineId Id="1393" Count="0" />
+      <LineId Id="1389" Count="0" />
+      <LineId Id="1535" Count="0" />
+      <LineId Id="1387" Count="0" />
+      <LineId Id="1879" Count="0" />
+      <LineId Id="1885" Count="0" />
+      <LineId Id="1882" Count="0" />
+      <LineId Id="1886" Count="1" />
+      <LineId Id="1883" Count="0" />
+      <LineId Id="1880" Count="1" />
+      <LineId Id="1396" Count="1" />
+      <LineId Id="1395" Count="0" />
+      <LineId Id="1820" Count="0" />
+      <LineId Id="741" Count="0" />
+      <LineId Id="743" Count="0" />
+      <LineId Id="1888" Count="0" />
+      <LineId Id="1896" Count="0" />
+      <LineId Id="1899" Count="3" />
+      <LineId Id="2056" Count="0" />
+      <LineId Id="1903" Count="0" />
+      <LineId Id="1898" Count="0" />
+      <LineId Id="1897" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="1284" Count="0" />
+      <LineId Id="991" Count="0" />
+      <LineId Id="1043" Count="0" />
+      <LineId Id="110" Count="1" />
+      <LineId Id="538" Count="0" />
+      <LineId Id="992" Count="0" />
+      <LineId Id="1092" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="1400" Count="0" />
+      <LineId Id="1764" Count="0" />
+      <LineId Id="1816" Count="0" />
+      <LineId Id="1593" Count="1" />
+      <LineId Id="1592" Count="0" />
+      <LineId Id="1756" Count="0" />
+      <LineId Id="1822" Count="1" />
+      <LineId Id="2116" Count="0" />
+      <LineId Id="1818" Count="0" />
+      <LineId Id="2113" Count="0" />
+      <LineId Id="2175" Count="0" />
+      <LineId Id="2178" Count="3" />
+      <LineId Id="2114" Count="0" />
+      <LineId Id="2117" Count="0" />
+      <LineId Id="2115" Count="0" />
+      <LineId Id="1759" Count="1" />
+      <LineId Id="1762" Count="0" />
+      <LineId Id="1761" Count="0" />
+      <LineId Id="1758" Count="0" />
+      <LineId Id="1398" Count="0" />
+      <LineId Id="1476" Count="0" />
+      <LineId Id="1527" Count="1" />
+      <LineId Id="1530" Count="0" />
+      <LineId Id="1529" Count="0" />
+      <LineId Id="1969" Count="0" />
+      <LineId Id="1971" Count="6" />
+      <LineId Id="1970" Count="0" />
+      <LineId Id="1978" Count="0" />
+      <LineId Id="1980" Count="1" />
+      <LineId Id="1979" Count="0" />
+      <LineId Id="1523" Count="2" />
+      <LineId Id="1958" Count="1" />
+      <LineId Id="1961" Count="0" />
+      <LineId Id="1983" Count="0" />
+      <LineId Id="1986" Count="2" />
+      <LineId Id="1963" Count="1" />
+      <LineId Id="1991" Count="0" />
+      <LineId Id="1993" Count="1" />
+      <LineId Id="1997" Count="0" />
+      <LineId Id="1995" Count="0" />
+      <LineId Id="1968" Count="0" />
+      <LineId Id="1403" Count="2" />
+      <LineId Id="1094" Count="0" />
+      <LineId Id="1406" Count="1" />
+      <LineId Id="1409" Count="1" />
+      <LineId Id="1412" Count="3" />
+      <LineId Id="1411" Count="0" />
+      <LineId Id="1416" Count="0" />
+      <LineId Id="1891" Count="1" />
+      <LineId Id="1894" Count="1" />
+      <LineId Id="1893" Count="0" />
+      <LineId Id="1889" Count="1" />
+      <LineId Id="1904" Count="0" />
+      <LineId Id="1418" Count="0" />
+      <LineId Id="1417" Count="0" />
+      <LineId Id="1475" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="824" Count="0" />
+      <LineId Id="1042" Count="0" />
+      <LineId Id="941" Count="2" />
+      <LineId Id="2241" Count="0" />
+      <LineId Id="825" Count="0" />
+      <LineId Id="1332" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="549" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

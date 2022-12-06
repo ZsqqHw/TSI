@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="systeminfo_MDP_read" Id="{91d54540-f241-4bbf-957d-df429b8039ec}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK systeminfo_MDP_read
+VAR_INPUT
+	excute:BOOL;
+	moduletype:WORD;  //module类型，参考https://infosys.beckhoff.com/content/1033/devicemanager/99079192065133835.html?id=1049129283645184856
+	tableID:BYTE;//附表标号
+	sbidxcount:USINT:=20;
+	startidx:INT;
+	outputadr:PVOID;
+	outputsiz:UDINT;
+END_VAR
+VAR_OUTPUT
+	bbusy:BOOL;
+	berror:BOOL;
+	nerrID1:UDINT;
+	nerrID2:UDINT;
+END_VAR
+VAR
+	excute1,excute2:BOOL;													//触发位
+	dsbuf:ARRAY[0..254] OF BYTE;										//	寄存器数组
+	trig:Tc2_Standard.F_TRIG;
+	MDPaddr:Tc2_MDP.ST_MDP_Addr;								//功能块
+	FB_scanmodule:Tc2_MDP.FB_MDP_ScanModules;	//https://infosys.beckhoff.com/content/1033/tcplclib_tc2_mdp/27021597942949259.html?id=8338783758843393121
+	FB_read:Tc2_MDP.FB_MDP_ReadModuleContent;	//https://infosys.beckhoff.com/content/1033/tcplclib_tc2_mdp/27021597942946187.html?id=6623212347933124917
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[excute1:=excute;
+trig(CLK:= FB_scanmodule.bBusy, Q=>excute2 );
+bbusy :=FB_scanmodule.bBusy AND FB_read.bBusy;
+berror :=FB_scanmodule .bError AND FB_read.bError;
+
+FB_scanmodule(
+	bExecute:= excute1, 
+	nModuleType:=moduletype, 
+	iModIdx:= 0, 
+	tTimeout:= , 
+	sAmsNetId:= , 
+	bBusy=> , 
+	bError=> , 
+	nErrID=> nerrID1, 
+	nDynModuleId=> , 
+	iModuleTypeCount=> , 
+	iModuleCount=> );
+
+MDPaddr.nArea:=16#8;
+MDPaddr.nModuleId:=FB_scanmodule.nDynModuleId;
+MDPaddr.nTableId:=tableID;//附表标号
+
+FB_read(
+	bExecute:= excute2, 
+	stMDP_DynAddr:= MDPaddr, 
+	iSubIdxCount:= sbidxcount, //附表长度
+	pDstBuf:= ADR(dsbuf), 
+	cbDstBufLen:= SIZEOF(dsbuf), 
+	tTimeout:= , 
+	sAmsNetId:= , 
+	bBusy=> , 
+	bError=> , 
+	nErrID=> nerrID2, 
+	iErrPos=> , 
+	arrStartIdx=> );
+	
+Tc2_System.MEMCPY(outputadr,ADR(dsbuf[FB_read.arrStartIdx[startidx(*附表参数号，即subindex*)]]),outputsiz);//将对应的参数赋值给相应的变量
+]]></ST>
+    </Implementation>
+    <LineIds Name="systeminfo_MDP_read">
+      <LineId Id="56" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="64" Count="1" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="16" Count="31" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

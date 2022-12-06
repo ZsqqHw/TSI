@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_AxisOutput" Id="{96d8a75b-eccc-4b28-92ca-5ce4ecb2fe1e}">
+    <Declaration><![CDATA[TYPE UDT_AxisOutput :
+	STRUCT
+		Active: BOOL;
+		CmdDone: BOOL;
+		Homed: BOOL;
+		HomeDone: BOOL;
+		ActVel: LREAL;
+		ActTorq: LREAL;
+		ErrorID: UDINT;
+		Error: BOOL;
+		PowerOn: BOOL;
+		ActPos: LREAL;
+		ActModuloPos: LREAL;
+		InVelocity: BOOL;
+		StopDone: BOOL;
+		InGear: BOOL;
+		InSync: BOOL; 
+		InCam: BOOL;
+		GearOutDone: BOOL;
+		CamOutDone: BOOL;
+		SetPosDone: BOOL;
+		SelectCamTableDone: BOOL; 
+		StandStill: BOOL;
+		PosInRange: ARRAY[1..8] OF BOOL;
+	END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

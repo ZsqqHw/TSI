@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_VacuumAdmin" Id="{5042d5f5-c6aa-48fb-8777-9743491251f3}">
+    <Declaration><![CDATA[TYPE UDT_VacuumAdmin :
+STRUCT
+	i: UDT_VacuumInput;
+	o: UDT_VacuumOutput;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

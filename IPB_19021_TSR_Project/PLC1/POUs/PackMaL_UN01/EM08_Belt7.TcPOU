@@ -1,0 +1,470 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="EM08_Belt7" Id="{cf439940-bf5a-4cb1-bfa1-af8c18ca0b92}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EM08_Belt7
+VAR
+	Ref_Belt: REFERENCE TO UDT_AXISADMIN;
+	Ref_MachineStateModel: REFERENCE TO PackMlv3_StateModel;
+	Ref_Unit: REFERENCE TO UDT_UnitAdmin;	
+	ref_diTransferPick:REFERENCE TO DINT;
+	ref_diPrint:REFERENCE TO DINT;
+	ref_bTransferPut:REFERENCE TO bool;
+	Ref_Robot: REFERENCE TO UDT_Scara;
+	
+	EM_No: INT:=8;
+	tonAbortingWatchDog: TON;
+	
+	lrPosCnt: LREAL;
+	tonBeltSeq: TON;
+	Belt7Seq: SequenceTransfer;
+
+	iBox: INT;
+END_VAR
+
+VAR CONSTANT
+		
+END_VAR
+VAR RETAIN
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//减速比25/1 同步轮周长40*10=400，皮带总长645*10= 6450，43个工位，工位间距150
+Ref_MachineStateModel REF= UN01_MachineStateModel;
+Ref_Unit REF=Unit01;
+Ref_Belt REF= arRealAxisAdmin[48];
+ref_diTransferPick REF= glb_diTransferPick_UN02;
+ref_diPrint REF= glb_diPrint_UN02;
+ref_bTransferPut REF= glb_bTransferPut_UN02;
+
+MainRoution();
+SR999_Faulthandler();
+
+glb_bUnit02BoxEmpty:=NOT glb_Un02Box.Box[0].Valid 
+AND NOT glb_Un02Box.Box[1].Valid AND NOT glb_Un02Box.Box[2].Valid AND NOT glb_Un02Box.Box[3].Valid 
+AND NOT glb_Un02Box.Box[4].Valid AND NOT glb_Un02Box.Box[5].Valid AND NOT glb_Un02Box.Box[6].Valid 
+AND NOT glb_Un02Box.Box[7].Valid AND NOT glb_Un02Box.Box[8].Valid AND NOT glb_Un02Box.Box[9].Valid 
+AND NOT glb_Un02Box.Box[10].Valid AND NOT glb_Un02Box.Box[11].Valid AND NOT glb_Un02Box.Box[12].Valid 
+AND NOT glb_Un02Box.Box[13].Valid AND NOT glb_Un02Box.Box[14].Valid AND NOT glb_Un02Box.Box[15].Valid 
+AND NOT glb_Un02Box.Box[16].Valid AND NOT glb_Un02Box.Box[17].Valid AND NOT glb_Un02Box.Box[18].Valid 
+AND NOT glb_Un02Box.Box[19].Valid AND NOT glb_Un02Box.Box[20].Valid AND NOT glb_Un02Box.Box[21].Valid ;
+
+
+]]></ST>
+    </Implementation>
+    <Action Name="CM02_Belt" Id="{c9121230-9055-4d8c-8ea9-1c081160ce51}">
+      <Implementation>
+        <ST><![CDATA[  CASE Belt7Seq.Now  OF
+	0: 
+       IF Ref_MachineStateModel.Sts_Resetting THEN
+		  Belt7Seq(Execute:= TRUE, Next:= Seq_Resetting);
+	   END_IF	
+       IF Ref_MachineStateModel.Sts_Execute THEN
+		  Belt7Seq(Execute:= TRUE, Next:= 110);
+	   END_IF
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+		  Belt7Seq(Execute:= TRUE, Next:= Seq_Stopping);   
+	   END_IF	
+
+
+	   
+	Seq_Resetting:
+		IF NOT Ref_Belt.o.PowerOn  THEN;
+		   Ref_Belt.i.Enable:=TRUE;
+		ELSE
+		   Belt7Seq(Execute:= TRUE, Next:= 20);  
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping  THEN
+		   Belt7Seq(Execute:= TRUE, Next:= Seq_Stopping);   
+		END_IF		
+		
+	20:
+	   IF NOT glb_AllAxisHomed_UN01 THEN
+		  Belt7Seq(Execute:= TRUE, Next:= 21);   
+		  ELSE
+	      Belt7Seq(Execute:= TRUE, Next:= 30);  
+	   END_IF
+	   
+	21: 
+       MEMSET(destAddr:= ADR(glb_Un02Box), fillByte:= 0, n:= SIZEOF(glb_Un02Box));
+       ref_diPrint:=0;
+       Belt7Seq(Execute:= TRUE, Next:= 22); 
+	   
+	22:	
+	   Ref_Belt.i.Home:=TRUE;
+	   IF Ref_Belt.o.HomeDone THEN
+		   Ref_Belt.i.Home:=FALSE;
+		   Belt7Seq(Execute:= TRUE, Next:= 25);   
+	   ELSE IF Ref_MachineStateModel.Sts_Stopping  THEN
+		       Belt7Seq(Execute:= TRUE, Next:= Seq_Stopping);   
+		    END_IF	 		   
+	   END_IF
+	   
+	25:
+		Ref_Belt.i.Pos:=0;
+	    lrPosCnt:=1;	
+	    Belt7Seq(Execute:= TRUE,Hold:= FALSE, Next:= 30);  
+
+		
+	30:			
+		tonBeltSeq(IN:= TRUE, PT:= T#1S, Q=> , ET=> );
+		IF tonBeltSeq.Q THEN
+			tonBeltSeq(IN:= FALSE, PT:= T#1S, Q=> , ET=> );
+			Ref_Belt.i.MoveAbs:=TRUE;	
+			Belt7Seq(Execute:= TRUE, Next:= 31);  	   
+		END_IF
+			
+    31:	
+		IF  Ref_Belt.o.CmdDone THEN
+		    Ref_Belt.i.MoveAbs:=FALSE;
+            Belt7Seq(Execute:= TRUE, Next:= Seq_ResettingDone);  	
+        ELSE IF Ref_MachineStateModel.Sts_Stopping  THEN
+		        Belt7Seq(Execute:= TRUE, Next:= Seq_Stopping);     
+	         END_IF		
+		END_IF
+		
+	Seq_ResettingDone:
+         IF NOT Ref_MachineStateModel.Sts_Resetting THEN
+            Belt7Seq(Execute:= TRUE, Next:= 0);
+         END_IF  	      
+	   
+		
+	110:   
+		   IF Ref_MachineStateModel.Sts_Stopping AND Ref_Unit.EM_Stopping_Done[7] THEN
+			  Belt7Seq(Execute:= TRUE, Next:= Seq_Stopping);     
+		   ELSE IF NOT (ref_bTransferPut OR HMI_Unit02Simulation) 
+                   AND NOT glb_Un02Box.Box[HMI_PrintNo].PrintRequest THEN
+				    Belt7Seq(Execute:= TRUE, Next:= 120); 
+         		    ELSE IF  NOT glb_Un02Box.Box[HMI_PrintNo].PrintRequest
+						     AND NOT glb_Un02Box.Box[0].Valid
+							 AND glb_bUnit01BoxNotReady
+                             AND NOT glb_bUnit02BoxEmpty THEN
+							 Belt7Seq(Execute:= TRUE, Next:= 200); 
+					END_IF
+				END_IF 
+		   END_IF  
+  
+	120: 
+        Ref_Belt.i.Pos:=-150*lrPosCnt; 
+		Ref_Belt.i.MoveAbs:=TRUE;		
+		Belt7Seq(Execute:= TRUE,Hold:=FALSE, Next:= 130);  
+		
+	130: 
+        IF 	Ref_Belt.o.CmdDone THEN
+			lrPosCnt:=lrPosCnt+1;
+			Ref_Belt.i.MoveAbs:=FALSE;
+			Belt7Seq(Execute:= TRUE,Hold:=FALSE, Next:= 140);  		
+		END_IF
+		
+	140: 
+	     IF glb_Un02Box.Box[0].Valid THEN 
+			ref_diPrint.0:=TRUE;
+		 END_IF
+
+	     FOR iBox:= 63 TO 1 BY -1 DO
+			 glb_Un02Box.Box[iBox]:=glb_Un02Box.Box[iBox-1];
+		 END_FOR		
+		 
+		 Belt7Seq(Execute:= TRUE, Hold:=FALSE, Next:= 150);  
+		 
+	150:	 
+		 glb_Un02Box.Box[0].PrintData:='';
+		 glb_Un02Box.Box[0].amount:=100;
+		 glb_Un02Box.Box[0].Valid:=FALSE;
+		 glb_Un02Box.Box[0].PrintRequest:=FALSE;
+		 
+		 ref_bTransferPut:=TRUE;
+		 ref_diPrint:=SHL(ref_diPrint,1);		
+		 
+		 Belt7Seq(Execute:= TRUE, Hold:=FALSE, Next:= 110);  	
+			 
+			 
+	200:	 
+        Ref_Belt.i.Pos:=-150*lrPosCnt; 
+		Ref_Belt.i.MoveAbs:=TRUE;		
+		Belt7Seq(Execute:= TRUE,Hold:=FALSE, Next:= 210);  		 
+		
+	210:	 
+        IF 	Ref_Belt.o.CmdDone THEN
+			lrPosCnt:=lrPosCnt+1;
+			Ref_Belt.i.MoveAbs:=FALSE;
+			Belt7Seq(Execute:= TRUE,Hold:=FALSE, Next:= 220);  		
+		END_IF		 
+		 
+	220:		 
+	     FOR iBox:= 63 TO 1 BY -1 DO
+			 glb_Un02Box.Box[iBox]:=glb_Un02Box.Box[iBox-1];
+		 END_FOR			
+		 ref_diPrint:=SHL(ref_diPrint,1);		
+		 Belt7Seq(Execute:= TRUE, Hold:=FALSE, Next:= 110);  
+
+	 
+		 
+	Seq_stopping: 
+	    IF NOT Ref_Belt.o.StandStill THEN
+		   Ref_Belt.i.Stop:=TRUE;
+		ELSE
+		   Belt7Seq(Execute:= TRUE, Next:= 901);  
+		END_IF
+    901:
+
+       tonBeltSeq(IN:= TRUE, PT:= T#1S, Q=> , ET=> );
+	   IF tonBeltSeq.Q THEN
+		  tonBeltSeq(IN:= FALSE, PT:= T#1S, Q=> , ET=> );
+		  Belt7Seq(Execute:= TRUE, Next:= Seq_StoppingDone);  
+	   END_IF
+	   
+ 
+	Seq_stoppingDone:	 
+	     Ref_Belt.i.disable:=TRUE;
+		 IF NOT Ref_MachineStateModel.Sts_Stopping THEN
+			Belt7Seq(Execute:= TRUE, Next:= 0);
+		 END_IF		 		 
+END_CASE
+Belt7Seq.Hold := Ref_MachineStateModel.Sts_Held;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="MainRoution" Id="{3db2cef7-0260-4f40-bfa6-9ced0c7d3292}">
+      <Implementation>
+        <ST><![CDATA[EM_No:=8;
+IF Ref_Unit.EM_Selected[EM_No] THEN
+	IF Ref_MachineStateModel.Sts_Holding THEN
+		Ref_Unit.EM_Holding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Holding_Done[EM_No]:=FALSE;
+	END_IF
+	IF Ref_MachineStateModel.Sts_UnHolding THEN
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Suspending THEN
+		Ref_Unit.EM_Suspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Suspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_UnSuspending THEN
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=FALSE;
+	END_IF
+
+	IF Ref_MachineStateModel.Sts_Resetting AND Belt7Seq.Now=100 THEN
+       Ref_Unit.EM_Resetting_Done[EM_No]:=TRUE;   
+       ELSE   
+       Ref_Unit.EM_Resetting_Done[EM_No]:=FALSE;   
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Clearing THEN
+		Ref_Unit.EM_Clearing_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Clearing_Done[EM_No]:=FALSE;  
+	END_IF
+		
+	IF Ref_MachineStateModel.Sts_Starting THEN
+	   Ref_Unit.EM_Starting_Done[EM_No]:=TRUE;
+	   ELSE
+	   Ref_Unit.EM_Starting_Done[EM_No]:=FALSE;
+	END_IF
+		
+	IF Ref_MachineStateModel.Sts_Stopping AND Belt7Seq.Now=1000 THEN
+       Ref_Unit.EM_Stopping_Done[EM_No]:=TRUE;
+	   ELSE
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Aborting THEN	
+		Belt7Seq(Execute:= TRUE, Next:= 0);
+        IF  NOT Ref_Belt.o.StandStill THEN
+			Ref_Belt.i.Stop :=TRUE;
+			ELSE 
+			Ref_Belt.i.Stop :=FALSE;
+		END_IF
+		
+		IF  tonAbortingWatchDog.Q THEN 
+			Ref_Unit.EM_Aborting_Done[EM_No]:=TRUE;
+			Ref_Belt.i.Disable:=TRUE;
+		END_IF
+	END_IF
+	tonAbortingWatchDog(IN:= Ref_MachineStateModel.Sts_Aborting, PT:=T#3S , Q=> , ET=> );	
+//////////////////////////////////////////////////////////////////////////////////////////////
+	CM02_Belt();
+ELSE
+	 Belt7Seq(Execute:= TRUE, Next:= 0);
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="SR999_FaultHandler" Id="{1e38150b-beff-401c-8cce-8b102c62315f}">
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="EM08_Belt7">
+      <LineId Id="575" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="544" Count="0" />
+      <LineId Id="482" Count="0" />
+      <LineId Id="777" Count="0" />
+      <LineId Id="859" Count="0" />
+      <LineId Id="778" Count="0" />
+      <LineId Id="695" Count="1" />
+      <LineId Id="690" Count="0" />
+      <LineId Id="739" Count="0" />
+      <LineId Id="738" Count="0" />
+      <LineId Id="909" Count="0" />
+      <LineId Id="958" Count="5" />
+      <LineId Id="904" Count="0" />
+      <LineId Id="907" Count="0" />
+      <LineId Id="902" Count="0" />
+    </LineIds>
+    <LineIds Name="EM08_Belt7.CM02_Belt">
+      <LineId Id="2" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="44" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="170" Count="1" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="83" Count="2" />
+      <LineId Id="87" Count="2" />
+      <LineId Id="183" Count="1" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="95" Count="2" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="290" Count="0" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="105" Count="3" />
+      <LineId Id="212" Count="1" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="109" Count="5" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="115" Count="11" />
+      <LineId Id="133" Count="1" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="162" Count="2" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="291" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="236" Count="1" />
+      <LineId Id="241" Count="0" />
+      <LineId Id="243" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="152" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="267" Count="0" />
+      <LineId Id="275" Count="0" />
+      <LineId Id="273" Count="0" />
+      <LineId Id="180" Count="0" />
+      <LineId Id="281" Count="1" />
+      <LineId Id="280" Count="0" />
+      <LineId Id="283" Count="0" />
+      <LineId Id="277" Count="2" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="292" Count="0" />
+      <LineId Id="294" Count="0" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="59" Count="1" />
+      <LineId Id="244" Count="0" />
+      <LineId Id="252" Count="1" />
+      <LineId Id="245" Count="0" />
+      <LineId Id="266" Count="0" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="254" Count="3" />
+      <LineId Id="247" Count="2" />
+      <LineId Id="286" Count="1" />
+      <LineId Id="285" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="258" Count="0" />
+      <LineId Id="265" Count="0" />
+      <LineId Id="264" Count="0" />
+      <LineId Id="250" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="53" Count="1" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="50" Count="2" />
+      <LineId Id="62" Count="1" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="39" Count="3" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="138" Count="0" />
+    </LineIds>
+    <LineIds Name="EM08_Belt7.MainRoution">
+      <LineId Id="1" Count="0" />
+      <LineId Id="89" Count="22" />
+      <LineId Id="115" Count="2" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="195" Count="0" />
+      <LineId Id="118" Count="3" />
+      <LineId Id="159" Count="1" />
+      <LineId Id="122" Count="1" />
+      <LineId Id="129" Count="1" />
+      <LineId Id="156" Count="1" />
+      <LineId Id="131" Count="1" />
+      <LineId Id="137" Count="1" />
+      <LineId Id="162" Count="1" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="194" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="210" Count="1" />
+      <LineId Id="187" Count="6" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="206" Count="1" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="84" Count="0" />
+    </LineIds>
+    <LineIds Name="EM08_Belt7.SR999_FaultHandler">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

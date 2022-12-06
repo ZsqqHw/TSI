@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Unit_Status" Id="{9c56ff29-c72f-4cf8-819c-02417b216c6c}">
+    <Declaration><![CDATA[TYPE UDT_Unit_Status :
+STRUCT
+	Clearing: BOOL;//清除中
+	Stopped: BOOL;//已停机
+	Starting: BOOL;//启动中
+	Idle: BOOL;//空闲中
+	Suspended: BOOL;//挂起
+	Execute: BOOL;//执行中
+	Stopping: BOOL;//停机中
+	Aborting: BOOL;//终止中
+	Aborted: BOOL;//已终止
+	Holding: BOOL;//暂停中
+	Held: BOOL;//已暂停
+	UnHolding: BOOL;//解除暂停中
+	Suspending: BOOL;//挂起中
+	UnSuspending: BOOL;//解除挂起
+	Resetting: BOOL;//重置中
+	Completing: BOOL;//结束中
+	Complete: BOOL;//已完成
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Hmi_Input" Id="{2943ef9f-9906-424f-b81f-bed8948dd5d7}">
+    <Declaration><![CDATA[TYPE UDT_Hmi_Input :
+STRUCT
+	Reset: BOOL;//触摸屏复位
+	Start: BOOL;//触摸屏启动
+	Hold: BOOL;//触摸屏暂停	
+	Stop: BOOL;//触摸屏停止
+	ClearFault: BOOL;//触摸屏错位清除	Belt
+	ModifyRecipe: BOOL; //更换配方请求,为1时PLC将输入的配方写入,并在配方输出中变更
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

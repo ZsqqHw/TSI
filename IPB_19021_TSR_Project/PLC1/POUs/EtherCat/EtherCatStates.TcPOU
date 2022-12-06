@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="EtherCatStates" Id="{640567f2-d4e9-4c09-bf89-82c82719cf56}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EtherCatStates
+VAR
+	Device1_netID AT %I*:Tc2_System.T_AmsNetIdArr;							//硬件网络的AMSnetID
+	Device1_nEcMasterDeviceId AT %I*:UINT;		//主站的deviceID
+	
+    Device1_slaveAddresses    : ARRAY[0..255] OF UINT;						//读取的从站地址（以数组保存）
+	Device1_devStates           : ARRAY[0..255] OF ST_EcSlaveState;		//读取的从站状态机
+	Device1_slavenames			: ARRAY[0..255] OF T_MaxString;			//读取从站名字
+	Device1_nSlaves           : UINT := 0;														//从站个数
+    i:INT;
+	
+	Device1_fb_getalladdr:Tc2_EtherCAT.FB_EcGetAllSlaveAddr;		//读取从站地址的功能块 https://infosys.beckhoff.com/content/1033/tcplclib_tc2_ethercat/9007199311752331.html?id=8671424095593379685
+	Device1_fb_getallstate:Tc2_EtherCAT.FB_EcGetAllSlaveStates;		//读取从站状态机的功能块 https://infosys.beckhoff.com/content/1033/tcplclib_tc2_ethercat/9007199311770635.html?id=2217456128990928132
+	Device1_fb_getallname: IOF_GetBoxNameByAddr;							//读取从站名称 https://
+	ton1: Ton;
+	bExecute: BOOL;
+	
+	
+	Device2_netID AT %I*:Tc2_System.T_AmsNetIdArr;							//硬件网络的AMSnetID
+	Device2_nEcMasterDeviceId AT %I*:UINT;		//主站的deviceID
+	
+    Device2_slaveAddresses    : ARRAY[0..255] OF UINT;						//读取的从站地址（以数组保存）
+	Device2_devStates           : ARRAY[0..255] OF ST_EcSlaveState;		//读取的从站状态机
+	Device2_slavenames			: ARRAY[0..255] OF T_MaxString;			//读取从站名字
+	Device2_nSlaves           : UINT := 0;														//从站个数
+    k:INT;
+	
+	Device2_fb_getalladdr:Tc2_EtherCAT.FB_EcGetAllSlaveAddr;		//读取从站地址的功能块 https://infosys.beckhoff.com/content/1033/tcplclib_tc2_ethercat/9007199311752331.html?id=8671424095593379685
+	Device2_fb_getallstate:Tc2_EtherCAT.FB_EcGetAllSlaveStates;		//读取从站状态机的功能块 https://infosys.beckhoff.com/content/1033/tcplclib_tc2_ethercat/9007199311770635.html?id=2217456128990928132
+	Device2_fb_getallname: IOF_GetBoxNameByAddr;							//读取从站名称 https://
+	
+	
+	
+	
+	iDevice2OPCnt: INT;
+	j: INT;
+	iDevice1OPCnt: INT;
+	
+	
+	fbPlc_Shutdown:	NT_Shutdown;
+	bPlcShutDown: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ton1(IN:= NOT ton1.Q, PT:= T#2S, Q=> bExecute, ET=> );
+
+Device1_fb_getalladdr(//读取从站地址
+	sNetId:= F_CreateAmsNetId(Device1_netID), //网络netID
+	pAddrBuf:= ADR(Device1_slaveAddresses), //寄存器地址
+	cbBufLen:= SIZEOF(Device1_slaveAddresses), 
+	bExecute:= bExecute, 
+	nSlaves=> Device1_nSlaves);//从站个数
+	
+Device1_fb_getallstate(//读取从站状态机
+	sNetId:= F_CreateAmsNetId(Device1_netID), //网络地址
+	pStateBuf:= ADR(Device1_devStates), //寄存器地址
+	cbBufLen:= SIZEOF(Device1_devStates), 
+	bExecute:= bExecute, 
+	nSlaves=> );
+
+Device1_fb_getallname(//读取从站名称
+	NETID:= , 
+	DEVICEID:=Device1_nEcMasterDeviceId, //device number
+	BOXADDR:=  Device1_slaveAddresses[j], //从站号
+	BOXNAME=> Device1_slavenames[j]);//返回从站名
+
+IF Device1_slaveAddresses[j]>0 AND NOT Device1_fb_getallname .start THEN//反复触发功能块
+	Device1_fb_getallname.START:=TRUE;
+ELSIF Device1_slaveAddresses[j+1]>0 AND NOT Device1_fb_getallname.BUSY THEN
+		j:=j+1;
+		Device1_fb_getallname.START:=FALSE;
+END_IF
+
+
+
+Device2_fb_getalladdr(//读取从站地址
+	sNetId:= F_CreateAmsNetId(Device2_netID), //网络netID
+	pAddrBuf:= ADR(Device2_slaveAddresses), //寄存器地址
+	cbBufLen:= SIZEOF(Device2_slaveAddresses), 
+	bExecute:= bExecute, 
+	nSlaves=> Device2_nSlaves);//从站个数
+	
+Device2_fb_getallstate(//读取从站状态机
+	sNetId:= F_CreateAmsNetId(Device2_netID), //网络地址
+	pStateBuf:= ADR(Device2_devStates), //寄存器地址
+	cbBufLen:= SIZEOF(Device2_devStates), 
+	bExecute:= bExecute, 
+	nSlaves=> );
+
+Device2_fb_getallname(//读取从站名称
+	NETID:= , 
+	DEVICEID:=Device2_nEcMasterDeviceId, //device number
+	BOXADDR:=  Device2_slaveAddresses[k], //从站号
+	BOXNAME=> Device2_slavenames[k]);//返回从站名
+
+IF Device2_slaveAddresses[k]>0 AND NOT Device2_fb_getallname .start THEN//反复触发功能块
+	Device2_fb_getallname.START:=TRUE;
+ELSIF Device2_slaveAddresses[k+1]>0 AND NOT Device2_fb_getallname.BUSY THEN
+		k:=k+1;
+		Device2_fb_getallname.START:=FALSE;
+END_IF
+
+iDevice1OPCnt:=0;
+FOR i:=0 TO 106 DO
+	IF Device2_devStates[i].deviceState=8 THEN
+		iDevice1OPCnt:=iDevice1OPCnt+1;
+	END_IF
+END_FOR
+IF iDevice1OPCnt=107 THEN
+   glb_bDevice1AllOP:=TRUE;
+   ELSE	   
+   glb_bDevice1AllOP:=FALSE;
+END_IF
+iDevice2OPCnt:=0;
+FOR i:=0 TO 43 DO
+	IF Device1_devStates[i].deviceState=8 THEN
+		iDevice2OPCnt:=iDevice2OPCnt+1;
+	END_IF
+END_FOR
+
+IF iDevice2OPCnt=44 THEN
+	glb_bDevice2AllOP:=TRUE;
+	ELSE		
+	glb_bDevice2AllOP:=FALSE;
+END_IF
+
+FOR i:=0 TO 255 DO
+   IF BYTE_TO_SINT(Device1_devStates[i].deviceState)=1 THEN
+	   HMI_EtherCat_States1[i]:='Init';
+   END_IF
+   IF BYTE_TO_SINT(Device1_devStates[i].deviceState)=2 THEN
+	   HMI_EtherCat_States1[i]:='Pre-OP';
+   END_IF
+   IF BYTE_TO_SINT(Device1_devStates[i].deviceState)=3 THEN
+	   HMI_EtherCat_States1[i]:='Bootstrap';
+   END_IF
+   IF BYTE_TO_SINT(Device1_devStates[i].deviceState)=4 THEN
+	   HMI_EtherCat_States1[i]:='Safe-OP';
+   END_IF
+   IF BYTE_TO_SINT(Device1_devStates[i].deviceState)=8 THEN
+	   HMI_EtherCat_States1[i]:='OK';
+   END_IF
+
+   IF BYTE_TO_SINT(Device2_devStates[i].deviceState)=1 THEN
+	   HMI_EtherCat_States2[i]:='Init';
+   END_IF
+   IF BYTE_TO_SINT(Device2_devStates[i].deviceState)=2 THEN
+	   HMI_EtherCat_States2[i]:='Pre-OP';
+   END_IF
+   IF BYTE_TO_SINT(Device2_devStates[i].deviceState)=3 THEN
+	   HMI_EtherCat_States2[i]:='Bootstrap';
+   END_IF
+   IF BYTE_TO_SINT(Device2_devStates[i].deviceState)=4 THEN
+	   HMI_EtherCat_States2[i]:='Safe-OP';
+   END_IF
+   IF BYTE_TO_SINT(Device2_devStates[i].deviceState)=8 THEN
+	   HMI_EtherCat_States2[i]:='OK';
+   END_IF
+   
+   HMI_EtherCat_Name1[i]:= Device1_slavenames[i];
+   HMI_EtherCat_Name2[i]:= Device2_slavenames[i];
+END_FOR
+
+
+
+fbPlc_Shutdown(
+	NETID:='5.74.170.4.1.1' , 
+	DELAY:= , 
+	START:= bPlcShutDown, 
+	TMOUT:= , 
+	BUSY=> , 
+	ERR=> , 
+	ERRID=> );]]></ST>
+    </Implementation>
+    <LineIds Name="EtherCatStates">
+      <LineId Id="91" Count="26" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="138" Count="27" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="205" Count="1" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="209" Count="2" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="349" Count="1" />
+      <LineId Id="353" Count="0" />
+      <LineId Id="356" Count="0" />
+      <LineId Id="351" Count="0" />
+      <LineId Id="359" Count="0" />
+      <LineId Id="263" Count="3" />
+      <LineId Id="262" Count="0" />
+      <LineId Id="261" Count="0" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="267" Count="0" />
+      <LineId Id="284" Count="3" />
+      <LineId Id="281" Count="0" />
+      <LineId Id="288" Count="1" />
+      <LineId Id="282" Count="0" />
+      <LineId Id="290" Count="1" />
+      <LineId Id="283" Count="0" />
+      <LineId Id="292" Count="1" />
+      <LineId Id="280" Count="0" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="294" Count="13" />
+      <LineId Id="279" Count="0" />
+      <LineId Id="398" Count="2" />
+      <LineId Id="259" Count="0" />
+      <LineId Id="346" Count="2" />
+      <LineId Id="442" Count="6" />
+      <LineId Id="345" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

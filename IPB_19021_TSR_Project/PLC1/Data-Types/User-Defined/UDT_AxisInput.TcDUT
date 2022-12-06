@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_AxisInput" Id="{f8583cd2-a6d5-4639-8535-12d05e809b27}">
+    <Declaration><![CDATA[TYPE UDT_AxisInput :
+STRUCT
+  Mode: INT;
+  Enable: BOOL;
+  MoveAbs: BOOL;
+  MoveAdd: BOOL;
+  MoveReal: BOOL;
+  MoveVel: BOOL;
+  Stop: BOOL;
+  Home: BOOL;
+  Reset: BOOL;
+  Pos: LREAL;
+  Dist: LREAL;
+  Vel: LREAL:=10;
+  Acc: LREAL:=100;
+  Dec: LREAL:=100;
+  Jerk: LREAL;
+  StopDec: LREAL:=1000;
+  HomeOffset: REAL;
+  HomeMode: DINT;
+  JogP: BOOL;
+  JogN: BOOL;
+  JogVel: LREAL:=10;
+  JogAcc: LREAL:=100;
+  JogDec: LREAL:=100;
+  HomeCali: BOOL;
+  Direction: MC_Direction;
+  GearIn: BOOL;
+  GearOut: BOOL;
+  CamIn: BOOL;
+  CamOut: BOOL;
+  RatioNum: LREAL:=1;
+  RatioDen: UINT:=1;
+  SetPosExe: BOOL;
+  SetPosPar: LREAL:=0;
+  SelectCamTable: BOOL;
+  Disable: BOOL;
+  PosRangeTable: ARRAY[1..8] OF ARRAY[1..2] OF LREAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

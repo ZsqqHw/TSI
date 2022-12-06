@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_MS300Output" Id="{f801cd3d-45ad-4134-b59a-147ebe0eb867}">
+    <Declaration><![CDATA[TYPE UDT_MS300Output :
+	STRUCT
+		Active: BOOL;
+		CmdDone: BOOL;
+		Homed: BOOL;
+		HomeDone: BOOL;
+		ActVel: LREAL;
+		ActTorq: LREAL;
+		ErrorID: UDINT;
+		Error: BOOL;
+		PowerOn: BOOL;
+		ActPos: LREAL;
+		ActModuloPos: LREAL;
+		InVelocity: BOOL;
+		StopDone: BOOL;
+		InGear: BOOL;
+		InSync: BOOL; 
+		GearOutDone: BOOL;
+		CamOutDone: BOOL;
+		SetPosDone: BOOL;
+		SelectCamTableDone: BOOL; 
+		StandStill: BOOL;
+		
+        ReadyToSwitchOn: BOOL;
+		SwitchOn: BOOL;
+		OperationEnable: BOOL;
+		Fault: BOOL;
+		VoltageEnable: BOOL;
+		QuickStop: BOOL;
+		SwitchOnDisabled: BOOL;
+		Warning: BOOL;
+		Reserved: BOOL;
+		Remote: BOOL;
+		TargetReached: BOOL;
+		InternalLimitActive: BOOL;
+		Operation: BOOL;
+
+		
+		
+		
+	END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

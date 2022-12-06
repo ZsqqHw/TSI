@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_MS300_REF" Id="{e866bd56-1a64-4af4-8f02-29860a36204e}">
+    <Declaration><![CDATA[TYPE UDT_MS300_REF :
+STRUCT
+	StatusWord AT %I* : UINT;
+	VeloDemand AT %I*: INT;
+	ModeDisplay AT %I*: SINT;
+	ControlWord AT %Q* :UINT;
+	TargetVelo AT %Q* :INT;
+	ModeOperation AT %Q* :SINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

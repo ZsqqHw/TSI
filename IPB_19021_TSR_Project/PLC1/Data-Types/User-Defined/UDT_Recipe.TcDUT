@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Recipe" Id="{b36037e9-374c-48ac-bd05-fcc08c77805e}">
+    <Declaration><![CDATA[TYPE UDT_Recipe :
+STRUCT	
+	user: STRING(23);
+	amount: DINT;//需要生产的盒数
+	counters: ARRAY[1..40] OF UDT_Counters;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

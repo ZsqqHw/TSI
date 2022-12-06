@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="Condition" Id="{0ae2da68-c55e-49ca-ad86-6ee53885a5c7}">
+    <Declaration><![CDATA[TYPE Condition :
+(
+	Clearing,
+	Starting,
+	Stopping,
+	Aborting,
+	Holding,
+	UnHolding,
+	Suspending,
+	UnSuspending,
+	Resetting,
+    Clearing_Done,
+	Starting_Done,
+	Stopping_Done,
+	Aborting_Done,
+	Holding_Done,
+	UnHolding_Done,
+	Suspending_Done,
+	UnSuspending_Done,
+	Resetting_Done
+) INT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="BLINK" Id="{2abd3458-a4c2-4604-84be-91318fabc29c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK BLINK 
+VAR_INPUT
+	TimeH: DINT;
+	TimeL: DINT;
+END_VAR
+VAR_OUTPUT
+	OUT: BOOL;
+END_VAR
+VAR
+	tonTimeHigh: TON;
+	tonTimeLow: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[tonTimeLow(IN:= NOT tonTimeHigh.Q , PT:=DINT_TO_TIME(TimeL) , Q=> OUT, ET=> );
+tonTimeHigh(IN:=tonTimeLow.Q  , PT:= DINT_TO_TIME(TimeH), Q=> , ET=> );
+]]></ST>
+    </Implementation>
+    <LineIds Name="BLINK">
+      <LineId Id="12" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="19" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

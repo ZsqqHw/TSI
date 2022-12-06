@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_BoxList" Id="{7c663cfd-1b33-45e0-8b79-192a7cfac469}">
+    <Declaration><![CDATA[TYPE UDT_BoxList :
+STRUCT
+	Box: ARRAY[0..64] OF UDT_BOX;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

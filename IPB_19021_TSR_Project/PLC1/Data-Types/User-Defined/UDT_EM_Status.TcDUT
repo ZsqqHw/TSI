@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_EM_Status" Id="{36db5d9d-666e-4815-853d-13065511c062}">
+    <Declaration><![CDATA[TYPE UDT_EM_Status :
+STRUCT
+	Selected: BOOL;//启用中
+	Faulted: BOOL;
+	EnableDone: BOOL;
+	DisableDone: BOOL;
+	StartExecutionDone: BOOL;
+	PrepareExecutionDone: BOOL;
+	AbortingDone: BOOL;
+	StoppingDone: BOOL;
+	FaultResetDone: BOOL;
+	HomeDone: BOOL;
+	PauseDone: BOOL;
+	CycleInStandbyDone: BOOL;
+	WarningEvent: BOOL;
+	GeneralEvent: BOOL;
+	StopEvent: BOOL;	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

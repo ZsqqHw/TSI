@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<TcEventSources Version="2">
+	<Source>
+		<GUID>{28111931-001D-0000-5164-7B0001000000}</GUID>
+		<Name LcId="1031">CPX-AP-I-EC-M12</Name>
+		<Name LcId="1033">CPX-AP-I-EC-M12</Name>
+		<Event>
+			<Id>22</Id>
+			<Message LcId="1031">{0} - Undervoltage in logic supply (PS) 24 V DC</Message>
+			<Message LcId="1033">{0} - Undervoltage in logic supply (PS) 24 V DC</Message>
+		</Event>
+		<Event>
+			<Id>23</Id>
+			<Message LcId="1031">{0} - Overvoltage in logic supply (PS) 24 V DC</Message>
+			<Message LcId="1033">{0} - Overvoltage in logic supply (PS) 24 V DC</Message>
+		</Event>
+		<Event>
+			<Id>183</Id>
+			<Message LcId="1031">{0} - Firmware invalid</Message>
+			<Message LcId="1033">{0} - Firmware invalid</Message>
+		</Event>
+		<Event>
+			<Id>261</Id>
+			<Message LcId="1031">{0} - Undervoltage in load supply (PL) 24 V DC</Message>
+			<Message LcId="1033">{0} - Undervoltage in load supply (PL) 24 V DC</Message>
+		</Event>
+		<Event>
+			<Id>262</Id>
+			<Message LcId="1031">{0} - Load supply (PL) 24 V DC switched off</Message>
+			<Message LcId="1033">{0} - Load supply (PL) 24 V DC switched off</Message>
+		</Event>
+		<Event>
+			<Id>265</Id>
+			<Message LcId="1031">{0} - The startup parameter specified in the AP device description does not exist in the device or is different from the specification. </Message>
+			<Message LcId="1033">{0} - The startup parameter specified in the AP device description does not exist in the device or is different from the specification. </Message>
+		</Event>
+		<Event>
+			<Id>266</Id>
+			<Message LcId="1031">{0} - The length of the startup parameter in the device and the AP device description do not match.</Message>
+			<Message LcId="1033">{0} - The length of the startup parameter in the device and the AP device description do not match.</Message>
+		</Event>
+		<Event>
+			<Id>267</Id>
+			<Message LcId="1031">{0} - A short circuit / overload of the sensor supply has been detected.</Message>
+			<Message LcId="1033">{0} - A short circuit / overload of the sensor supply has been detected.</Message>
+		</Event>
+		<Event>
+			<Id>268</Id>
+			<Message LcId="1031">{0} - Connected digital output load exceeds allowed power consumption</Message>
+			<Message LcId="1033">{0} - Connected digital output load exceeds allowed power consumption</Message>
+		</Event>
+		<Event>
+			<Id>292</Id>
+			<Message LcId="1031">{0} - No communication with AP master possible.</Message>
+			<Message LcId="1033">{0} - No communication with AP master possible.</Message>
+		</Event>
+		<Event>
+			<Id>293</Id>
+			<Message LcId="1031">{0} - The valve coil, which shall be switched, is not connected or defect.</Message>
+			<Message LcId="1033">{0} - The valve coil, which shall be switched, is not connected or defect.</Message>
+		</Event>
+		<Event>
+			<Id>295</Id>
+			<Message LcId="1031">{0} - The AP system communication to a module has failed.</Message>
+			<Message LcId="1033">{0} - The AP system communication to a module has failed.</Message>
+		</Event>
+		<Event>
+			<Id>296</Id>
+			<Message LcId="1031">{0} - The AP device description is invalid or missing.</Message>
+			<Message LcId="1033">{0} - The AP device description is invalid or missing.</Message>
+		</Event>
+		<Event>
+			<Id>297</Id>
+			<Message LcId="1031">{0} - The startup AP device description is invalid or missing.</Message>
+			<Message LcId="1033">{0} - The startup AP device description is invalid or missing.</Message>
+		</Event>
+		<Event>
+			<Id>302</Id>
+			<Message LcId="1031">{0} - The address, which was assigned to the device is invalid.</Message>
+			<Message LcId="1033">{0} - The address, which was assigned to the device is invalid.</Message>
+		</Event>
+		<Event>
+			<Id>304</Id>
+			<Message LcId="1031">{0} - The process data watchdog for the outputs timed out in the module</Message>
+			<Message LcId="1033">{0} - The process data watchdog for the outputs timed out in the module</Message>
+		</Event>
+		<Event>
+			<Id>305</Id>
+			<Message LcId="1031">{0} - The process data watchdog for the inputs timed out in the module</Message>
+			<Message LcId="1033">{0} - The process data watchdog for the inputs timed out in the module</Message>
+		</Event>
+		<Event>
+			<Id>306</Id>
+			<Message LcId="1031">{0} - The process data watchdog for the outputs timed out in the master</Message>
+			<Message LcId="1033">{0} - The process data watchdog for the outputs timed out in the master</Message>
+		</Event>
+		<Event>
+			<Id>307</Id>
+			<Message LcId="1031">{0} - The process data watchdog for the inputs timed out in the master</Message>
+			<Message LcId="1033">{0} - The process data watchdog for the inputs timed out in the master</Message>
+		</Event>
+		<Event>
+			<Id>308</Id>
+			<Message LcId="1031">{0} - A module did not mirror the toggle bit in the process data</Message>
+			<Message LcId="1033">{0} - A module did not mirror the toggle bit in the process data</Message>
+		</Event>
+		<Event>
+			<Id>319</Id>
+			<Message LcId="1031">{0} - Overvoltage in load supply (PL) 24 V DC</Message>
+			<Message LcId="1033">{0} - Overvoltage in load supply (PL) 24 V DC</Message>
+		</Event>
+		<Event>
+			<Id>320</Id>
+			<Message LcId="1031">{0} - The system is starting.</Message>
+			<Message LcId="1033">{0} - The system is starting.</Message>
+		</Event>
+		<Event>
+			<Id>392</Id>
+			<Message LcId="1031">{0} - Ident check skipped - PLC has not written to Object 0xF030</Message>
+			<Message LcId="1033">{0} - Ident check skipped - PLC has not written to Object 0xF030</Message>
+		</Event>
+		<Event>
+			<Id>393</Id>
+			<Message LcId="1031">{0} - Ident check failed for configured module at slot {1} (Detected {2} - Configured {3})</Message>
+			<Message LcId="1033">{0} - Ident check failed for configured module at slot {1} (Detected {2} - Configured {3})</Message>
+		</Event>
+		<Event>
+			<Id>399</Id>
+			<Message LcId="1031">{0} - The version of the full diagnostic image is not supported.</Message>
+			<Message LcId="1033">{0} - The version of the full diagnostic image is not supported.</Message>
+		</Event>
+		<Event>
+			<Id>400</Id>
+			<Message LcId="1031">{0} - The version of the diagnosis is not supported.</Message>
+			<Message LcId="1033">{0} - The version of the diagnosis is not supported.</Message>
+		</Event>
+		<Event>
+			<Id>401</Id>
+			<Message LcId="1031">{0} - State change request from: {1} to: {2}</Message>
+			<Message LcId="1033">{0} - State change request from: {1} to: {2}</Message>
+		</Event>
+		<Event>
+			<Id>402</Id>
+			<Message LcId="1031">{0} - Calculate bus cycle time failed (Local timer too slow)</Message>
+			<Message LcId="1033">{0} - Calculate bus cycle time failed (Local timer too slow)</Message>
+		</Event>
+		<Event>
+			<Id>403</Id>
+			<Message LcId="1031">{0} - Sync Manager {1} invalid address ({2})</Message>
+			<Message LcId="1033">{0} - Sync Manager {1} invalid address ({2})</Message>
+		</Event>
+		<Event>
+			<Id>404</Id>
+			<Message LcId="1031">{0} - Sync Manager {1} invalid size ({2})</Message>
+			<Message LcId="1033">{0} - Sync Manager {1} invalid size ({2})</Message>
+		</Event>
+		<Event>
+			<Id>405</Id>
+			<Message LcId="1031">{0} - Sync Manager {1} invalid settings ({2})</Message>
+			<Message LcId="1033">{0} - Sync Manager {1} invalid settings ({2})</Message>
+		</Event>
+		<Event>
+			<Id>406</Id>
+			<Message LcId="1031">{0} - DC activation register is invalid</Message>
+			<Message LcId="1033">{0} - DC activation register is invalid</Message>
+		</Event>
+		<Event>
+			<Id>407</Id>
+			<Message LcId="1031">{0} - Configured SyncType (0x1C32.1 or 0x1C33.1) not supported. Check DC registers and supported SyncTypes (0x1C32.4 and 0x1C33.4)</Message>
+			<Message LcId="1033">{0} - Configured SyncType (0x1C32.1 or 0x1C33.1) not supported. Check DC registers and supported SyncTypes (0x1C32.4 and 0x1C33.4)</Message>
+		</Event>
+		<Property>
+			<Name>DisplayTxtId</Name>
+			<Value>true</Value>
+		</Property>
+	</Source>
+</TcEventSources>

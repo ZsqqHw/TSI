@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_DirectMotor" Id="{5f14fc96-9feb-4269-87e6-c037a1fcfc46}">
+    <Declaration><![CDATA[TYPE UDT_DirectMotor :
+STRUCT
+	Forward: BOOL;
+	Backward: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="AOI_DI" Id="{6897fb74-1237-46d1-9bae-f3316086ec5e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_DI
+VAR_INPUT
+	ON: BOOL;
+	OFF: BOOL;
+	NAME: STRING := 'Not use';
+	LINK: BOOL;
+END_VAR
+VAR_OUTPUT
+	VALUE: BOOL;
+	R_TRIG: BOOL;
+	F_TRIG: BOOL;
+END_VAR
+VAR
+	rtON: R_TRIG;
+	rtOFF: R_TRIG;
+	ftON: F_TRIG;
+	ftOFF: F_TRIG;	
+	rtValue: R_TRIG;
+	ftValue: F_TRIG;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[VALUE:= (ON OR LINK) AND NOT OFF; 
+rtValue(CLK:=VALUE);
+ftValue(CLK:=VALUE);
+R_TRIG:=rtValue.Q;
+F_TRIG:=ftValue.Q; 
+rtON(CLK:=ON);
+(*
+IF rtON.Q THEN
+	OFF:=FALSE;
+	ON:=TRUE;	
+END_IF
+rtOFF(CLK:=OFF);
+IF rtOFF.Q THEN
+	ON:=FALSE;
+	OFF:=TRUE;
+END_IF
+
+rtOFF(CLK:= OFF, Q=> );
+
+IF ftOFF.Q THEN
+	OFF:=FALSE;
+END_IF
+
+rtON(CLK:= ON, Q=> );
+
+IF ftON.Q THEN
+	ON:=FALSE;
+END_IF
+
+*)
+IF ON AND OFF THEN
+	ON:=FALSE;
+	OFF:=FALSE;	
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_DI">
+      <LineId Id="46" Count="0" />
+      <LineId Id="4" Count="4" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="11" Count="5" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="79" Count="1" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="84" Count="4" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="17" Count="2" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="91" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

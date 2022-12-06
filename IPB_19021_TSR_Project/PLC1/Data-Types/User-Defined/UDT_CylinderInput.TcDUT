@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_CylinderInput" Id="{fefd772a-d7e0-4c71-bd88-66fd6d451485}">
+    <Declaration><![CDATA[TYPE UDT_CylinderInput :
+STRUCT
+	Mode: BOOL; //模式
+	Reset: BOOL; //复位
+	ActiveIn: BOOL; //原位
+	ActiveOut: BOOL; //工作位
+	InSensor: BOOL; //原位检测
+	OutSensor: BOOL; //工作位检测
+	CheckTime: DINT; //检测时间
+	HmiIN: BOOL;
+	HmiOut: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

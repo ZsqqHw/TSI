@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Scara_DO" Id="{39b694d1-7342-4bdb-97c3-f2a861928f54}">
+    <Declaration><![CDATA[TYPE UDT_Scara_DO :
+STRUCT
+    Error: BOOL;
+	Enable: BOOL;
+	ProRunning: BOOL;
+	ProFault: BOOL;
+	ProPickDone: BOOL;
+	ProPutDone: BOOL;
+	ProDepartDone: BOOL;
+	Held: BOOL;
+	InPos: BOOL;
+	ProStopped: BOOL;
+	FuctionHold: BOOL;
+    loopRunActive :BOOL;
+	LoopStopDone: BOOL;
+	ResettingDone: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

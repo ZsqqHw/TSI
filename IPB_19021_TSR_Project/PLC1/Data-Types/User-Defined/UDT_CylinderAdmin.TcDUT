@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_CylinderAdmin" Id="{b05cc2bb-507c-4e66-b82b-e67c76e0281e}">
+    <Declaration><![CDATA[TYPE UDT_CylinderAdmin :
+STRUCT
+	i: UDT_CylinderInput;
+	o: UDT_CylinderOutput;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

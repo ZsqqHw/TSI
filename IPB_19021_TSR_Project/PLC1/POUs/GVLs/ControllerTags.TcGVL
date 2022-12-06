@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <GVL Name="ControllerTags" Id="{633e8543-e77b-40a2-b07b-46c1af5c7ec5}">
+    <Declaration><![CDATA[VAR_GLOBAL
+	UN01_MachineStateModel: PackMlv3_StateModel;
+	Unit01: UDT_UnitAdmin;	
+	
+	UN02_MachineStateModel: PackMlv3_StateModel;
+	Unit02: UDT_UnitAdmin;	
+	HMI_AlarmMute: BOOL;//报警消音
+	HMI_Input:  UDT_Hmi_Input; //远程触摸屏发送数据给设备	
+	HMI_Output:  UDT_Hmi_Output; //当前生产的配方反馈给触摸屏
+	HMI_Recipe: UDT_Recipe;
+	RecipeBuffer: UDT_Recipe;
+
+	arRealAxisAdmin: ARRAY[1..65] OF UDT_AXISADMIN;//实际轴
+	arVirtualAxisAdmin: ARRAY[1..65] OF UDT_AXISADMIN;//虚拟轴
+	arMS300Admin: ARRAY[1..1] OF UDT_MS300Admin;
+	arDropCylinder: ARRAY[1..40] OF UDT_CylinderAdmin;//料仓落料气缸
+	arHighSensor: ARRAY[1..40] OF UDT_SensorAdmin;//料仓高料位传感器
+	arLowSensor: ARRAY[1..40] OF UDT_SensorAdmin;//料仓低料位传感器
+	arDropSensor: ARRAY[1..40] OF UDT_SensorAdmin;//料仓低料位传感器
+	arCounters: ARRAY[1..40] OF AOI_CountersAdmin;//料仓控制
+    HMI_StopEvent: ARRAY[0..40] OF UDT_EVENT;
+	HMI_GeneralEvent: ARRAY[0..10] OF UDT_EVENT;//常规信息
+	HMI_WarningEvent: ARRAY[0..10] OF UDT_EVENT;//非停机报警信息
+	
+	arDropBufferCyclinder: ARRAY[0..10] OF UDT_CylinderAdmin;
+
+	arPackCylinder: ARRAY[1..60] OF UDT_CylinderAdmin;//包装系统气缸组
+	arPackVacuum: ARRAY[1..60] OF UDT_VacuumAdmin;//包装系统真空组
+	arPackSensor: ARRAY[1..60] OF UDT_SensorAdmin;//包装系统真空组
+	arPackMotor: ARRAY[1..16] OF UDT_directMotor;//调速马达
+	arPackHeatRealy: ARRAY[1..16] OF BOOL;//加热固态继电器
+	EncoderAxis: ARRAY[1..16] OF Axis_Ref;//编码器轴
+	(*digital input *)
+	EL1008 AT%I* : ARRAY[1..64,1..8] OF BOOL;
+	(*digital output*)
+	EL2008 AT%Q* : ARRAY[1..64,1..8] OF BOOL;	
+	CPX8_1 AT%I* : ARRAY[1..64,1..8] OF BOOL;
+	CPX8_2 AT%I* : ARRAY[1..64,1..8] OF BOOL;	
+	WPI_1 AT%Q* : ARRAY[1..64,1..8] OF BOOL;
+	WPI_2 AT%Q* : ARRAY[1..64,1..8] OF BOOL;
+	WPI_3 AT%Q* : ARRAY[1..64,1..8] OF BOOL;
+	EL3312 AT%I* : ARRAY[1..16,1..2] OF UDT_EL3312;
+	
+	DI_: ARRAY [1..64,1..8] OF  AOI_DI;
+	DO_: ARRAY [1..64,1..8] OF  AOI_DO;
+	
+	glb_BinBelt1: UDT_BinBelt;
+	glb_BinBelt2: UDT_BinBelt;	
+	glb_BinBelt3: UDT_BinBelt;	
+	glb_BinBelt4_5: UDT_BinBelt;
+	glb_RecipeTotalBin: INT;
+
+	
+	glb_AllCountersInitDone: BOOL;
+	glb_Un01Box: UDT_BOXLIST;
+	glb_rMainBeltSpeed: REAL;//主线速度
+	glb_bModeSwitch_UN01: BOOL;//模式选择
+	glb_bStartButton_UN01: BOOL;//启动按钮
+	glb_bStopButton_UN01: BOOL;//停止按钮
+	glb_diEstopButton_UN01: DINT;//急停按钮
+	glb_bResetButton_UN01: BOOL;//复位按钮
+	glb_bAirFeedback_UN01: ARRAY[1..8] OF BOOL;//气压反馈
+	glb_bStartBottonLight_UN01: BOOL;//启动按钮指示灯
+	glb_bStopBottonLight_UN01: BOOL;//停止按钮指示灯
+	glb_bResetBottonLight_UN01: BOOL;//复位按钮指示灯
+	
+	glb_arLightRelay_UN01: ARRAY[1..16] OF BOOL;//数粒系统设备照明继电器
+    glb_arLightRed_UN01: ARRAY[1..8] OF BOOL;//三色灯红灯
+    glb_arLightYellow_UN01: ARRAY[1..8] OF BOOL;//三色灯黄灯
+    glb_arLightGreen_UN01: ARRAY[1..8] OF BOOL;//三色灯绿灯
+    glb_arLightAlarm_UN01: ARRAY[1..8] OF BOOL;//三色灯蜂鸣器		
+	glb_arSafeRelayNo_UN01: ARRAY[1..8] OF BOOL;;//安全继电器反馈	
+	
+	glb_bPackAirValve_UN01: BOOL;//总装罐气阀开关
+	glb_bCounterAirValve_UN01: BOOL;//数粒气阀开关
+	glb_diBeltObjCnt: DINT; //数粒系统中半成品数量
+	glb_bUnit01BoxEmpty: BOOL;//前端纸盒全空
+	glb_bUnit01BoxNotReady: BOOL;//前端纸盒未就绪
+	
+	glb_lrMasterTargetCnt: LREAL;//计算主轴的数量
+	glb_lrBelt1TargetCnt: LREAL;//计算配方生产完成后belt1的数量	
+	glb_lrBelt2TargetCnt: LREAL;//计算配方生产完成后belt2的数量	
+	glb_lrBelt3TargetCnt: LREAL;//计算配方生产完成后belt3的数量	
+	glb_lrBoxTargetCnt: LREAL;//计算配方生产完成拉盒数量
+
+	glb_lrMasterWrkCnt: LREAL;//计算主轴的数量
+	glb_lrBelt1WrkCnt: LREAL;//计算配方生产完成后belt1的数量	
+	glb_lrBelt2WrkCnt: LREAL;//计算配方生产完成后belt2的数量	
+	glb_lrBelt3WrkCnt: LREAL;//计算配方生产完成后belt3的数量	
+	glb_lrBoxWrkCnt: LREAL;//计算配方生产完成拉盒数量
+
+    glb_lrBelt3ValidCnt: LREAL;//belt3的产品数量
+	
+	glb_bSafetyReset: BOOL;//安全继电器复位
+	arSafeDoorSts: ARRAY [1..40] OF  BOOL;
+//	arEstopSts: ARRAY [1..40] OF  BOOL;
+
+	glb_Un02Box: UDT_BOXLIST;
+	glb_CompleteBox: UDT_BOXLIST;
+	glb_bModeSwitch_UN02: BOOL;//模式选择
+	glb_bStartButton_UN02: BOOL;//启动按钮
+	glb_bStopButton_UN02: BOOL;//停止按钮
+	glb_diEstopButton_UN02: DINT;//急停按钮
+	glb_bResetButton_UN02: BOOL;//复位按钮
+	glb_bAirFeedback_UN02: BOOL;
+	
+	glb_bStartBottonLight_UN02: BOOL;
+	glb_bStopBottonLight_UN02: BOOL;
+	glb_bResetBottonLight_UN02: BOOL;
+
+    glb_arLightRed_UN02: ARRAY[1..8] OF BOOL;
+    glb_arLightYellow_UN02: ARRAY[1..8] OF BOOL;	
+    glb_arLightGreen_UN02: ARRAY[1..8] OF BOOL;	
+    glb_arLightAlarm_UN02: ARRAY[1..8] OF BOOL;	
+		
+	ScaraRobot: UDT_Scara;//机器人(*IP 192.168.1.20*)			
+	arErrorCodeDrive AT %I*: ARRAY[1..64] OF UINT;
+	
+	glb_diNogoodFlag_UN01: DINT;//不良标志	
+	glb_diGoodFlag_UN01: DINT;//良品标志
+	glb_diPullFlag_UN01: DINT;//拉盒信号
+	glb_diDropFlag_UN01: DINT;//落药信号
+	glb_diCutFlag_Un01: DINT;//冲裁信号	
+	glb_diSealFlag_Un01: DINT;//封盒信号
+	glb_diTransferFlag_UN01: DINT;//移载抓取信号
+    glb_bTransferPutWait_UN01: BOOL;//等待放置
+	glb_bUnit02BoxEmpty: BOOL;//后段铝盒全空
+	glb_bWaitRobotPick: BOOL;
+	glb_bAllSafetyOk: BOOL;
+    glb_bTransferPut_UN02: BOOL;//移载放置信号
+	glb_diTransferPick_UN02: DINT;//移载抓取信号
+	glb_diPrint_UN02: DINT;//喷印标志位	
+	glb_BoxTransferBuffer: UDT_BOX;//移载缓冲区信息
+	//ethercat状态
+	HMI_EtherCat_States1: ARRAY [0..255] OF STRING;
+	HMI_EtherCat_States2: ARRAY [0..255] OF STRING;
+	HMI_EtherCat_Name1: ARRAY [0..255] OF STRING;
+	HMI_EtherCat_Name2: ARRAY [0..255] OF STRING;
+	glb_bDevice1AllOP: BOOL;
+	glb_bDevice2AllOP: BOOL;
+		
+	glb_AllAxisHomed_UN01: BOOL;
+	glb_AllAxisHomed_UN02: BOOL;	
+	glb_BinList: UDT_BInlist;
+	glb_DropFlag: ARRAY[1..40] OF BOOL;
+	
+	glb_TransferCnt: DINT;
+	
+	
+	HMI_LocModeEnable: BOOL;//启用本地配方模式 
+    HMI_LocModeInput: UDT_Hmi_Input;//本地配方模式
+	HMI_LocModeInput_UN02: UDT_Hmi_Input;//UN02配方模式	
+    HMI_HeatTempAct: ARRAY[1..16] OF REAL;
+	HMI_SkipTransferPut: BOOL;
+	HMI_RecipeReset: BOOL;
+	HMI_RecipeAbort: BOOL;
+	HMI_RecipeRedo: BOOL;
+	// 取消配方
+	HMI_RecipCancel: BOOL;
+	
+	HMI_ClearCounter: ARRAY[1..40] OF BOOL;
+	
+	HMI_AxisView: ARRAY[1..64] OF UDT_Hmi_AxisView;
+	HMI_OEEView: UDT_Hmi_OEE;
+	HMI_BoxViewUN01: ARRAY[0..64] OF STRING;
+	HMI_BoxViewUN02: ARRAY[0..64] OF STRING;
+	HMI_ManualInhibit: ARRAY[0..255] OF BOOL;
+	HMI_HeatDisable: BOOL;
+	
+	HMI_CompleteBox : UDT_BOX;
+	HMI_CompleteUpdate: BOOL;
+	HMI_Unit02Simulation :BOOL;
+	
+	HMI_PrinterTest: BOOL; //喷码机测试
+	HMI_PrinterConnected: BOOL; //喷码机通讯正常
+	HMI_PrinterFault: BOOL; //喷码机喷码失败
+	HMI_PrinterTestData: STRING(22):='T/S MADE POSSIBLE';//喷码机反馈字符	
+	HMI_PrinterReceiveData: STRING;//喷码机反馈字符
+		
+	HMI_AutoCut: BOOL;
+	HMI_CutCnt: DINT;
+
+	HMI_CountersCntUp: ARRAY[1..40] OF DINT;
+	HMI_DisableCntAlarmAll: BOOL;
+	HMI_EnbaleCntAlarmAll : BOOL;
+	HMI_DisableCntAlarmAll2: BOOL;
+	HMI_EnbaleCntAlarmAll2 : BOOL;	
+	// 拉膜报警
+	glb_MembraneAlarm: BOOL;
+END_VAR
+
+
+VAR_GLOBAL RETAIN
+	HMI_SkipCntAlarm: ARRAY[1..40] OF BOOL;
+	HMI_CntCheckTime: DINT:=1500;
+	HMI_CntCheck: ARRAY[1..40] OF BOOL;
+	
+	HMI_HomeOffsetBelt: ARRAY[1..16] OF REAL;//皮带原点
+	HMI_BeltVelo: ARRAY[1..16] OF REAL:=[16(50)];//皮带速度
+	HMI_BeltAcc: ARRAY[1..16] OF REAL:=[16(100)];;//皮带速度
+	HMI_BeltDec: ARRAY[1..16] OF REAL:=[16(100)];;//皮带速度
+	HMI_CountersVelo: LREAL;
+	HMI_CountersAcc: LREAL;
+	HMI_CountersDec: LREAL;
+	HMI_MasterVelo: LREAL;//主轴速度
+	HMI_HeatTempSet: ARRAY[1..16] OF REAL;//加热温度设置
+	HMI_SealTime: DINT;//封口时间
+	HMI_SealTime2: DINT;//封口时间	
+	HMI_arSealTime: array[1..8] of DINT;
+	HMI_PullerPara: ARRAY[1..8] OF LREAL;//[1]拉膜长度 [2]拉膜速度
+	HMI_PusherPos: ARRAY[1..8] OF LREAL;
+	HMI_EMSelectUN01: ARRAY[0..64] OF BOOL;
+	HMI_EMSelectUN02: ARRAY[0..64] OF BOOL;
+	
+	HMI_PrintNo: INT:=11;//打印站位号
+	HMI_PrintMaxTime: DINT:=30;//最大打印监控时间
+    HMI_PickNo: INT:=7;//抓取站位号	
+	
+	HMI_DropNo: INT:=2;//落料站位号
+	HMI_CutNo: INT:=7;//裁切站位号
+	HMI_Check1No: INT:=4;//铝杯检测1站位号
+	HMI_Check2No: INT:=5;//铝杯检测2站位号	
+	HMI_Seal1No: INT:=10;//封口1站位号
+	HMI_Seal2No: INT:=11;//封口2站位号
+	HMI_TransferNo: INT:=13;//封口1站位号	
+	
+	HMI_DropPosOffset: REAL:=-120;
+	HMI_B3DropBinNo1: INT:=1;
+	HMI_B3DropBinNo2: INT:=14;
+	HMI_B3DropBinNo3: INT:=28;
+	HMI_B2DropBinNo: INT:=12;
+	HMI_B1DropBinNo: INT:=12;	
+	
+END_VAR
+
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

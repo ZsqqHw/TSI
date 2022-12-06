@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="AOI_DeltaScaraRobot" Id="{7ccf4f04-80f1-47ce-82b8-5de0d8cc1692}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_DeltaScaraRobot
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	rtStart: R_trig;
+	rtStop: R_Trig;
+	rtHold: R_Trig;
+END_VAR
+VAR_IN_OUT
+	Scara: UDT_Scara;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Scara.i.Auto THEN
+   Scara.Di_[1][4]:=0;
+   Scara.Di_[1][5]:=1;   
+   ELSE IF Scara.i.T2  THEN
+	      Scara.Di_[1][4]:=1;
+          Scara.Di_[1][5]:=1;     
+         END_IF 		
+END_IF
+
+IF rtStart.Q  THEN
+   Scara.Di_[1][6]:=1;
+   Scara.Di_[1][7]:=1;
+END_IF   
+IF Scara.i.Stop THEN
+   Scara.Di_[1][6]:=1;
+   Scara.Di_[1][7]:=0;
+END_IF   
+IF rtHold.Q THEN
+	Scara.Di_[1][6]:=0;
+	Scara.Di_[1][7]:=1;
+END_IF
+
+
+rtStart(CLK:=Scara.i.Start , Q=> );
+rtStop(CLK:=Scara.i.Stop , Q=> );
+rtHold(CLK:=Scara.i.Hold , Q=> );
+
+Scara.Di_[1][1]:=NOT Scara.i.Estop AND NOT Scara.i.Shutdown ;
+Scara.Di_[1][2]:=NOT Scara.i.Estop;
+Scara.Di_[1][3]:=Scara.i.Reset;
+Scara.Di_[1][8]:=Scara.i.reset OR scara.i.FuctionReset;
+
+Scara.o.Error:=Scara.Do_[1][1];
+Scara.o.Enable:=Scara.Do_[1][2];
+Scara.o.InPos:=Scara.Do_[1][3];
+Scara.o.FuctionHold:=Scara.Do_[1][4];
+Scara.o.ProRunning:=Scara.Do_[1][5] AND Scara.Do_[1][6];
+Scara.o.Held:=NOT Scara.Do_[1][5] AND Scara.Do_[1][6];
+Scara.o.ProStopped:= Scara.Do_[1][5] AND NOT Scara.Do_[1][6];
+
+Scara.Di_[2][1]:=Scara.i.ProFaultClear;
+Scara.Di_[2][2]:=Scara.i.ProPick;
+Scara.Di_[2][3]:=Scara.i.ProDepart;
+Scara.Di_[2][4]:=Scara.i.ProPut;
+Scara.Di_[2][5]:=Scara.i.LoopStop;//循环停止
+
+Scara.o.ProFault:=Scara.Do_[2][1];
+Scara.o.ProPickDone:=Scara.Do_[2][2];
+Scara.o.ProPutDone:=Scara.Do_[2][3];
+Scara.o.ProDepartDone:=Scara.Do_[2][4];
+Scara.o.LoopStopDone:=Scara.Do_[2][5];//循环完成
+Scara.o.ResettingDone:=Scara.Do_[2][6];//复位完成
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_DeltaScaraRobot">
+      <LineId Id="12" Count="1" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="83" Count="1" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="63" Count="2" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="69" Count="1" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="121" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

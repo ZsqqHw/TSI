@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="CheckPointer" Id="{6b9d881e-10b4-4ae7-a683-76fa469522d3}" SpecialFunc="CheckPointer">
+    <Declaration><![CDATA[// 隐含生成代码：不要编辑
+FUNCTION CheckPointer : POINTER TO BYTE
+VAR_INPUT 
+	ptToTest : POINTER TO BYTE; // 指针的目标地址
+	iSize : DINT;		        // 指针指向的类型大小。（例如：POINTER TO ARRAY [0..9] OF INT为20）
+	iGran : DINT;		        // 指针访问的粒度，即指针指向的类型中最大的非结构数据类型的大小。（例如：POINTER TO ARRAY [0..9] OF INT为2）
+	bWrite: BOOL;		        // 指示读或写权限。TRUE=写权限。
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// 没有标准的实现方式。在此处输入代码
+CheckPointer := ptToTest;
+{flow}]]></ST>
+    </Implementation>
+    <LineIds Name="CheckPointer">
+      <LineId Id="11" Count="1" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

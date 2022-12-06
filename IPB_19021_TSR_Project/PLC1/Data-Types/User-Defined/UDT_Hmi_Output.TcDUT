@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Hmi_Output" Id="{8261add2-d8d3-420c-a7b3-1c730fbe01f7}">
+    <Declaration><![CDATA[TYPE UDT_Hmi_Output :
+STRUCT
+	RecipeModifyDone: BOOL;//PLC配方切换完成	
+	RecipeProduction: BOOL;//生产中
+	RecipeComplete: BOOL;//生产完成	
+	RecipeEmplty: BOOL; //
+	InQuantity: DINT;//实时反馈当前生产的数量
+	OutQuantity: DINT;//实时反馈当前生产的数量
+	Counters: ARRAY[1..40]OF UDT_Counters;//当前40个工位粒机信息                                 
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

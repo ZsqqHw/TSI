@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_CM_Condition" Id="{7206d524-cdbf-4c36-9346-4a63b0895cba}">
+    <Declaration><![CDATA[TYPE UDT_CM_Condition :
+STRUCT
+	Clearing_Done: BOOL;//清除完成
+	Starting_Done: BOOL;//启动完成
+	Stopping_Done: BOOL;//停机完成
+	Aborting_Done: BOOL;//终止完成
+	Holding_Done: BOOL;//暂停完成
+	UnHolding_Done: BOOL;//解除暂停完成
+	Suspending_Done: BOOL;//挂起完成
+	UnSuspending_Done: BOOL;//解除挂起完成
+	Resetting_Done: BOOL;//重置完成
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

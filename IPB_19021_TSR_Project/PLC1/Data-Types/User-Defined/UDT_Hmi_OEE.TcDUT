@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Hmi_OEE" Id="{194b6b45-3d6d-4b77-9e84-0165fd00bd92}">
+    <Declaration><![CDATA[TYPE UDT_Hmi_OEE :
+STRUCT
+	OEE: REAL;
+	PlannedTime: DINT;
+	UsableTime: DINT;
+	Usability :REAL;
+	DesignSpeed: REAL;
+	AverageSpeed: REAL;
+	GoodCount: DINT;
+	NogoodCount: DINT;
+	Performance: REAL;
+	Quality: REAL;
+	Active: BOOL;
+	Reset: BOOL;
+	
+	ClearingTime: DINT;//清除中
+	StoppedTime: DINT;//已停机
+	StartingTime: DINT;//启动中
+	IdleTime: DINT;//空闲中
+	SuspendedTime: DINT;//挂起
+	ExecuteTime: DINT;//执行中
+	StoppingTime: DINT;//停机中
+	AbortingTime: DINT;//终止中
+	AbortedTime: DINT;//已终止
+	HoldingTime: DINT;//暂停中
+	HeldTime: DINT;//已暂停
+	UnHoldingTime: DINT;//解除暂停中
+	SuspendingTime: DINT;//挂起中
+	UnSuspendingTime: DINT;//解除挂起
+	ResettingTime: DINT;//重置中
+	CompletingTime: DINT;//结束中
+	CompleteTime: DINT;//已完成
+	
+	CounterProcessTime: ARRAY [1..40] OF DINT;
+	DropProcessTime: ARRAY [1..40] OF DINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

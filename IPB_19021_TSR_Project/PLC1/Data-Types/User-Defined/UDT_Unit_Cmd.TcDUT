@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_Unit_Cmd" Id="{e90f8d14-c2ac-4b43-925a-c97eaf14ea8e}">
+    <Declaration><![CDATA[TYPE UDT_Unit_Cmd :
+STRUCT
+	Mode: DINT;//模式 0手动,1自动
+	Reset: BOOL;//复位
+	Start: BOOL;//启动
+	Stop: BOOL;//停止
+	Hold: BOOL;//暂停
+	UnHold: BOOL;//解除暂停
+	Suspend: BOOL;//挂起
+	UnSuspend: BOOL;//解除挂起
+	Abort: BOOL;//中止
+	Clear: BOOL;//清除故障
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_SensorAdmin" Id="{26a74bed-ab5b-49e0-bedf-ddaee6c2ac72}">
+    <Declaration><![CDATA[TYPE UDT_SensorAdmin :
+STRUCT
+	i: UDT_SENSORINPUT;
+	o: UDT_SENSOROUTPUT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

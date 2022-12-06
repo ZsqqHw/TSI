@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="AOI_Timer" Id="{9d53ef77-e013-4fb6-b341-2313db76c901}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_Timer
+VAR_INPUT
+	bEnable: BOOL;
+	bReset: BOOL;
+END_VAR
+VAR_OUTPUT
+	diSecond:DINT;
+	diMinute: DINT;
+	diHour: DINT;
+	diTotalSecond: DINT;
+	diTotalMinute: DINT;
+	diTotalHour: DINT;
+END_VAR
+VAR
+	tonSecond: Ton;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[tonSecond(IN:= bEnable AND NOT tonSecond.Q, PT:=T#1000MS , Q=> , ET=> );
+IF tonSecond.Q THEN
+	diSecond:=diSecond+1;
+	diTotalSecond:=diTotalSecond+1;
+END_IF
+
+IF diSecond>59 THEN
+	diSecond:=0;
+	diMinute:=diMinute+1;
+	diTotalMinute:=diTotalMinute+1;
+END_IF
+
+IF diMinute>59 THEN
+	diMinute:=0;
+	diHour:=diHour+1;
+	diTotalHour:=diTotalHour+1;
+END_IF
+
+IF bReset THEN
+	diSecond :=0;
+	diMinute:=0;
+	diHour:=0;
+	diTotalSecond:=0;
+	diTotalMinute:=0;
+	diTotalHour:=0;	
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_Timer">
+      <LineId Id="9" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="31" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="46" Count="4" />
+      <LineId Id="42" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

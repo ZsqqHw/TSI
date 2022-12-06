@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="EM01_Master" Id="{40be8088-7005-4369-a85a-46875fa0e609}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EM01_Master
+VAR
+	ref_Master1: REFERENCE TO UDT_AXISADMIN;	
+	ref_Follower4: REFERENCE TO UDT_AXISADMIN;
+	ref_Follower5: REFERENCE TO UDT_AXISADMIN;	
+	Ref_MachineStateModel: REFERENCE TO PackMlv3_StateModel;
+	ref_Work_Recipe: REFERENCE TO UDT_Hmi_Output; //当前生产的配方
+
+    Ref_Unit: REFERENCE TO UDT_UnitAdmin;
+	ref_lrLatchMasterPos: REFERENCE TO LREAL;
+	ref_BinList: REFERENCE TO UDT_BINlist;	
+	ref_diBeltObjCnt: REFERENCE TO DINT;
+	EM_No: INT:=1;
+
+	tonAbortingWatchDog: TON;   
+	MasterSeq: SequenceTransfer;
+	
+END_VAR
+
+VAR CONSTANT
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// 主轴走200MM产出一个产品
+Ref_MachineStateModel REF= UN01_MachineStateModel;
+Ref_Unit REF=Unit01;
+ref_Work_Recipe REF= HMI_Output;
+ref_Follower4  REF= arRealAxisAdmin[44];
+ref_Follower5  REF= arRealAxisAdmin[45];
+ref_Master1 REF= arVirtualAxisAdmin[1];
+
+ref_BinList REF=Glb_BinList;
+ref_diBeltObjCnt REF=glb_diBeltObjCnt;
+CM01_Master();
+MainRoution();
+SR99_FaultHandle();
+
+ref_master1.i.PosRangeTable[1][1]:=190;
+ref_master1.i.PosRangeTable[1][2]:=200;]]></ST>
+    </Implementation>
+    <Action Name="CM01_Master" Id="{1ae91068-5d2b-4bbf-91cf-d600db16ff00}">
+      <Implementation>
+        <ST><![CDATA[CASE MasterSeq.Now OF		 
+	0: 
+	   IF Ref_MachineStateModel.Sts_Resetting THEN
+		  MasterSeq(ExeCute:= TRUE, Next:= Seq_Resetting );
+	   END_IF	   
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+          MasterSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone );  
+	   END_IF	
+
+	Seq_Resetting:
+		IF NOT ref_Master1.o.PowerOn  THEN;
+		   ref_Master1.i.Enable:=TRUE;
+	    ELSE
+		   MasterSeq(ExeCute:= TRUE, Next:= 20 );
+		END_IF
+	    IF Ref_MachineStateModel.Sts_Stopping  THEN
+		   MasterSeq(ExeCute:= TRUE, Next:= Seq_Stopping);  
+	    END_IF	
+	20:	
+	       ref_master1.i.PosRangeTable[1][1]:=0;
+		   ref_master1.i.PosRangeTable[1][2]:=10;
+		   ref_master1.i.JogAcc:=100;
+		   ref_Master1.i.JogDec:=5000;
+		   IF NOT glb_AllAxisHomed_UN01 THEN
+			  MasterSeq(ExeCute:= TRUE, Next:= 21 );
+			  ELSE
+			  MasterSeq(ExeCute:= TRUE, Next:= Seq_ResettingDone );
+		   END_IF
+	21:    
+		   ref_Master1.i.HomeMode:=2;
+		   ref_Master1.i.Home:=TRUE;
+		   IF ref_Master1.o.HomeDone THEN
+			   ref_Master1.i.Home:=FALSE;
+			   MasterSeq(ExeCute:= TRUE, Next:= 30 );
+		   ELSE IF Ref_MachineStateModel.Sts_Stopping  THEN
+		           MasterSeq(ExeCute:= TRUE, Next:= Seq_Stopping);  
+	            END_IF	 
+		   END_IF
+    30:   
+
+		  glb_diBeltObjCnt:=0;
+          MasterSeq(ExeCute:= TRUE, Next:= Seq_ResettingDone ); 
+		  
+	Seq_ResettingDone: 
+         IF NOT Ref_MachineStateModel.Sts_Resetting THEN
+			MasterSeq(ExeCute:= TRUE, Next:= 0 );
+		 END_IF	  
+ 	  
+	Seq_Stopping:	
+	     MasterSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone); 
+	Seq_StoppingDone: 
+	     IF NOT Ref_MachineStateModel.Sts_Stopping THEN
+			MasterSeq(ExeCute:= TRUE, Next:= 0 );
+		 END_IF	   
+		 
+END_CASE
+MasterSeq(ExeCute:= FALSE, Next:= , Last=> , Now=> );
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="MainRoution" Id="{529d5d32-328c-4e72-afd3-7b6c49aea43a}">
+      <Implementation>
+        <ST><![CDATA[EM_No:=1;
+IF Ref_Unit.EM_Selected[EM_No] THEN
+	IF Ref_MachineStateModel.Sts_Holding THEN
+		Ref_Unit.EM_Holding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Holding_Done[EM_No]:=FALSE;
+	END_IF
+	IF Ref_MachineStateModel.Sts_UnHolding THEN
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Suspending THEN
+		Ref_Unit.EM_Suspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Suspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_UnSuspending THEN
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=FALSE;
+	END_IF
+		
+	IF Ref_MachineStateModel.Sts_Resetting AND MasterSeq.Now=Seq_ResettingDone  THEN
+	   Ref_Unit.EM_Resetting_Done[EM_No]:=TRUE; 
+       ELSE   
+	   Ref_Unit.EM_Resetting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Clearing THEN
+	      Ref_Unit.EM_Clearing_Done[EM_No]:=TRUE;
+		  ELSE
+		  Ref_Unit.EM_Clearing_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Aborting THEN
+	   MasterSeq(ExeCute:= TRUE, Next:= 0 );
+       IF tonAbortingWatchDog.Q THEN
+		  ref_Master1.i.Disable:=TRUE;
+		  Ref_Unit.EM_Aborting_Done[EM_No]:=TRUE;
+	   END_IF
+	   ELSE
+		  Ref_Unit.EM_Aborting_Done[EM_No]:=FALSE;
+	END_IF
+	tonAbortingWatchDog(IN:= Ref_MachineStateModel.Sts_Aborting, PT:=T#3S , Q=> , ET=> );
+	
+	IF Ref_MachineStateModel.Sts_Starting THEN
+	   Ref_Unit.EM_Starting_Done[EM_No]:=TRUE;
+	   ELSE
+	   Ref_Unit.EM_Starting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Stopping  AND MasterSeq.Now=Seq_StoppingDone THEN
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=TRUE;
+	   ELSE	   
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=FALSE;
+	END_IF
+
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="SR99_FaultHandle" Id="{e7b41dea-36cd-4243-8903-31908f899a44}">
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="EM01_Master">
+      <LineId Id="340" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="319" Count="0" />
+      <LineId Id="439" Count="0" />
+      <LineId Id="413" Count="0" />
+      <LineId Id="412" Count="0" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="471" Count="0" />
+      <LineId Id="501" Count="0" />
+      <LineId Id="558" Count="0" />
+      <LineId Id="362" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="531" Count="1" />
+      <LineId Id="530" Count="0" />
+    </LineIds>
+    <LineIds Name="EM01_Master.CM01_Master">
+      <LineId Id="115" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="311" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="310" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="322" Count="0" />
+      <LineId Id="163" Count="0" />
+      <LineId Id="282" Count="4" />
+      <LineId Id="288" Count="1" />
+      <LineId Id="325" Count="1" />
+      <LineId Id="290" Count="16" />
+      <LineId Id="329" Count="1" />
+      <LineId Id="328" Count="0" />
+      <LineId Id="307" Count="1" />
+      <LineId Id="327" Count="0" />
+      <LineId Id="309" Count="0" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="320" Count="0" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="319" Count="0" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="314" Count="0" />
+      <LineId Id="318" Count="0" />
+      <LineId Id="331" Count="0" />
+      <LineId Id="333" Count="0" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="177" Count="1" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="90" Count="1" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="24" Count="0" />
+    </LineIds>
+    <LineIds Name="EM01_Master.MainRoution">
+      <LineId Id="1" Count="0" />
+      <LineId Id="89" Count="23" />
+      <LineId Id="117" Count="2" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="121" Count="3" />
+      <LineId Id="150" Count="1" />
+      <LineId Id="125" Count="2" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="163" Count="0" />
+      <LineId Id="157" Count="3" />
+      <LineId Id="129" Count="4" />
+      <LineId Id="153" Count="1" />
+      <LineId Id="134" Count="1" />
+      <LineId Id="140" Count="4" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="87" Count="0" />
+    </LineIds>
+    <LineIds Name="EM01_Master.SR99_FaultHandle">
+      <LineId Id="8" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

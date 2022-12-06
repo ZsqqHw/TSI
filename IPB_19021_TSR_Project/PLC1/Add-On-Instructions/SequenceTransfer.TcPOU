@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="SequenceTransfer" Id="{15e3dac5-1803-4bd2-a45f-a13fe28c8e65}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SequenceTransfer
+VAR_INPUT	
+    Execute:BOOL;
+	Next: INT;
+	Hold: BOOL;
+END_VAR
+VAR_OUTPUT
+	Last: INT;
+	Now: INT;
+END_VAR
+VAR_IN_OUT
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Execute AND NOT Hold THEN
+   Last:=Now;
+   Now:=Next;
+   Execute:=FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="SequenceTransfer">
+      <LineId Id="9" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

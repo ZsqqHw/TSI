@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="MAIN" Id="{4aa747b6-83d5-4350-b684-1fc40bed5ebf}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	fbNovRamReadWrite : FB_NovRamReadWriteEx;
+	bRead 		: BOOL;
+	bWrite 		: BOOL;
+	fromNovRam 	: ARRAY[1..100] OF BYTE;
+	toNovRam 		: ARRAY[1..100] OF BYTE:=[1,2,3,4,5];
+	bBusy 		: BOOL;
+	bError 		: BOOL;
+	nErrID 		: UDINT;
+	cbRead 		: UDINT;
+	cbWrite 		: UDINT;
+
+	ss: ARRAY [0..38] OF UDINT;
+	ssLAN: ARRAY [0..38] OF UDINT;
+	ssOffs:ARRAY [0..38] OF UDINT;
+	index: INT;
+	Firstcycle:BOOL:=TRUE;
+
+	Wsteps: INT;
+	bWriteBusy: BOOL;
+	Rsteps: INT;
+	bReadBusy: BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Firstcycle THEN
+		initial();
+END_IF
+
+ReadNov();
+WriteNov();
+]]></ST>
+    </Implementation>
+    <Action Name="Initial" Id="{5f6d3d84-4b75-4c84-a351-997a3bae32af}">
+      <Implementation>
+        <ST><![CDATA[ss[0]:=ADR(strArrMachineT_NovRAM);
+ss[1]:=ADR(iDataA_NovRAM);
+ss[2]:=ADR(iDataB_NovRAM);
+ss[3]:=ADR(iDataC_NovRAM);
+ss[4]:=ADR(iDataE_NovRAM);
+ss[5]:=ADR(iDataF_NovRAM);
+ss[6]:=ADR(iDataG_NovRAM);
+ss[7]:=ADR(iDataH_NovRAM);
+ss[8]:=ADR(iDataI_NovRAM);
+ss[9]:=ADR(iDataJ_NovRAM);
+ss[10]:=ADR(iDataK_NovRAM);
+ss[11]:=ADR(iDataL_NovRAM);
+ss[12]:=ADR(iDataM_NovRAM);
+ss[13]:=ADR(iDataN_NovRAM);
+ss[14]:=ADR(iDataO_NovRAM);
+ss[15]:=ADR(iDataP_NovRAM);
+ss[16]:=ADR(iDataQ_NovRAM);
+ss[17]:=ADR(iDataR_NovRAM);
+ss[18]:=ADR(iDataS_NovRAM);
+ss[19]:=ADR(iDataT_NovRAM);
+ss[20]:=ADR(iDataU_NovRAM);
+ss[21]:=ADR(iDataV_NovRAM);
+ss[22]:=ADR(iDataW_NovRAM);
+ss[23]:=ADR(iDataX_NovRAM);
+ss[24]:=ADR(iDataY_NovRAM);
+ss[25]:=ADR(iDataZ_NovRAM);
+ss[26]:=ADR(iDataAA_NovRAM);
+ss[27]:=ADR(iDataAB_NovRAM);
+ss[28]:=ADR(iDataAC_NovRAM);
+ss[29]:=ADR(iDataAD_NovRAM);
+ss[30]:=ADR(iDataAE_NovRAM);
+ss[31]:=ADR(iDataAF_NovRAM);
+ss[32]:=ADR(iDataAG_NovRAM);
+ss[33]:=ADR(iDataAH_NovRAM);
+ss[34]:=ADR(iDataAI_NovRAM);
+ss[35]:=ADR(iDataAJ_NovRAM);
+ss[36]:=ADR(iDataAK_NovRAM);
+ss[37]:=ADR(iDataAL_NovRAM);
+ss[38]:=ADR(iDataAM_NovRAM);
+
+
+ssLAN[0]:=SIZEOF(strArrMachineT_NovRAM);
+ssLAN[1]:=SIZEOF(iDataA_NovRAM);
+ssLAN[2]:=SIZEOF(iDataB_NovRAM);
+ssLAN[3]:=SIZEOF(iDataC_NovRAM);
+ssLAN[4]:=SIZEOF(iDataE_NovRAM);
+ssLAN[5]:=SIZEOF(iDataF_NovRAM);
+ssLAN[6]:=SIZEOF(iDataG_NovRAM);
+ssLAN[7]:=SIZEOF(iDataH_NovRAM);
+ssLAN[8]:=SIZEOF(iDataI_NovRAM);
+ssLAN[9]:=SIZEOF(iDataJ_NovRAM);
+ssLAN[10]:=SIZEOF(iDataK_NovRAM);
+ssLAN[11]:=SIZEOF(iDataL_NovRAM);
+ssLAN[12]:=SIZEOF(iDataM_NovRAM);
+ssLAN[13]:=SIZEOF(iDataN_NovRAM);
+ssLAN[14]:=SIZEOF(iDataO_NovRAM);
+ssLAN[15]:=SIZEOF(iDataP_NovRAM);
+ssLAN[16]:=SIZEOF(iDataQ_NovRAM);
+ssLAN[17]:=SIZEOF(iDataR_NovRAM);
+ssLAN[18]:=SIZEOF(iDataS_NovRAM);
+ssLAN[19]:=SIZEOF(iDataT_NovRAM);
+ssLAN[20]:=SIZEOF(iDataU_NovRAM);
+ssLAN[21]:=SIZEOF(iDataV_NovRAM);
+ssLAN[22]:=SIZEOF(iDataW_NovRAM);
+ssLAN[23]:=SIZEOF(iDataX_NovRAM);
+ssLAN[24]:=SIZEOF(iDataY_NovRAM);
+ssLAN[25]:=SIZEOF(iDataZ_NovRAM);
+ssLAN[26]:=SIZEOF(iDataAA_NovRAM);
+ssLAN[27]:=SIZEOF(iDataAB_NovRAM);
+ssLAN[28]:=SIZEOF(iDataAC_NovRAM);
+ssLAN[29]:=SIZEOF(iDataAD_NovRAM);
+ssLAN[30]:=SIZEOF(iDataAE_NovRAM);
+ssLAN[31]:=SIZEOF(iDataAF_NovRAM);
+ssLAN[32]:=SIZEOF(iDataAG_NovRAM);
+ssLAN[33]:=SIZEOF(iDataAH_NovRAM);
+ssLAN[34]:=SIZEOF(iDataAI_NovRAM);
+ssLAN[35]:=SIZEOF(iDataAJ_NovRAM);
+ssLAN[36]:=SIZEOF(iDataAK_NovRAM);
+ssLAN[37]:=SIZEOF(iDataAL_NovRAM);
+ssLAN[38]:=SIZEOF(iDataAM_NovRAM);
+
+ssOffs[0]:=0;
+ssOffs[1]:=ssLAN[0];
+ssOffs[2]:=ssOffs[1]+ssLAN[1];
+ssOffs[3]:=ssOffs[2]+ssLAN[2];
+ssOffs[4]:=ssOffs[3]+ssLAN[3];
+ssOffs[5]:=ssOffs[4]+ssLAN[4];
+ssOffs[6]:=ssOffs[5]+ssLAN[5];
+ssOffs[7]:=ssOffs[6]+ssLAN[6];
+ssOffs[8]:=ssOffs[7]+ssLAN[7];
+ssOffs[9]:=ssOffs[8]+ssLAN[8];
+ssOffs[10]:=ssOffs[9]+ssLAN[9];
+ssOffs[11]:=ssOffs[10]+ssLAN[10];
+ssOffs[12]:=ssOffs[11]+ssLAN[11];
+ssOffs[13]:=ssOffs[12]+ssLAN[12];
+ssOffs[14]:=ssOffs[13]+ssLAN[13];
+ssOffs[15]:=ssOffs[14]+ssLAN[14];
+ssOffs[16]:=ssOffs[15]+ssLAN[15];
+ssOffs[17]:=ssOffs[16]+ssLAN[16];
+ssOffs[18]:=ssOffs[17]+ssLAN[17];
+ssOffs[19]:=ssOffs[18]+ssLAN[18];
+ssOffs[20]:=ssOffs[19]+ssLAN[19];
+ssOffs[21]:=ssOffs[20]+ssLAN[20];
+ssOffs[22]:=ssOffs[21]+ssLAN[21];
+ssOffs[23]:=ssOffs[22]+ssLAN[22];
+ssOffs[24]:=ssOffs[23]+ssLAN[23];
+ssOffs[25]:=ssOffs[24]+ssLAN[24];
+ssOffs[26]:=ssOffs[25]+ssLAN[25];
+ssOffs[27]:=ssOffs[26]+ssLAN[26];
+ssOffs[28]:=ssOffs[27]+ssLAN[27];
+ssOffs[29]:=ssOffs[28]+ssLAN[28];
+ssOffs[30]:=ssOffs[29]+ssLAN[29];
+ssOffs[31]:=ssOffs[30]+ssLAN[30];
+ssOffs[32]:=ssOffs[31]+ssLAN[31];
+ssOffs[33]:=ssOffs[32]+ssLAN[32];
+ssOffs[34]:=ssOffs[33]+ssLAN[33];
+ssOffs[35]:=ssOffs[34]+ssLAN[34];
+ssOffs[36]:=ssOffs[35]+ssLAN[35];
+ssOffs[37]:=ssOffs[36]+ssLAN[36];
+ssOffs[38]:=ssOffs[37]+ssLAN[37];
+
+
+Firstcycle:=0;
+bRead:=TRUE;
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ReadNov" Id="{1532f9ae-e209-4623-a276-53dc8e439cff}">
+      <Implementation>
+        <ST><![CDATA[CASE Rsteps OF
+0:	IF bRead THEN
+		Rsteps:=10;
+		index:=0;
+		bRead:=0;
+		bReadBusy:=TRUE;
+	END_IF
+10:
+	fbNovRamReadWrite(
+		nDevId:= 2,
+		bRead:=TRUE ,
+		bWrite:= ,
+		cbSrcLen:=ssLAN[index] ,
+		cbDestLen:=ssLAN[index] ,
+		pSrcAddr:=ss[index] ,
+		pDestAddr:=ss[index] ,
+		nReadOffs:=ssOffs[index] ,
+		nWriteOffs:=ssOffs[index] ,
+		tTimeOut:=T#5s ,
+		bBusy=>bBusy ,
+		bError=>bError  ,
+		nErrId=>nErrID ,
+		cbRead=>cbRead ,
+		cbWrite=>cbWrite );
+	IF NOT fbNovRamReadWrite.bBusy THEN
+		fbNovRamReadWrite(bRead:=FALSE ,);
+		Rsteps:=20;
+	END_IF
+20:
+	IF index<38 THEN
+		index:=index+1;
+		Rsteps:=10;
+	ELSE
+		bRead:=0;
+		Rsteps:=0;
+		bReadBusy:=FALSE;
+	END_IF
+END_CASE
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="WriteNov" Id="{e72de0d7-66f6-4fb6-9617-4df4c668701c}">
+      <Implementation>
+        <ST><![CDATA[CASE Wsteps OF
+0:	IF bWrite THEN
+		Wsteps:=10;
+		index:=0;
+		bWrite:=0;
+		bWriteBusy:=TRUE;
+	END_IF
+10:
+	fbNovRamReadWrite(
+		nDevId:= 2,
+		bRead:= ,
+		bWrite:=TRUE ,
+		cbSrcLen:=ssLAN[index] ,
+		cbDestLen:=ssLAN[index] ,
+		pSrcAddr:=ss[index] ,
+		pDestAddr:=ss[index] ,
+		nReadOffs:=ssOffs[index] ,
+		nWriteOffs:=ssOffs[index] ,
+		tTimeOut:=T#5s ,
+		bBusy=>bBusy ,
+		bError=>bError  ,
+		nErrId=>nErrID ,
+		cbRead=>cbRead ,
+		cbWrite=>cbWrite );
+	IF NOT fbNovRamReadWrite.bBusy THEN
+		fbNovRamReadWrite(bWrite:=FALSE ,);
+		Wsteps:=20;
+	END_IF
+20:
+	IF index<38 THEN
+		index:=index+1;
+		Wsteps:=10;
+	ELSE
+		bWrite:=0;
+		Wsteps:=0;
+		bWriteBusy:=FALSE;
+	END_IF
+END_CASE
+]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="MAIN">
+      <LineId Id="24" Count="6" />
+    </LineIds>
+    <LineIds Name="MAIN.Initial">
+      <LineId Id="0" Count="125" />
+    </LineIds>
+    <LineIds Name="MAIN.ReadNov">
+      <LineId Id="0" Count="38" />
+    </LineIds>
+    <LineIds Name="MAIN.WriteNov">
+      <LineId Id="0" Count="38" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

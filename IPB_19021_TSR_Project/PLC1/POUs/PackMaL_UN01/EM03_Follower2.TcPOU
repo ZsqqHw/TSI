@@ -1,0 +1,702 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="EM03_Follower2" Id="{2f682a4a-2ddd-4822-8e89-b37a8044efe2}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EM03_Follower2
+VAR
+	ref_Master: REFERENCE TO UDT_AXISADMIN;
+	ref_Follower: REFERENCE TO UDT_AXISADMIN;
+	Ref_MachineStateModel: REFERENCE TO PackMlv3_StateModel;
+	Ref_Unit: REFERENCE TO UDT_UnitAdmin;
+	EM_No: INT:=3;
+	tonAbortingWatchDog: TON;
+	tonStoppingWatchDog: Ton;
+	MC_CamIn_Follower: MC_CamIn;
+
+	MC_CamTableSelect_Follower: MC_CamTableSelect;
+	CamTableFollower: MC_CAM_REF;
+	table1: ARRAY[1..2] OF MC_MotionFunctionPoint; (*用于定义电子凸轮表中的关键点*)
+
+
+    MC_ReadCamTableSlaveDynamicsFollwer: MC_ReadCamTableSlaveDynamics;
+	
+	tonFollowerSeq: TON;
+	FollowerSeq: SequenceTransfer;	
+	
+	i: INT;
+	lrPosCnt: LREAL;
+	bRecipeComplete: BOOL;
+	bBeltInRange: BOOL;
+	iLastSeq: INT;
+	j: INT;
+	tonBufferCyclinderDelay: TON;
+END_VAR
+
+VAR CONSTANT
+	iCamID: MC_CAM_ID:=2;		
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//减速比10/1 同步轮周长400 ，皮带总长5200，26个工位，工位间距200
+Ref_MachineStateModel REF= UN01_MachineStateModel;
+Ref_Unit REF=Unit01;
+ref_Master REF= arVirtualAxisAdmin[1];
+ref_Follower REF= arRealAxisAdmin[42];
+MainRoution();
+CM01_Cam();
+SR999_Faulthandler();]]></ST>
+    </Implementation>
+    <Action Name="CM01_Cam" Id="{0aa010fa-7415-414b-bdba-bd1777637f91}">
+      <Implementation>
+        <ST><![CDATA[//凸轮1曲线
+camTableFollower.ArraySize:=SIZEOF(table1);
+camTableFollower.NoOfColumns:=1;
+camTableFollower.NoOfRows:=2;
+camTableFollower.pArray:=ADR(table1);
+camTableFollower.TableType:=MC_TABLETYPE_MOTIONFUNCTION;
+
+table1[1].FunctionType:=MOTIONFUNCTYPE_POLYNOM1;
+table1[1].MasterPos:=0;
+table1[1].SlavePos:=0;
+table1[1].PointIndex:=1;
+table1[1].PointType:=MOTIONPOINTTYPE_MOTION;
+		
+table1[2].FunctionType:=MOTIONFUNCTYPE_POLYNOM1;
+table1[2].MasterPos:=200;
+table1[2].SlavePos:=200;
+table1[2].PointIndex:=2;
+table1[2].PointType:=MOTIONPOINTTYPE_MOTION;
+
+MC_CamIn_Follower(
+	Master:= ref_Master.Axis, 
+	Slave:= ref_Follower.Axis, 
+	Execute:= ref_Follower.i.CamIn, 
+	MasterOffset:= , 
+	SlaveOffset:= , 
+	MasterScaling:= 1, 
+	SlaveScaling:= 1, 
+	StartMode:= MC_STARTMODE_ABSOLUTE, 
+	CamTableID:= iCamID, 
+	BufferMode:= , 
+	Options:= , 
+	InSync=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_CamTableSelect_Follower(
+	Master:= ref_Master.Axis, 
+	Slave:= ref_Follower.Axis, 
+	CamTable:= CamTableFollower, 
+	Execute:= ref_Follower.i.SelectCamTable, 
+	Periodic:= TRUE, 
+	MasterAbsolute:= , 
+	SlaveAbsolute:= , 
+	CamTableID:= iCamID, 
+	Done=> ref_Follower.o.SelectCamTableDone, 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );	
+	
+MC_ReadCamTableSlaveDynamicsFollwer(
+	Execute:= , 
+	CamTableID:=iCamID , 
+	MasterPosition:=ref_Master.o.ActPos , 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> , 
+	SlavePosition=> , 
+	SlaveVelocity=> , 
+	SlaveAcceleration=> );	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM02_Follower" Id="{88bd8768-c5f8-40fb-9501-9d1176285f7a}">
+      <Implementation>
+        <ST><![CDATA[CASE FollowerSeq.Now OF
+	0: 	   
+	   IF Ref_MachineStateModel.Sts_Resetting  THEN
+          FollowerSeq(ExeCute:=TRUE , Next:= Seq_Resetting);  
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+		  FollowerSeq(ExeCute:=TRUE , Next:= Seq_Stopping);   
+	   END_IF
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  FollowerSeq(ExeCute:= TRUE, Next:= 110);   
+	   END_IF	   
+{#region Resetting}	   
+	Seq_Resetting:
+		IF NOT ref_Follower.o.PowerOn  THEN;
+		   ref_Follower.i.Enable:=TRUE;
+		ELSE
+		   FollowerSeq(ExeCute:=TRUE , Next:= 20); 
+		END_IF
+	    IF Ref_MachineStateModel.Sts_Stopping  THEN
+		   FollowerSeq(ExeCute:= TRUE, Next:= Seq_Stopping);  
+	    END_IF
+		
+	20:	
+		IF NOT glb_AllAxisHomed_UN01 THEN
+			FollowerSeq(ExeCute:=TRUE , Next:= 21);  
+			ELSE
+			FollowerSeq(ExeCute:=TRUE , Next:= 30); 
+		END_IF
+	   
+	21:
+	   iLastSeq:=0;
+	   glb_lrBelt2TargetCnt:=0;
+       glb_lrBelt2WrkCnt:=0;
+	   bRecipeComplete:=FALSE;
+	   arDropBufferCyclinder[2].i.ActiveIn:=TRUE;
+	   arDropBufferCyclinder[2].i.ActiveOut:=FALSE;
+	   
+       MEMSET(destAddr:= ADR(glb_BinBelt2), fillByte:= 0, n:= SIZEOF(glb_BinBelt2));    
+	   FollowerSeq(ExeCute:=TRUE , Next:= 22); 
+	   
+    22:
+       tonFollowerSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+       IF tonFollowerSeq.Q AND arDropBufferCyclinder[2].i.InSensor THEN
+		   tonFollowerSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+		   FollowerSeq(ExeCute:=TRUE , Next:= 23); 
+       END_IF 
+	23:
+	   ref_Follower.i.Home:=TRUE;
+	   IF ref_Follower.o.HomeDone THEN
+		   ref_Follower.i.Home:=FALSE;
+		   FollowerSeq(ExeCute:=TRUE , Next:= 24); 
+	   ELSE IF Ref_MachineStateModel.Sts_Stopping  THEN
+		       ref_Follower.i.Home:=FALSE;
+			   ref_Follower.i.stop:=TRUE;
+               FollowerSeq(ExeCute:=TRUE , Next:= Seq_Stopping);   
+	        END_IF	   
+	   END_IF	
+	   
+    24: 
+		FOR i:=1 TO 10 DO
+			glb_BinBelt2.bin[1].arDrop[i]:=TRUE;
+	    END_FOR			
+			glb_BinBelt2.bin[1].arDrop[HMI_B2DropBinNo]:=TRUE;
+			glb_BinBelt2.bin[40].arDrop[40]:=TRUE;
+        lrPosCnt:=1;
+		ref_Follower.i.Pos:=0;		
+		FollowerSeq(ExeCute:=TRUE , Next:= 25);
+		
+	25:
+        IF ref_Follower.o.StandStill THEN
+		   FollowerSeq(Execute:= TRUE, Next:= 30);   
+	    END_IF
+		
+    30:	//生产复位
+	    ref_Follower.i.MoveAbs:=TRUE;
+	    FollowerSeq(Execute:= TRUE, Next:= 31);   	
+		
+	31:
+    	IF  ref_Follower.o.CmdDone THEN
+		    ref_Follower.i.MoveAbs:=FALSE;
+            FollowerSeq(Execute:= TRUE, Next:= Seq_ResettingDone);    	
+		END_IF
+
+   	Seq_ResettingDone: 
+         IF NOT Ref_MachineStateModel.Sts_Resetting THEN
+			FollowerSeq(ExeCute:=TRUE , Next:= 0); 	
+		 END_IF	   
+{end_region}
+	
+    //自动运行
+    110:	
+	     IF iLastSeq>100 THEN
+			 FollowerSeq(ExeCute:=TRUE , Next:= iLastSeq);
+		 ELSE 
+	         FollowerSeq(ExeCute:=TRUE , Next:= 111);
+		 END_IF
+	
+	111:
+		  IF glb_lrBelt2WrkCnt < glb_lrBelt2TargetCnt THEN
+			 FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 120);
+		  ELSE IF glb_lrBelt2WrkCnt = glb_lrBelt2TargetCnt THEN
+					FOR i:=1 TO 10 DO
+						glb_BinBelt2.bin[1].arDrop[i]:=TRUE;
+					END_FOR	
+						glb_BinBelt2.bin[1].arDrop[HMI_B2DropBinNo]:=TRUE;
+			    		glb_BinBelt2.bin[40].arDrop[40]:=TRUE;	
+                   glb_lrBelt2WrkCnt:=0;
+                   glb_lrBelt2TargetCnt:=0;	 
+			   END_IF
+		  END_IF  
+		  IF Ref_MachineStateModel.Sts_Stopping  THEN
+		     FollowerSeq(ExeCute:=TRUE , Next:= Seq_Stopping);   
+	      END_IF		  
+    120:  
+	
+		  FOR j:=1 TO 10 DO
+			  IF  glb_BinBelt2.bin[j].arDrop[j] AND arCounters[j].Error THEN
+				  glb_BinBelt2.bin[j].bReject:=TRUE;
+			  END_IF			  
+		  END_FOR
+
+	      FOR j:=31 TO 40 DO
+			  IF  glb_BinBelt2.bin[j].arDrop[j] AND arCounters[j].Error THEN
+				  glb_BinBelt2.bin[j].bReject:=TRUE;
+			  END_IF			  
+		  END_FOR	
+	
+	      IF NOT glb_BinBelt2.bin[1].arDrop[1] 
+          AND NOT glb_BinBelt2.bin[2].arDrop[2] 
+          AND NOT glb_BinBelt2.bin[3].arDrop[3] 
+          AND NOT glb_BinBelt2.bin[4].arDrop[4] 
+          AND NOT glb_BinBelt2.bin[5].arDrop[5] 
+          AND NOT glb_BinBelt2.bin[6].arDrop[6]
+          AND NOT glb_BinBelt2.bin[7].arDrop[7] 
+          AND NOT glb_BinBelt2.bin[8].arDrop[8] 
+          AND NOT glb_BinBelt2.bin[9].arDrop[9] 
+          AND NOT glb_BinBelt2.bin[10].arDrop[10] 
+		  AND NOT glb_BinBelt2.bin[31].arDrop[31] 
+          AND NOT glb_BinBelt2.bin[32].arDrop[32] 
+          AND NOT glb_BinBelt2.bin[33].arDrop[33] 
+          AND NOT glb_BinBelt2.bin[34].arDrop[34] 
+          AND NOT glb_BinBelt2.bin[35].arDrop[35] 
+          AND NOT glb_BinBelt2.bin[36].arDrop[36]
+          AND NOT glb_BinBelt2.bin[37].arDrop[37] 
+          AND NOT glb_BinBelt2.bin[38].arDrop[38] 
+          AND NOT glb_BinBelt2.bin[39].arDrop[39] 
+          AND NOT glb_BinBelt2.bin[40].arDrop[40] THEN
+              FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 121); 
+          END_IF
+		  
+		  IF Ref_MachineStateModel.Sts_Stopping  THEN
+		     FollowerSeq(ExeCute:=TRUE , Next:= Seq_Stopping);   
+	      END_IF
+	121:  	
+          IF NOT glb_BinBelt2.bin[HMI_B2DropBinNo].arDrop[HMI_B2DropBinNo] THEN 
+              FollowerSeq(ExeCute:=TRUE , Next:= 130); 	
+		  ELSE  //落料到皮带3	  
+			  FollowerSeq(ExeCute:=TRUE , Next:= 200); 	
+		  END_IF
+		  
+	130:  
+	      ref_Follower.i.Pos:=ref_Follower.i.Pos+215;
+	      FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 150);
+	
+	150:
+	      ref_Follower.i.MoveAbs:=TRUE;
+		  IF ref_Follower.o.CmdDone THEN
+			 ref_Follower.i.MoveAbs:=FALSE;
+			 FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 300);
+		  END_IF
+	
+
+	200://等待皮带3信号
+		IF glb_BinBelt3.bin[HMI_B3DropBinNo2].arDrop[HMI_B3DropBinNo2] THEN
+			FollowerSeq(ExeCute:=TRUE , Next:= 201); 
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping  THEN
+			FollowerSeq(ExeCute:=TRUE , Next:= Seq_Stopping);   
+		END_IF	
+	201:
+	     arDropBufferCyclinder[2].i.ActiveIn:=FALSE;
+	     arDropBufferCyclinder[2].i.ActiveOut:=TRUE;
+		 tonBufferCyclinderDelay(IN:= TRUE, PT:= T#500MS, Q=> , ET=> );
+		 IF tonBufferCyclinderDelay.Q THEN
+			tonBufferCyclinderDelay(IN:= FALSE, PT:= T#500MS, Q=> , ET=> );
+			FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 210);
+		 END_IF		
+	210:
+		  ref_Follower.i.Pos:=ref_Follower.i.Pos+215;
+		  FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 220);
+	
+	220:
+	      ref_Follower.i.MoveAbs:=TRUE;
+		  IF ref_Follower.o.CmdDone THEN
+			 ref_Follower.i.MoveAbs:=FALSE;
+			 FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 221);
+		  END_IF
+		  IF (ref_Follower.i.Pos-ref_Follower.o.ActPos) < 60 AND NOT bBeltInRange THEN
+		   //   glb_BinBelt3.bin[HMI_B3DropBinNo2].arDrop[HMI_B3DropBinNo2]:=FALSE;
+			  bBeltInRange:=TRUE;
+		  END_IF 
+		  
+	221:
+	     arDropBufferCyclinder[2].i.ActiveIn:=TRUE;
+	     arDropBufferCyclinder[2].i.ActiveOut:=FALSE;
+		 IF arDropBufferCyclinder[2].i.InSensor AND NOT arDropBufferCyclinder[2].o.Error THEN
+			FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 230);
+		 END_IF	  	
+	
+		 
+	230:
+	      bBeltInRange:=FALSE;
+		  glb_BinBelt3.bin[HMI_B3DropBinNo2].arDrop[HMI_B3DropBinNo2]:=FALSE;
+		  glb_BinBelt2.bin[HMI_B2DropBinNo].arDrop[HMI_B2DropBinNo]:=FALSE;
+		  FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 300); 
+		  
+	300:
+	     glb_lrBelt2WrkCnt:=glb_lrBelt2WrkCnt+1;
+	      FOR i:=20 TO 1 BY -1 DO
+			  glb_BinBelt2.bin[i].arDrop:= glb_BinBelt2.bin[i-1].arDrop;
+		  END_FOR
+			glb_BinBelt2.bin[31].arDrop[31]:=glb_BinBelt2.bin[10].arDrop[10];
+			glb_BinBelt2.bin[32].arDrop[32]:=glb_BinBelt2.bin[9].arDrop[9];		     
+			glb_BinBelt2.bin[33].arDrop[33]:=glb_BinBelt2.bin[8].arDrop[8];		
+			glb_BinBelt2.bin[34].arDrop[34]:=glb_BinBelt2.bin[7].arDrop[7];
+			glb_BinBelt2.bin[35].arDrop[35]:=glb_BinBelt2.bin[6].arDrop[6];
+			glb_BinBelt2.bin[36].arDrop[36]:=glb_BinBelt2.bin[5].arDrop[5];
+			glb_BinBelt2.bin[37].arDrop[37]:=glb_BinBelt2.bin[4].arDrop[4];
+			glb_BinBelt2.bin[38].arDrop[38]:=glb_BinBelt2.bin[3].arDrop[3];
+			glb_BinBelt2.bin[39].arDrop[39]:=glb_BinBelt2.bin[2].arDrop[2];			  
+			FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 310); 
+		  	  
+		  
+	310:	  
+	      IF glb_lrBelt2WrkCnt < glb_lrBelt2TargetCnt-HMI_B2DropBinNo THEN
+			 FollowerSeq(ExeCute:=TRUE , Next:= 320); //数粒未完成
+             ELSE
+	         FollowerSeq(ExeCute:=TRUE , Next:= 400); //数粒已完成
+		  END_IF	
+	320:
+			FOR i:=1 TO 10 DO
+				glb_BinBelt2.bin[1].arDrop[i]:=TRUE;
+			END_FOR	
+				glb_BinBelt2.bin[1].arDrop[HMI_B2DropBinNo]:=TRUE;
+			    glb_BinBelt2.bin[40].arDrop[40]:=TRUE;
+	        FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 111);
+	
+	400://数粒已完成
+			FOR i:=1 TO 10 DO
+				glb_BinBelt2.bin[1].arDrop[i]:=FALSE;
+			END_FOR	
+				glb_BinBelt2.bin[1].arDrop[HMI_B2DropBinNo]:=FALSE;
+			    glb_BinBelt2.bin[40].arDrop[40]:=FALSE;
+			FollowerSeq(ExeCute:=TRUE ,Hold:=FALSE, Next:= 111);
+			
+
+		  
+	Seq_Stopping:   
+	    iLastSeq:= FollowerSeq.Last;
+	    tonFollowerSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonFollowerSeq.Q THEN
+			tonFollowerSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			FollowerSeq(ExeCute:=TRUE , Next:= Seq_StoppingDone); 
+		END_IF
+		
+
+	Seq_StoppingDone:
+	     ref_Follower.i.Disable:=TRUE;
+		 IF NOT Ref_MachineStateModel.Sts_Stopping THEN
+			FollowerSeq(ExeCute:=TRUE , Next:= 0); 
+		 END_IF
+END_CASE
+FollowerSeq.Hold := Ref_MachineStateModel.Sts_Held;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="MainRoution" Id="{a946feac-f84b-44cd-a0f4-42d8835a7ea8}">
+      <Implementation>
+        <ST><![CDATA[EM_No:=3;
+IF Ref_Unit.EM_Selected[EM_No] THEN
+	IF Ref_MachineStateModel.Sts_Holding THEN
+		Ref_Unit.EM_Holding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Holding_Done[EM_No]:=FALSE;
+	END_IF
+	IF Ref_MachineStateModel.Sts_UnHolding THEN
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Suspending THEN
+		Ref_Unit.EM_Suspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Suspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_UnSuspending THEN
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Resetting  AND FollowerSeq.Now=Seq_ResettingDone THEN
+	   Ref_Unit.EM_Resetting_Done[EM_No]:=TRUE;
+       ELSE   
+	   Ref_Unit.EM_Resetting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Clearing THEN
+	   Ref_Unit.EM_Clearing_Done[EM_No]:=TRUE;
+	   ELSE
+	   Ref_Unit.EM_Clearing_Done[EM_No]:=FALSE;
+	END_IF
+	
+
+	IF Ref_MachineStateModel.Sts_Starting THEN
+	   Ref_Unit.EM_Starting_Done[EM_No]:=TRUE;
+	   ELSE
+       Ref_Unit.EM_Starting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Stopping AND FollowerSeq.Next=Seq_StoppingDone  THEN
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=TRUE;	
+       ELSE  
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=FALSE;	
+	END_IF
+
+	IF Ref_MachineStateModel.Sts_Aborting THEN
+		
+       FollowerSeq(ExeCute:=TRUE , Next:= 0);
+		IF ref_Follower.o.InSync THEN	 
+		   ref_Follower.i.CamOut:=TRUE;
+		ELSE IF  NOT ref_Follower.o.StandStill THEN
+				ref_follower.i.Stop:=TRUE;
+			END_IF
+		END_IF  	
+				
+		IF tonAbortingWatchDog.Q THEN 
+			Ref_Unit.EM_Aborting_Done[EM_No]:=TRUE;
+			ref_Follower.i.Disable:=TRUE;
+        END_IF
+    ELSE
+		Ref_Unit.EM_Aborting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	tonAbortingWatchDog(IN:= Ref_MachineStateModel.Sts_Aborting, PT:=T#3S , Q=> , ET=> );
+	CM02_Follower();
+ELSE
+FollowerSeq(ExeCute:=TRUE , Next:= 0); 			
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="SR999_FaultHandler" Id="{3f2717de-2a1f-49b8-99c5-ea5b9fab26b7}">
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="EM03_Follower2">
+      <LineId Id="578" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="547" Count="0" />
+      <LineId Id="484" Count="0" />
+      <LineId Id="482" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="516" Count="0" />
+      <LineId Id="129" Count="0" />
+    </LineIds>
+    <LineIds Name="EM03_Follower2.CM01_Cam">
+      <LineId Id="44" Count="16" />
+      <LineId Id="42" Count="1" />
+      <LineId Id="2" Count="16" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="30" Count="11" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="64" Count="9" />
+      <LineId Id="63" Count="0" />
+    </LineIds>
+    <LineIds Name="EM03_Follower2.CM02_Follower">
+      <LineId Id="469" Count="8" />
+      <LineId Id="667" Count="1" />
+      <LineId Id="478" Count="0" />
+      <LineId Id="669" Count="0" />
+      <LineId Id="479" Count="3" />
+      <LineId Id="484" Count="1" />
+      <LineId Id="606" Count="1" />
+      <LineId Id="486" Count="0" />
+      <LineId Id="608" Count="0" />
+      <LineId Id="489" Count="7" />
+      <LineId Id="1039" Count="0" />
+      <LineId Id="1030" Count="0" />
+      <LineId Id="1003" Count="0" />
+      <LineId Id="1000" Count="0" />
+      <LineId Id="1089" Count="0" />
+      <LineId Id="1091" Count="0" />
+      <LineId Id="1090" Count="0" />
+      <LineId Id="851" Count="0" />
+      <LineId Id="887" Count="0" />
+      <LineId Id="1004" Count="0" />
+      <LineId Id="497" Count="0" />
+      <LineId Id="888" Count="0" />
+      <LineId Id="498" Count="1" />
+      <LineId Id="501" Count="1" />
+      <LineId Id="508" Count="0" />
+      <LineId Id="889" Count="0" />
+      <LineId Id="509" Count="4" />
+      <LineId Id="890" Count="0" />
+      <LineId Id="514" Count="2" />
+      <LineId Id="891" Count="0" />
+      <LineId Id="694" Count="0" />
+      <LineId Id="801" Count="1" />
+      <LineId Id="800" Count="0" />
+      <LineId Id="894" Count="0" />
+      <LineId Id="944" Count="0" />
+      <LineId Id="696" Count="0" />
+      <LineId Id="693" Count="0" />
+      <LineId Id="697" Count="0" />
+      <LineId Id="711" Count="0" />
+      <LineId Id="698" Count="12" />
+      <LineId Id="689" Count="0" />
+      <LineId Id="757" Count="0" />
+      <LineId Id="601" Count="3" />
+      <LineId Id="561" Count="0" />
+      <LineId Id="1005" Count="0" />
+      <LineId Id="653" Count="1" />
+      <LineId Id="1042" Count="1" />
+      <LineId Id="1045" Count="1" />
+      <LineId Id="1044" Count="0" />
+      <LineId Id="1040" Count="1" />
+      <LineId Id="883" Count="1" />
+      <LineId Id="1024" Count="0" />
+      <LineId Id="1026" Count="3" />
+      <LineId Id="1025" Count="0" />
+      <LineId Id="1033" Count="0" />
+      <LineId Id="1032" Count="0" />
+      <LineId Id="1023" Count="0" />
+      <LineId Id="784" Count="0" />
+      <LineId Id="1021" Count="1" />
+      <LineId Id="1020" Count="0" />
+      <LineId Id="661" Count="0" />
+      <LineId Id="1057" Count="0" />
+      <LineId Id="1064" Count="9" />
+      <LineId Id="1058" Count="1" />
+      <LineId Id="674" Count="0" />
+      <LineId Id="1006" Count="0" />
+      <LineId Id="952" Count="0" />
+      <LineId Id="1007" Count="0" />
+      <LineId Id="953" Count="0" />
+      <LineId Id="1008" Count="0" />
+      <LineId Id="663" Count="0" />
+      <LineId Id="1009" Count="0" />
+      <LineId Id="954" Count="0" />
+      <LineId Id="1010" Count="0" />
+      <LineId Id="878" Count="0" />
+      <LineId Id="1011" Count="0" />
+      <LineId Id="955" Count="0" />
+      <LineId Id="1012" Count="0" />
+      <LineId Id="956" Count="0" />
+      <LineId Id="1013" Count="0" />
+      <LineId Id="880" Count="0" />
+      <LineId Id="1014" Count="0" />
+      <LineId Id="957" Count="0" />
+      <LineId Id="1015" Count="0" />
+      <LineId Id="901" Count="0" />
+      <LineId Id="900" Count="0" />
+      <LineId Id="958" Count="0" />
+      <LineId Id="904" Count="1" />
+      <LineId Id="903" Count="0" />
+      <LineId Id="902" Count="0" />
+      <LineId Id="873" Count="0" />
+      <LineId Id="665" Count="0" />
+      <LineId Id="853" Count="0" />
+      <LineId Id="855" Count="0" />
+      <LineId Id="675" Count="0" />
+      <LineId Id="1047" Count="0" />
+      <LineId Id="652" Count="0" />
+      <LineId Id="679" Count="1" />
+      <LineId Id="882" Count="0" />
+      <LineId Id="682" Count="0" />
+      <LineId Id="718" Count="1" />
+      <LineId Id="722" Count="0" />
+      <LineId Id="720" Count="1" />
+      <LineId Id="731" Count="0" />
+      <LineId Id="835" Count="1" />
+      <LineId Id="926" Count="0" />
+      <LineId Id="838" Count="0" />
+      <LineId Id="865" Count="0" />
+      <LineId Id="927" Count="1" />
+      <LineId Id="735" Count="0" />
+      <LineId Id="1074" Count="6" />
+      <LineId Id="929" Count="0" />
+      <LineId Id="774" Count="8" />
+      <LineId Id="736" Count="0" />
+      <LineId Id="1036" Count="2" />
+      <LineId Id="1035" Count="0" />
+      <LineId Id="1086" Count="0" />
+      <LineId Id="1081" Count="4" />
+      <LineId Id="1034" Count="0" />
+      <LineId Id="737" Count="0" />
+      <LineId Id="1087" Count="0" />
+      <LineId Id="785" Count="0" />
+      <LineId Id="793" Count="0" />
+      <LineId Id="1088" Count="0" />
+      <LineId Id="799" Count="0" />
+      <LineId Id="791" Count="0" />
+      <LineId Id="740" Count="0" />
+      <LineId Id="805" Count="0" />
+      <LineId Id="1001" Count="0" />
+      <LineId Id="843" Count="1" />
+      <LineId Id="842" Count="0" />
+      <LineId Id="959" Count="7" />
+      <LineId Id="930" Count="0" />
+      <LineId Id="967" Count="0" />
+      <LineId Id="931" Count="0" />
+      <LineId Id="847" Count="0" />
+      <LineId Id="846" Count="0" />
+      <LineId Id="819" Count="3" />
+      <LineId Id="806" Count="1" />
+      <LineId Id="827" Count="2" />
+      <LineId Id="947" Count="1" />
+      <LineId Id="823" Count="2" />
+      <LineId Id="1016" Count="3" />
+      <LineId Id="946" Count="0" />
+      <LineId Id="826" Count="0" />
+      <LineId Id="968" Count="0" />
+      <LineId Id="949" Count="0" />
+      <LineId Id="872" Count="0" />
+      <LineId Id="564" Count="0" />
+      <LineId Id="1048" Count="0" />
+      <LineId Id="584" Count="5" />
+      <LineId Id="594" Count="6" />
+      <LineId Id="1031" Count="0" />
+    </LineIds>
+    <LineIds Name="EM03_Follower2.MainRoution">
+      <LineId Id="1" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="75" Count="1" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="73" Count="1" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="14" Count="1" />
+      <LineId Id="71" Count="1" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="69" Count="1" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="149" Count="3" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="101" Count="1" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="123" Count="2" />
+      <LineId Id="154" Count="5" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="130" Count="8" />
+      <LineId Id="160" Count="1" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="84" Count="0" />
+    </LineIds>
+    <LineIds Name="EM03_Follower2.SR999_FaultHandler">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

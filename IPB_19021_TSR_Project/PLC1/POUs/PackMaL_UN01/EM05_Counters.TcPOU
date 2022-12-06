@@ -1,0 +1,469 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="EM05_Counters" Id="{0baf6a8a-1073-4fd6-8135-58eda79fb4c3}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EM05_Counters
+VAR
+	ref_Master: REFERENCE TO UDT_AXISADMIN;
+	Ref_MachineStateModel: REFERENCE TO PackMlv3_StateModel;
+	Ref_Unit: REFERENCE TO UDT_UnitAdmin;	
+	
+	ref_Work_Recipe: REFERENCE TO UDT_Hmi_Output; //当前生产的配方反馈给触摸屏
+	ref_diBeltObjCnt: REFERENCE TO DINT;
+	ref_lrLatchMasterPos: REFERENCE TO LREAL;
+    ref_lrMasterTargetPos: REFERENCE TO LREAL;
+	ref_BinList: REFERENCE TO UDT_BINlist;
+	
+	EM_No: INT:=5;
+	diProductCnt: DINT;
+	tonAbortingWatchDog: TON;
+	i,j,k: INT;
+
+	rt_ProductCntUp: R_Trig;
+	
+	arDropFlag: ARRAY[1..40] OF BOOL;//落料标志	
+	arDropCnt: ARRAY[1..40] OF DINT;//落料技数
+
+
+	tonExeRtirg: ARRAY [1..40 ] OF Ton;
+	arDropInRange: ARRAY [1..40 ] OF BOOL;
+	d: INT;
+	rtDropInRange: ARRAY [1..40 ] OF R_trig;
+	ftDropFlag: ARRAY [1..40 ] OF F_trig;
+	rtDropFlag: ARRAY [1..40 ] OF R_trig;
+	ftInSensor: ARRAY [1..40 ] OF F_trig;
+	rtInSensor: ARRAY [1..40 ] OF R_trig;
+	ftOutSensor: ARRAY [1..40 ] OF F_trig;
+	rtOutSensor: ARRAY [1..40 ] OF R_trig;	
+
+	iNotDone: INT;
+
+	iHomeCnt: INT;
+	iPowerCnt: INT;
+	iInitDone: INT;
+	iStandstill: INT;
+	Loc_Counter_Seq: INT;
+
+	diMasterRangeCnt: DINT; //出料皮带计数
+	aoi_binProduct: AOI_BIN;
+	rtBeltInRange: R_trig;
+	lrMasterPosAdd: LREAL;
+	lrWorkPosBuffer: LREAL;
+	iNotInitID: INT;
+
+	iMovAbsCnt: INT;
+
+	lrWorkPosExe: LREAL;
+	iC: INT;
+	iB: INT;
+	iMovFailCnt: INT;
+	
+	
+	tonCounterSeq: Ton;
+	CounterSeq: SequenceTransfer;
+	
+	iDrop: INT;
+	iBusyCounter: INT;
+	iNotBusyCounter: INT;
+	iCntDone: INT;
+END_VAR
+
+VAR CONSTANT
+;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//伺服转1圈 落料24颗
+Ref_MachineStateModel REF= UN01_MachineStateModel;
+Ref_Unit REF=Unit01;
+ref_Work_Recipe REF=HMI_Output;
+ref_Master REF= arVirtualAxisAdmin[1];
+ref_diBeltObjCnt REF=glb_diBeltObjCnt;
+
+ref_BinList REF= Glb_BinList;
+MainRoution();
+
+
+
+]]></ST>
+    </Implementation>
+    <Action Name="CM01_Counters" Id="{88a9805c-ef01-4f14-bfb7-655ee7439444}">
+      <Implementation>
+        <ST><![CDATA[CASE CounterSeq.Now OF
+	0: 
+	   IF Ref_MachineStateModel.Sts_Resetting THEN
+          CounterSeq(ExeCute:= TRUE, Next:= Seq_Resetting);
+	   END_IF	
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+          CounterSeq(ExeCute:= TRUE, Next:= Seq_Stopping);
+	   END_IF
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  CounterSeq(ExeCute:= TRUE, Next:= 110);   
+	   END_IF	 	   
+	Seq_Resetting:
+	  iPowerCnt:=0;
+		FOR i:=1 TO 40 DO
+			IF NOT arRealAxisAdmin[i].o.PowerOn THEN
+			   arRealAxisAdmin[i].i.Enable:=TRUE;
+			ELSE
+			   iPowerCnt:=iPowerCnt+1;
+			END_IF  
+		END_FOR
+		IF iPowerCnt=40 THEN
+		   CounterSeq(ExeCute:= TRUE, Next:= 11);
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping  THEN
+		   CounterSeq(ExeCute:= TRUE, Next:= Seq_Stopping);
+		END_IF	  
+		
+	11:
+       tonCounterSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+	   IF tonCounterSeq.Q THEN
+          tonCounterSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );	
+          CounterSeq(ExeCute:= TRUE, Next:= 20);
+	   END_IF
+	   
+	20:
+		IF NOT glb_AllAxisHomed_UN01 THEN
+			CounterSeq(ExeCute:=TRUE , Next:= 21);  
+			ELSE
+			CounterSeq(ExeCute:=TRUE , Next:= 30); 
+		END_IF	
+	21:
+	   iHomeCnt:=0;
+	   FOR i:=1 TO 40 DO
+		   arRealAxisAdmin[i].i.Pos:=0;
+		   arRealAxisAdmin[i].i.HomeMode:=2;
+		   arRealAxisAdmin[i].i.Home:=TRUE;    
+		   IF arRealAxisAdmin[i].o.HomeDone THEN
+			   iHomeCnt:=iHomeCnt+1;
+		   END_IF     
+	   END_FOR   
+	   
+	   IF iHomeCnt=40 THEN
+          CounterSeq(ExeCute:= TRUE, Next:= 22);
+	   END_IF	
+       IF Ref_MachineStateModel.Sts_Stopping  THEN
+	      CounterSeq(ExeCute:= TRUE, Next:= Seq_Stopping);
+	   END_IF
+		   
+    22:
+       tonCounterSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+	   IF tonCounterSeq.Q THEN
+          tonCounterSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );	
+          CounterSeq(ExeCute:= TRUE, Next:= 23);
+	   END_IF
+          
+	23:
+       FOR  i:=1 TO 40 DO
+		   arRealAxisAdmin[i].i.Home:=FALSE;
+	   END_FOR
+
+       CounterSeq(ExeCute:= TRUE, Next:= 30);
+   
+	30:
+	    iNotBusyCounter:=0;
+	    FOR i:=1 TO 40 DO
+			IF NOT arCounters[i].Busy THEN
+				iNotBusyCounter:=iNotBusyCounter+1;
+			ELSE
+				iBusyCounter:=i;
+			END_IF	
+		END_FOR
+		IF iNotBusyCounter=40 THEN
+           CounterSeq(ExeCute:= TRUE, Next:= 40);
+	    ELSE IF Ref_MachineStateModel.Sts_Stopping  THEN
+			    CounterSeq(ExeCute:= TRUE, Next:= Seq_Stopping);
+			 END_IF	
+		END_IF
+		
+    40:		
+		tonCounterSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonCounterSeq.Q THEN
+		   tonCounterSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );	
+		   CounterSeq(ExeCute:= TRUE, Next:= Seq_ResettingDone);
+		END_IF    
+
+	Seq_ResettingDone:
+		IF NOT Ref_MachineStateModel.Sts_Resetting THEN
+		   CounterSeq(ExeCute:= TRUE, Next:= 0);
+		END_IF	
+	  
+    110:
+		   IF HMI_Output.RecipeModifyDone THEN
+				FOR i:=1 TO 40 DO 
+					arCounters[i].Enable:=TRUE;		
+				END_FOR	
+           ELSE
+				FOR i:=1 TO 40 DO 
+					arCounters[i].Enable:=FALSE;		
+				END_FOR				   
+		   END_IF
+	
+		
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+          CounterSeq(ExeCute:= TRUE, Next:= Seq_Stopping);
+	   END_IF		
+		
+		
+		
+		
+	Seq_Stopping: 	
+		iNotBusyCounter:=0;
+		FOR i:=1 TO 40 DO
+			IF NOT arCounters[i].Busy THEN
+				iNotBusyCounter:=iNotBusyCounter+1;
+			ELSE
+				iBusyCounter:=i;
+			END_IF	
+		END_FOR
+		IF iNotBusyCounter=40 THEN
+		   CounterSeq(ExeCute:= TRUE, Next:= 903);
+		END_IF
+	
+	
+	903:
+		FOR i:=1 TO 40 DO 
+			arCounters[i].Enable:=FALSE;	
+            arCounters[i].Execute:=FALSE;	
+            CounterSeq(ExeCute:= TRUE, Next:= 904);	
+		END_FOR	
+    904:
+		tonCounterSeq(IN:=TRUE , PT:=T#1.5S , Q=> , ET=> );	  
+		IF tonCounterSeq.Q THEN
+			tonCounterSeq(IN:=FALSE , PT:=T#1.5S , Q=> , ET=> );	
+			CounterSeq(ExeCute:= TRUE, Next:= 905);  
+		END_IF				
+
+	905:
+	    FOR i:=1 TO 40 DO 
+			arRealAxisAdmin[i].i.Disable:=TRUE;
+			CounterSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone);
+        END_FOR	
+			
+	
+	Seq_StoppingDone:
+		IF NOT Ref_MachineStateModel.Sts_Stopping THEN
+		   CounterSeq(ExeCute:= TRUE, Next:= 0);
+		END_IF	
+		
+END_CASE
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="MainRoution" Id="{7ac38113-d258-4703-b30c-25bd358c8261}">
+      <Implementation>
+        <ST><![CDATA[EM_No:=5;
+IF Ref_Unit.EM_Selected[EM_No] THEN
+	IF Ref_MachineStateModel.Sts_Holding THEN
+		Ref_Unit.EM_Holding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Holding_Done[EM_No]:=FALSE;
+	END_IF
+	IF Ref_MachineStateModel.Sts_UnHolding THEN
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Suspending THEN
+		Ref_Unit.EM_Suspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Suspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_UnSuspending THEN
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Resetting AND CounterSeq.Now=Seq_ResettingDone THEN
+       Ref_Unit.EM_Resetting_Done[EM_No]:=TRUE;
+       ELSE   
+       Ref_Unit.EM_Resetting_Done[EM_No]:=FALSE;	   
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Clearing THEN
+	   Ref_Unit.EM_Clearing_Done[EM_No]:=TRUE;
+	   ELSE   
+	   Ref_Unit.EM_Clearing_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Starting THEN
+	   Ref_Unit.EM_Starting_Done[EM_No]:=TRUE;
+	   ELSE	   
+	   Ref_Unit.EM_Starting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Stopping AND CounterSeq.Now=Seq_StoppingDone THEN
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=TRUE;	
+	   ELSE
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=FALSE;	   
+	END_IF
+
+	IF Ref_MachineStateModel.Sts_Aborting THEN
+		CounterSeq(ExeCute:= TRUE, Next:= 0);
+        FOR i:=1 TO 40 DO 
+			arCounters[i].Enable:=FALSE; 
+			arDropCylinder[i].i.ActiveIn:=FALSE;
+			arDropCylinder[i].i.ActiveOut:=FALSE;
+		END_FOR
+		
+		IF  tonAbortingWatchDog.Q THEN 
+		    Ref_Unit.EM_Aborting_Done[EM_No]:=TRUE;
+			FOR i:=1 TO 40 DO 
+				arRealAxisAdmin[i].i.Enable:=FALSE;
+			END_FOR			
+		END_IF
+		ELSE
+        Ref_Unit.EM_Aborting_Done[EM_No]:=FALSE;
+	END_IF
+	tonAbortingWatchDog(IN:= Ref_MachineStateModel.Sts_Aborting, PT:=T#3S , Q=> , ET=> );	
+CM01_Counters();
+ELSE
+	CounterSeq(ExeCute:= TRUE, Next:= 0);
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="SR999_FaultHandler" Id="{f318dec9-3e3e-41d2-af56-7df73e16b5cb}">
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="EM05_Counters">
+      <LineId Id="527" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="496" Count="0" />
+      <LineId Id="455" Count="0" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="647" Count="0" />
+      <LineId Id="842" Count="0" />
+      <LineId Id="711" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="911" Count="0" />
+      <LineId Id="578" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="129" Count="0" />
+    </LineIds>
+    <LineIds Name="EM05_Counters.CM01_Counters">
+      <LineId Id="2" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="376" Count="0" />
+      <LineId Id="450" Count="0" />
+      <LineId Id="374" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="451" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="755" Count="1" />
+      <LineId Id="367" Count="0" />
+      <LineId Id="378" Count="9" />
+      <LineId Id="452" Count="0" />
+      <LineId Id="389" Count="0" />
+      <LineId Id="590" Count="1" />
+      <LineId Id="589" Count="0" />
+      <LineId Id="592" Count="0" />
+      <LineId Id="390" Count="3" />
+      <LineId Id="453" Count="0" />
+      <LineId Id="395" Count="0" />
+      <LineId Id="593" Count="0" />
+      <LineId Id="396" Count="0" />
+      <LineId Id="491" Count="3" />
+      <LineId Id="489" Count="0" />
+      <LineId Id="777" Count="12" />
+      <LineId Id="504" Count="0" />
+      <LineId Id="798" Count="1" />
+      <LineId Id="796" Count="0" />
+      <LineId Id="808" Count="0" />
+      <LineId Id="791" Count="4" />
+      <LineId Id="790" Count="0" />
+      <LineId Id="800" Count="0" />
+      <LineId Id="797" Count="0" />
+      <LineId Id="803" Count="0" />
+      <LineId Id="806" Count="1" />
+      <LineId Id="804" Count="1" />
+      <LineId Id="802" Count="0" />
+      <LineId Id="417" Count="0" />
+      <LineId Id="623" Count="0" />
+      <LineId Id="597" Count="0" />
+      <LineId Id="606" Count="3" />
+      <LineId Id="604" Count="1" />
+      <LineId Id="616" Count="4" />
+      <LineId Id="598" Count="0" />
+      <LineId Id="693" Count="0" />
+      <LineId Id="701" Count="4" />
+      <LineId Id="368" Count="0" />
+      <LineId Id="519" Count="0" />
+      <LineId Id="515" Count="2" />
+      <LineId Id="369" Count="0" />
+      <LineId Id="518" Count="0" />
+      <LineId Id="274" Count="0" />
+      <LineId Id="768" Count="0" />
+      <LineId Id="771" Count="1" />
+      <LineId Id="769" Count="0" />
+      <LineId Id="773" Count="0" />
+      <LineId Id="775" Count="1" />
+      <LineId Id="774" Count="0" />
+      <LineId Id="770" Count="0" />
+      <LineId Id="759" Count="0" />
+      <LineId Id="767" Count="0" />
+      <LineId Id="757" Count="1" />
+      <LineId Id="750" Count="4" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="635" Count="9" />
+      <LineId Id="648" Count="0" />
+      <LineId Id="624" Count="2" />
+      <LineId Id="663" Count="2" />
+      <LineId Id="672" Count="0" />
+      <LineId Id="666" Count="5" />
+      <LineId Id="662" Count="0" />
+      <LineId Id="634" Count="0" />
+      <LineId Id="268" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="31" Count="1" />
+      <LineId Id="445" Count="0" />
+      <LineId Id="273" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="65" Count="1" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="749" Count="0" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="48" Count="0" />
+    </LineIds>
+    <LineIds Name="EM05_Counters.MainRoution">
+      <LineId Id="1" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="85" Count="21" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="111" Count="2" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="115" Count="3" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="119" Count="1" />
+      <LineId Id="126" Count="1" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="180" Count="0" />
+      <LineId Id="128" Count="1" />
+      <LineId Id="134" Count="1" />
+      <LineId Id="182" Count="1" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="162" Count="1" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="166" Count="5" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="172" Count="3" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="193" Count="1" />
+      <LineId Id="84" Count="0" />
+    </LineIds>
+    <LineIds Name="EM05_Counters.SR999_FaultHandler">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="strMachineSimple" Id="{799f7687-b6b5-41da-bfbc-7f8ffa6b2f71}">
+    <Declaration><![CDATA[TYPE strMachineSimple :
+STRUCT
+
+(*对每一台机器的设置**)
+	iArrPort			:	ARRAY[1..8] OF UDINT;		(**端口定义**)
+	bArrPort			:	ARRAY[1..8] OF BOOL;			(*端口状态*)
+
+
+
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

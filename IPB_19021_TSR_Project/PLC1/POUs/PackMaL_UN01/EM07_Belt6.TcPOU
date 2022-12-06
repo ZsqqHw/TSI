@@ -1,0 +1,2510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="EM07_Belt6" Id="{dca61b82-5203-4b0d-b7da-4238c1da089b}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM EM07_Belt6
+VAR
+	ref_Master: REFERENCE TO UDT_AXISADMIN;
+	ref_Belt: REFERENCE TO UDT_AXISADMIN;
+	ref_Puller: REFERENCE TO UDT_AXISADMIN;
+	ref_Encoder: REFERENCE TO Axis_Ref;
+	ref_WindMotor: REFERENCE TO UDT_directMotor;
+	Ref_MachineStateModel: REFERENCE TO PackMlv3_StateModel;
+	ref_Work_Recipe: REFERENCE TO UDT_Hmi_Output; //当前生产的配方反馈给触摸屏
+	Ref_Unit: REFERENCE TO UDT_UnitAdmin;	
+	ref_BinList: REFERENCE TO UDT_BINlist;
+	ref_diBeltObjCnt: REFERENCE TO DINT;
+	ref_diPullFlag:REFERENCE TO DINT;
+	ref_diDropFlag:REFERENCE TO DINT;
+	ref_diCutFlag:REFERENCE TO DINT;	
+	ref_diSealFlag:REFERENCE TO DINT;
+	ref_diTransferFlag:REFERENCE TO DINT;	
+	ref_bTransferPut:REFERENCE TO BOOL;
+	ref_diGoodFlag:REFERENCE TO DINT;	
+	ref_diNogoodFlag:REFERENCE TO DINT;	
+	
+	InfeedCylinder: REFERENCE TO UDT_Cylinderadmin;	
+	InfeedSensor1: REFERENCE TO UDT_Sensoradmin;	
+	InfeedSensor2: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor3: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor4: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor5: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor6: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor7: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor8: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor9: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor10: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor11: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor12: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor13: REFERENCE TO UDT_Sensoradmin;
+	InfeedSensor14: REFERENCE TO UDT_Sensoradmin;
+	
+	PullCylinder1: REFERENCE TO UDT_Cylinderadmin;	
+	PullCylinder2: REFERENCE TO UDT_Cylinderadmin;
+	PullCylinder3: REFERENCE TO UDT_Cylinderadmin;
+	PullCylinder4: REFERENCE TO UDT_Cylinderadmin;
+	PullCylinder5: REFERENCE TO UDT_Cylinderadmin;
+	PullCylinder6: REFERENCE TO UDT_Cylinderadmin;
+	PullCylinder7: REFERENCE TO UDT_Cylinderadmin;
+
+	Check1Cylinder: REFERENCE TO UDT_Cylinderadmin;
+	Check1Sensor1: REFERENCE TO UDT_Sensoradmin;	
+	Check1Sensor2: REFERENCE TO UDT_Sensoradmin;
+	Check1Sensor3: REFERENCE TO UDT_Sensoradmin;
+	Check1Sensor4: REFERENCE TO UDT_Sensoradmin;
+	Check1Sensor5: REFERENCE TO UDT_Sensoradmin;
+	Check1Sensor6: REFERENCE TO UDT_Sensoradmin;
+	Check1Sensor7: REFERENCE TO UDT_Sensoradmin;
+
+	
+	PullVacuum1: REFERENCE TO UDT_Vacuumadmin;
+	PullVacuum2: REFERENCE TO UDT_Vacuumadmin;
+	PullVacuum3: REFERENCE TO UDT_Vacuumadmin;
+	PullVacuum4: REFERENCE TO UDT_Vacuumadmin;
+	PullVacuum5: REFERENCE TO UDT_Vacuumadmin;
+	PullVacuum6: REFERENCE TO UDT_Vacuumadmin;
+	PullVacuum7: REFERENCE TO UDT_Vacuumadmin;	
+	
+	DropCylinderUP: REFERENCE TO UDT_Cylinderadmin;
+	DropCylinderDown: REFERENCE TO UDT_Cylinderadmin;
+	CutCylinderUP: REFERENCE TO UDT_Cylinderadmin;
+	CutCylinderDown: REFERENCE TO UDT_Cylinderadmin;
+	
+    SealCylinderUP: REFERENCE TO UDT_Cylinderadmin;
+    SealCylinderDown: REFERENCE TO UDT_Cylinderadmin;
+
+    Seal2CylinderUP: REFERENCE TO UDT_Cylinderadmin;
+    Seal2CylinderDown: REFERENCE TO UDT_Cylinderadmin;
+	
+    TransferCyliderHori: REFERENCE TO UDT_Cylinderadmin;
+	TransferCyliderVert: REFERENCE TO UDT_Cylinderadmin;
+	TransferCyliderRota: REFERENCE TO UDT_Cylinderadmin;
+	
+	TransferVacuum1: REFERENCE TO UDT_Vacuumadmin;
+	TransferVacuum2: REFERENCE TO UDT_Vacuumadmin;
+	TransferVacuum3: REFERENCE TO UDT_Vacuumadmin;
+	TransferVacuum4: REFERENCE TO UDT_Vacuumadmin;
+	TransferVacuum5: REFERENCE TO UDT_Vacuumadmin;
+	TransferVacuum6: REFERENCE TO UDT_Vacuumadmin;
+	TransferVacuum7: REFERENCE TO UDT_Vacuumadmin;	
+	
+	
+	RejectCylinder: REFERENCE TO UDT_Cylinderadmin;
+	
+	
+	
+	EM_No: INT:=7;
+	tonAbortingWatchDog: TON;
+
+	tonDropSeq: ton;
+	tonPullSeq: ton;	
+	i: INT;
+  
+	tonTransferSeq: TON;
+	tonSealSeq:  ton;
+	tonSeal2Seq:  ton;
+	IN: INT;
+	bValveInitDone: BOOL;
+	lrEncoderPosOld: LREAL;
+	lrPosCnt: LREAL;
+	tonBeltSeq: Ton;
+	
+	iValid: INT;
+	rtTest: R_trig;
+	bTestrt: BOOL;
+
+	bBeltMove: BOOL;
+	lrLatchMasterPos: LREAL;
+	j: INT;
+		
+   
+	PullSeq: SequenceTransfer;	
+	DropSeq: SequenceTransfer;
+	SealSeq: SequenceTransfer;
+	Seal2Seq: SequenceTransfer;
+	Check1Seq: SequenceTransfer;
+	RejectSeq: SequenceTransfer;	
+	CutSeq: SequenceTransfer;
+	TransferSeq: SequenceTransfer;
+	BeltSeq: SequenceTransfer;
+	iTest: INT;
+	lrTestPos: LREAL;
+	tonCutSeq: TON;
+	bBoxSealView: BOOL;
+	bTestUpdata: BOOL;
+	iBox: INT;
+	iAutoCut: INT;
+	tonCheck1Seq: Ton;
+	tonRejectSeq: Ton;
+	bRejectActive: BOOL;
+END_VAR
+
+VAR CONSTANT	
+END_VAR
+VAR RETAIN
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//减速比50/1 同步轮周长57*15.875= 904.875，皮带总长462*15.875，33个工位，工位间距222.25
+Ref_MachineStateModel REF= UN01_MachineStateModel;
+Ref_Unit REF=Unit01;
+ref_Master REF= arVirtualAxisAdmin[1];
+ref_Belt REF= arRealAxisAdmin[46];
+ref_Puller REF= arRealAxisAdmin[47];
+ref_Work_Recipe REF=HMI_Output;
+ref_diBeltObjCnt REF=glb_diBeltObjCnt;
+
+ref_diPullFlag REF= glb_diPullFlag_UN01;
+ref_diDropFlag REF= glb_diDropFlag_UN01;
+ref_diCutFlag REF= glb_diCutFlag_UN01;
+ref_diSealFlag REF= glb_diSealFlag_UN01;
+ref_diGoodFlag REF= glb_diGoodFlag_UN01;
+ref_diNogoodFlag REF= glb_diNogoodFlag_UN01;
+
+ref_diTransferFlag REF= glb_diTransferFlag_UN01;
+ref_bTransferPut REF= glb_bTransferPut_UN02;//
+
+ref_Encoder REF= EncoderAxis[1];
+ref_BinList REF=Glb_BinList;
+ref_WindMotor REF= arPackMotor[1];
+InfeedSensor1 REF= arPackSensor[1];
+InfeedSensor2 REF= arPackSensor[2];
+InfeedSensor3 REF= arPackSensor[3];
+InfeedSensor4 REF= arPackSensor[4];
+InfeedSensor5 REF= arPackSensor[5];
+InfeedSensor6 REF= arPackSensor[6];
+InfeedSensor7 REF= arPackSensor[7];
+InfeedSensor8 REF= arPackSensor[8];
+InfeedSensor9 REF= arPackSensor[9];
+InfeedSensor10 REF= arPackSensor[10];
+InfeedSensor11 REF= arPackSensor[11];
+InfeedSensor12 REF= arPackSensor[12];
+InfeedSensor13 REF= arPackSensor[13];
+InfeedSensor14 REF= arPackSensor[14];
+
+InfeedCylinder REF= arPackCylinder[9];
+PullCylinder1 REF= arPackCylinder[1];
+PullCylinder2 REF= arPackCylinder[2];
+PullCylinder3 REF= arPackCylinder[3];
+PullCylinder4 REF= arPackCylinder[4];
+PullCylinder5 REF= arPackCylinder[5];
+PullCylinder6 REF= arPackCylinder[6];
+PullCylinder7 REF= arPackCylinder[7];
+
+arPackCylinder[1].i.OutSensor:=TRUE;
+arPackCylinder[2].i.OutSensor:=TRUE;
+arPackCylinder[3].i.OutSensor:=TRUE;
+arPackCylinder[4].i.OutSensor:=TRUE;
+arPackCylinder[5].i.OutSensor:=TRUE;
+arPackCylinder[6].i.OutSensor:=TRUE;
+arPackCylinder[7].i.OutSensor:=TRUE;
+
+
+DropCylinderUP REF= arPackCylinder[8];
+DropCylinderDown REF= arPackCylinder[12];
+DropCylinderDown.i.OutSensor:=TRUE;
+CutCylinderUP REF= arPackCylinder[17];
+CutCylinderDown REF= arPackCylinder[15];
+TransferCyliderHori REF= arPackCylinder[14];
+TransferCyliderVert REF= arPackCylinder[16];
+TransferCyliderRota REF= arPackCylinder[13];
+
+SealCylinderUP REF= arPackCylinder[10];
+SealCylinderDown REF= arPackCylinder[11];
+
+Seal2CylinderUP REF= arPackCylinder[18];
+Seal2CylinderDown REF= arPackCylinder[19];
+
+RejectCylinder REF= arPackCylinder[20];
+RejectCylinder.i.InSensor:=TRUE;
+RejectCylinder.i.OutSensor:=TRUE;
+
+PullVacuum1 REF=arPackVacuum[1];
+PullVacuum2 REF=arPackVacuum[2];
+PullVacuum3 REF=arPackVacuum[3];
+PullVacuum4 REF=arPackVacuum[4];
+PullVacuum5 REF=arPackVacuum[5];
+PullVacuum6 REF=arPackVacuum[6];
+PullVacuum7 REF=arPackVacuum[7];
+
+TransferVacuum1 REF=arPackVacuum[11];
+TransferVacuum2 REF=arPackVacuum[12];
+TransferVacuum3 REF=arPackVacuum[13];
+TransferVacuum4 REF=arPackVacuum[14];
+TransferVacuum5 REF=arPackVacuum[15];
+TransferVacuum6 REF=arPackVacuum[16];
+TransferVacuum7 REF=arPackVacuum[17];
+
+Check1Cylinder REF= arPackCylinder[41];
+Check1Sensor1 REF= arPackSensor[41];
+Check1Sensor2 REF= arPackSensor[42];
+Check1Sensor3 REF= arPackSensor[43];
+Check1Sensor4 REF= arPackSensor[44];
+Check1Sensor5 REF= arPackSensor[45];
+Check1Sensor6 REF= arPackSensor[46];
+Check1Sensor7 REF= arPackSensor[47];
+
+MainRoution();
+SR999_Faulthandler();
+
+glb_bUnit01BoxEmpty:= NOT glb_Un01Box.Box[0].Valid 
+AND NOT glb_Un01Box.Box[0].Valid AND NOT glb_Un01Box.Box[1].Valid AND NOT glb_Un01Box.Box[2].Valid
+AND NOT glb_Un01Box.Box[3].Valid AND NOT glb_Un01Box.Box[4].Valid AND NOT glb_Un01Box.Box[5].Valid
+AND NOT glb_Un01Box.Box[6].Valid AND NOT glb_Un01Box.Box[7].Valid AND NOT glb_Un01Box.Box[8].Valid 
+AND NOT glb_Un01Box.Box[9].Valid AND NOT glb_Un01Box.Box[10].Valid AND NOT glb_Un01Box.Box[11].Valid
+AND NOT glb_Un01Box.Box[12].Valid AND NOT glb_Un01Box.Box[13].Valid AND NOT glb_BoxTransferBuffer.Valid ;
+
+glb_bUnit01BoxNotReady:= NOT glb_Un01Box.Box[HMI_TransferNo-1].Valid 
+AND NOT glb_Un01Box.Box[HMI_TransferNo].Valid  AND NOT glb_BoxTransferBuffer.Valid ;
+
+]]></ST>
+    </Implementation>
+    <Action Name="CM01_Pull" Id="{0e2d3fa2-7be4-4fe3-af58-47ac184aebfe}">
+      <Implementation>
+        <ST><![CDATA[CASE PullSeq.Now OF
+	0:	 
+       IF Ref_MachineStateModel.Sts_Execute  THEN
+		  PullSeq(ExeCute:= TRUE, Next:= 110); 
+	   END_IF	
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+		  PullSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone);  
+	   END_IF
+	   
+	110: 
+        PullCylinder1.i.ActiveIn:=TRUE;		PullCylinder1.i.ActiveOut:=FALSE;
+        PullCylinder2.i.ActiveIn:=TRUE;		PullCylinder2.i.ActiveOut:=FALSE;
+        PullCylinder3.i.ActiveIn:=TRUE;		PullCylinder3.i.ActiveOut:=FALSE;
+        PullCylinder4.i.ActiveIn:=TRUE;		PullCylinder4.i.ActiveOut:=FALSE;
+        PullCylinder5.i.ActiveIn:=TRUE;		PullCylinder5.i.ActiveOut:=FALSE;
+        PullCylinder6.i.ActiveIn:=TRUE;		PullCylinder6.i.ActiveOut:=FALSE;
+        PullCylinder7.i.ActiveIn:=TRUE;		PullCylinder7.i.ActiveOut:=FALSE;
+		
+		IF PullCylinder1.i.InSensor
+		AND PullCylinder2.i.InSensor AND PullCylinder3.i.InSensor
+		AND PullCylinder4.i.InSensor AND PullCylinder5.i.InSensor
+		AND PullCylinder6.i.InSensor AND PullCylinder7.i.InSensor 
+		AND NOT PullCylinder1.o.Error AND NOT PullCylinder2.o.Error AND NOT PullCylinder3.o.Error
+		AND NOT PullCylinder4.o.Error AND NOT PullCylinder5.o.Error AND NOT PullCylinder6.o.Error
+		AND NOT PullCylinder7.o.Error THEN
+			PullSeq(ExeCute:= TRUE, Next:= 120);  
+		END_IF	
+	
+	120:
+	   IF InfeedSensor1.o.Value AND InfeedSensor2.o.Value AND InfeedSensor3.o.Value AND InfeedSensor4.o.Value AND
+		  InfeedSensor5.o.Value AND InfeedSensor6.o.Value AND InfeedSensor7.o.Value THEN
+		    PullSeq(ExeCute:= TRUE, Next:= 130);  
+		  ELSE IF InfeedSensor8.o.Value AND InfeedSensor9.o.Value AND InfeedSensor10.o.Value AND InfeedSensor11.o.Value AND
+		       InfeedSensor12.o.Value AND InfeedSensor13.o.Value AND InfeedSensor14.o.Value THEN
+               PullSeq(ExeCute:= TRUE, Next:= 140);  
+		  END_IF
+	   END_IF
+	   
+	130:
+	   InfeedCylinder.i.ActiveIn:=TRUE;
+	   InfeedCylinder.i.ActiveOut:=FALSE;
+	   IF InfeedCylinder.i.InSensor AND NOT InfeedCylinder.o.Error THEN
+		  PullSeq(ExeCute:= TRUE, Next:= 150);  
+	   END_IF   
+	   
+	140:
+	   InfeedCylinder.i.ActiveIn:=FALSE;
+	   InfeedCylinder.i.ActiveOut:=TRUE;
+	   IF InfeedCylinder.i.OutSensor AND NOT InfeedCylinder.o.Error THEN
+		  PullSeq(ExeCute:= TRUE, Next:= 150);  
+	   END_IF
+
+	150://计算拉盒数量
+	  
+		IF NOT bBeltMove AND ref_belt.o.StandStill THEN
+			IF (glb_lrBoxTargetCnt<>0) THEN
+				PullSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 160);  
+			ELSE IF (glb_lrBoxTargetCnt=0) AND(ref_diTransferFlag<>0) THEN
+					 PullSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 300);  
+				 END_IF
+			END_IF
+		END_IF
+
+		IF Ref_MachineStateModel.Sts_Stopping  THEN
+			PullSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= Seq_StoppingDone);  
+		END_IF   	   
+	   
+	   
+    160:
+        PullCylinder1.i.ActiveIn:=FALSE;		PullCylinder1.i.ActiveOut:=TRUE;
+        PullCylinder2.i.ActiveIn:=FALSE;		PullCylinder2.i.ActiveOut:=TRUE;
+        PullCylinder3.i.ActiveIn:=FALSE;		PullCylinder3.i.ActiveOut:=TRUE;
+        PullCylinder4.i.ActiveIn:=FALSE;		PullCylinder4.i.ActiveOut:=TRUE;
+        PullCylinder5.i.ActiveIn:=FALSE;		PullCylinder5.i.ActiveOut:=TRUE;
+        PullCylinder6.i.ActiveIn:=FALSE;		PullCylinder6.i.ActiveOut:=TRUE;
+        PullCylinder7.i.ActiveIn:=FALSE;		PullCylinder7.i.ActiveOut:=TRUE;
+	   
+		IF PullCylinder1.i.OutSensor
+		AND PullCylinder2.i.OutSensor AND PullCylinder3.i.OutSensor
+		AND PullCylinder4.i.OutSensor AND PullCylinder5.i.OutSensor
+		AND PullCylinder6.i.OutSensor AND PullCylinder7.i.OutSensor
+		AND NOT PullCylinder1.o.Error AND NOT PullCylinder2.o.Error AND NOT PullCylinder3.o.Error
+		AND NOT PullCylinder4.o.Error AND NOT PullCylinder5.o.Error AND NOT PullCylinder6.o.Error
+		AND NOT PullCylinder7.o.Error THEN
+			    PullSeq(ExeCute:= TRUE, Next:= 161); 
+		END_IF	
+		
+	161:
+		tonPullSeq(IN:=TRUE , PT:=T#200MS , Q=> , ET=> );
+		IF tonPullSeq.Q THEN
+			tonPullSeq(IN:=FALSE , PT:=T#200MS , Q=> , ET=> );
+			PullSeq(ExeCute:= TRUE, Next:= 162);  
+		END_IF
+    162:
+        //检查真空达到	
+		PullVacuum1.i.ActiveIN:=TRUE;
+		PullVacuum2.i.ActiveIN:=TRUE;
+		PullVacuum3.i.ActiveIN:=TRUE;
+		PullVacuum4.i.ActiveIN:=TRUE;
+		PullVacuum5.i.ActiveIN:=TRUE;
+		PullVacuum6.i.ActiveIN:=TRUE;
+		PullVacuum7.i.ActiveIN:=TRUE;	
+		IF PullVacuum1.i.Sensor AND PullVacuum2.i.Sensor AND PullVacuum3.i.Sensor AND 
+		   PullVacuum4.i.Sensor AND PullVacuum5.i.Sensor AND PullVacuum6.i.Sensor AND PullVacuum7.i.Sensor		
+        AND NOT PullVacuum1.o.Error AND NOT PullVacuum2.o.Error AND NOT PullVacuum3.o.Error 
+		AND NOT PullVacuum4.o.Error AND NOT PullVacuum5.o.Error AND NOT PullVacuum6.o.Error 
+		AND NOT PullVacuum7.o.Error  THEN
+		    PullSeq(ExeCute:= TRUE, Next:= 170); 
+		END_IF			
+ 
+    170:  
+		tonPullSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonPullSeq.Q THEN
+			tonPullSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			PullSeq(ExeCute:= TRUE, Next:= 180);  
+		END_IF
+	   
+	180:   
+        PullCylinder1.i.ActiveIn:=TRUE;		PullCylinder1.i.ActiveOut:=FALSE;
+        PullCylinder2.i.ActiveIn:=TRUE;		PullCylinder2.i.ActiveOut:=FALSE;
+        PullCylinder3.i.ActiveIn:=TRUE;		PullCylinder3.i.ActiveOut:=FALSE;
+        PullCylinder4.i.ActiveIn:=TRUE;		PullCylinder4.i.ActiveOut:=FALSE;
+        PullCylinder5.i.ActiveIn:=TRUE;		PullCylinder5.i.ActiveOut:=FALSE;
+        PullCylinder6.i.ActiveIn:=TRUE;		PullCylinder6.i.ActiveOut:=FALSE;
+        PullCylinder7.i.ActiveIn:=TRUE;		PullCylinder7.i.ActiveOut:=FALSE;
+		
+		IF PullCylinder1.i.InSensor
+		AND PullCylinder2.i.InSensor AND PullCylinder3.i.InSensor
+		AND PullCylinder4.i.InSensor AND PullCylinder5.i.InSensor
+		AND PullCylinder6.i.InSensor AND PullCylinder7.i.InSensor 
+		AND NOT PullCylinder1.o.Error AND NOT PullCylinder2.o.Error AND NOT PullCylinder3.o.Error
+		AND NOT PullCylinder4.o.Error AND NOT PullCylinder5.o.Error AND NOT PullCylinder6.o.Error
+		AND NOT PullCylinder7.o.Error THEN
+			PullSeq(ExeCute:= TRUE, Next:= 181);  
+		END_IF	
+		
+	181://确保真空未破坏	
+		PullVacuum1.i.ActiveIN:=TRUE;
+		PullVacuum2.i.ActiveIN:=TRUE;
+		PullVacuum3.i.ActiveIN:=TRUE;
+		PullVacuum4.i.ActiveIN:=TRUE;
+		PullVacuum5.i.ActiveIN:=TRUE;
+		PullVacuum6.i.ActiveIN:=TRUE;
+		PullVacuum7.i.ActiveIN:=TRUE;	
+		IF PullVacuum1.i.Sensor AND PullVacuum2.i.Sensor AND PullVacuum3.i.Sensor AND 
+		   PullVacuum4.i.Sensor AND PullVacuum5.i.Sensor AND PullVacuum6.i.Sensor AND PullVacuum7.i.Sensor		
+		AND NOT PullVacuum1.o.Error AND NOT PullVacuum2.o.Error AND NOT PullVacuum3.o.Error 
+		AND NOT PullVacuum4.o.Error AND NOT PullVacuum5.o.Error AND NOT PullVacuum6.o.Error 
+		AND NOT PullVacuum7.o.Error  THEN
+			PullSeq(ExeCute:= TRUE, Next:= 190); 
+		END_IF		
+		
+	190:  
+		PullVacuum1.i.ActiveIN:=FALSE;
+		PullVacuum2.i.ActiveIN:=FALSE;
+		PullVacuum3.i.ActiveIN:=FALSE;
+		PullVacuum4.i.ActiveIN:=FALSE;
+		PullVacuum5.i.ActiveIN:=FALSE;
+		PullVacuum6.i.ActiveIN:=FALSE;
+		PullVacuum7.i.ActiveIN:=FALSE;
+		PullSeq(ExeCute:= TRUE, Next:= 200);  
+   
+	200:	
+		   tonPullSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		   IF tonPullSeq.Q THEN
+			  tonPullSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			  PullSeq(ExeCute:= TRUE, Next:= 210);  
+		   END_IF
+		   
+	210:
+	        glb_lrBoxTargetCnt:=glb_lrBoxTargetCnt-1;
+			
+	        glb_Un01Box.Box[0].Valid:=TRUE;
+			glb_Un01Box.Box[0].Drop:=TRUE;
+			glb_Un01Box.Box[0].Cut:=TRUE;
+			glb_Un01Box.Box[0].Seal1:=TRUE;
+			glb_Un01Box.Box[0].Seal2:=TRUE;			
+			glb_Un01Box.Box[0].Transfer:=TRUE;
+			glb_Un01Box.Box[0].Check1:=TRUE;
+			glb_Un01Box.Box[0].Reject:=TRUE;
+			glb_Un01Box.Box[0].PrintData:='END';
+			glb_Un01Box.Box[0].amount:=0;
+	        bBeltMove:=TRUE;
+
+			ref_diDropFlag.0 :=TRUE;	
+			ref_diCutFlag.0 :=TRUE;				
+			ref_diSealFlag.0 :=TRUE;	
+			ref_diTransferFlag.0 :=TRUE;
+			PullSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 300);  
+				
+	300:   
+			tonPullSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+			IF tonPullSeq.Q THEN
+				tonPullSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+				bBeltMove:=TRUE;
+				PullSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 110);  
+			END_IF
+
+			
+	Seq_StoppingDone:   
+	     IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 PullSeq(ExeCute:= TRUE, Next:= 0);
+		 END_IF	
+		 
+END_CASE
+PullSeq.Hold := Ref_MachineStateModel.Sts_Held;
+
+
+
+
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM02_Drop" Id="{5cdb025f-e0b4-428e-bb2a-aba5ab5b1a0e}">
+      <Implementation>
+        <ST><![CDATA[CASE DropSeq.Now OF
+	0:	
+		IF Ref_MachineStateModel.Sts_Execute  THEN
+		   DropSeq(ExeCute:= TRUE, Next:=110); 
+		END_IF	
+		
+		IF Ref_MachineStateModel.Sts_Stopping  THEN
+		   DropSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone);    
+		END_IF	
+
+	110:
+		DropCylinderUP.i.ActiveIn:=TRUE;
+		DropCylinderUP.i.ActiveOut:=FALSE;
+		DropCylinderDown.i.ActiveIn:=TRUE;
+		DropCylinderDown.i.ActiveOut:=FALSE;	
+		IF DropCylinderUP.i.InSensor AND  DropCylinderDown.i.InSensor AND 
+		NOT DropCylinderUP.o.Error AND NOT DropCylinderDown.o.Error  THEN
+			DropSeq(ExeCute:= TRUE, Next:=120);  
+		END_IF
+	   
+	120://等待药品到达     
+		IF ref_diDropFlag.2 AND glb_BinBelt4_5.bin[8].arDrop[8] THEN
+		   DropSeq(ExeCute:= TRUE,Hold:=FALSE, Next:=121); 
+		END_IF
+		
+		IF Ref_MachineStateModel.Sts_Stopping  THEN
+		   DropSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone); 
+		END_IF	
+		
+	121:
+	    //判断产品是否需要剔除
+	    IF ref_BinList.Bin[49].bReject OR ref_BinList.Bin[48].bReject OR ref_BinList.Bin[47].bReject 
+		OR ref_BinList.Bin[46].bReject OR ref_BinList.Bin[45].bReject OR ref_BinList.Bin[44].bReject 
+        OR ref_BinList.Bin[43].bReject THEN
+		   glb_Un01Box.Box[2].Valid:=FALSE;
+		   glb_Un01Box.Box[2].Transfer:=FALSE;
+		END_IF
+        DropSeq(ExeCute:= TRUE,Hold:=FALSE, Next:=130);
+  
+	130:   
+		DropCylinderUP.i.ActiveIn:=FALSE;
+		DropCylinderUP.i.ActiveOut:=TRUE;
+		DropCylinderDown.i.ActiveIn:=FALSE;
+		DropCylinderDown.i.ActiveOut:=TRUE;	
+		IF DropCylinderUP.i.OutSensor AND  DropCylinderDown.i.OutSensor AND 
+		NOT DropCylinderUP.o.Error AND NOT DropCylinderDown.o.Error  THEN
+			DropSeq(ExeCute:= TRUE, Next:= 131);  
+		END_IF
+
+	131:   
+		tonDropSeq(IN:=TRUE , PT:=T#1500MS , Q=> , ET=> );
+		IF tonDropSeq.Q THEN
+		   tonDropSeq(IN:=FALSE , PT:=T#1500MS , Q=> , ET=> );
+		   DropSeq(ExeCute:= TRUE, Next:= 140); 
+		END_IF	
+
+	140:
+		DropCylinderUP.i.ActiveIn:=TRUE;
+		DropCylinderUP.i.ActiveOut:=FALSE;
+		IF DropCylinderUp.i.InSensor AND NOT  DropCylinderUP.o.Error THEN
+		   DropSeq(ExeCute:= TRUE, Next:= 141);     
+		END_IF	
+			
+	141:
+        IF 	glb_BinBelt4_5.bin[9].arDrop[8] THEN 
+			glb_Un01Box.Box[HMI_DropNo].PrintData:=glb_BinBelt4_5.bin[9].Name;
+			glb_Un01Box.Box[HMI_DropNo].amount:=glb_BinBelt4_5.bin[9].Amount;
+			(*
+			glb_Un01Box.Box[HMI_DropNo].Reject:=glb_BinBelt4_5.bin[9].bReject
+            OR glb_BinBelt4_5.bin[8].bReject OR glb_BinBelt4_5.bin[7].bReject
+            OR glb_BinBelt4_5.bin[6].bReject OR glb_BinBelt4_5.bin[5].bReject
+            OR glb_BinBelt4_5.bin[4].bReject OR glb_BinBelt4_5.bin[3].bReject;
+			*)
+			glb_BinBelt4_5.bin[9].arDrop[8]:=FALSE;
+			glb_BinBelt4_5.bin[8].arDrop[8]:=FALSE;
+			glb_BinBelt4_5.bin[7].arDrop[8]:=FALSE;
+			glb_BinBelt4_5.bin[6].arDrop[8]:=FALSE;
+			glb_BinBelt4_5.bin[5].arDrop[8]:=FALSE;
+			glb_BinBelt4_5.bin[4].arDrop[8]:=FALSE;
+			glb_BinBelt4_5.bin[3].arDrop[8]:=FALSE;
+						
+        ELSE IF glb_BinBelt4_5.bin[8].arDrop[8] THEN
+			    glb_Un01Box.Box[HMI_DropNo].PrintData:=glb_BinBelt4_5.bin[8].Name;
+				glb_Un01Box.Box[HMI_DropNo].amount:=glb_BinBelt4_5.bin[8].Amount;
+				(*
+				glb_Un01Box.Box[HMI_DropNo].Reject:=glb_BinBelt4_5.bin[8].bReject
+				OR glb_BinBelt4_5.bin[2].bReject OR glb_BinBelt4_5.bin[7].bReject
+				OR glb_BinBelt4_5.bin[6].bReject OR glb_BinBelt4_5.bin[5].bReject
+				OR glb_BinBelt4_5.bin[4].bReject OR glb_BinBelt4_5.bin[3].bReject;	
+                *)
+			
+				glb_BinBelt4_5.bin[8].arDrop[8]:=FALSE;
+				glb_BinBelt4_5.bin[7].arDrop[8]:=FALSE;
+				glb_BinBelt4_5.bin[6].arDrop[8]:=FALSE;
+				glb_BinBelt4_5.bin[5].arDrop[8]:=FALSE;
+				glb_BinBelt4_5.bin[4].arDrop[8]:=FALSE;
+				glb_BinBelt4_5.bin[3].arDrop[8]:=FALSE;
+			 	glb_BinBelt4_5.bin[2].arDrop[8]:=FALSE;	
+		
+		     END_IF
+		END_IF
+		
+		ref_Work_Recipe.OutQuantity:=ref_Work_Recipe.OutQuantity+7;
+		DropSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 142); 
+			
+    142:  
+		tonDropSeq(IN:=TRUE , PT:=T#2000MS , Q=> , ET=> );   
+		IF tonDropSeq.Q THEN
+			tonDropSeq(IN:=FALSE , PT:=T#2000MS , Q=> , ET=> );
+			DropSeq(ExeCute:= TRUE, Next:= 150); 
+		END_IF	
+	150:
+		DropCylinderDown.i.ActiveIn:=TRUE;
+		DropCylinderDown.i.ActiveOut:=FALSE;	 
+		IF DropCylinderDown.i.InSensor AND NOT DropCylinderDown.o.Error THEN
+			DropSeq(ExeCute:= TRUE, Next:= 160);   
+		END_IF	
+			
+	160:
+		ref_diDropFlag.2:=0;
+		ref_diGoodFlag.2:=1;
+		DropSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 110); 		
+			
+	Seq_StoppingDone:
+			 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+				 DropSeq(ExeCute:= TRUE, Next:= 0); 
+			 END_IF			
+END_CASE
+DropSeq.Hold := Ref_MachineStateModel.Sts_Held;
+
+
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM03_Cut" Id="{01397169-3d03-4cda-baa7-a172b65b14b2}">
+      <Implementation>
+        <ST><![CDATA[CASE CutSeq.Now OF	
+	0:
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  CutSeq(Execute:= TRUE, Next:= 110);  
+          //CutSeq(Execute:= TRUE, Next:= 0);   
+		  //ref_diCutFlag.8 :=FALSE;
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping THEN
+		  CutSeq(Execute:= TRUE, Next:= Seq_StoppingDone);     
+	   END_IF	
+	
+	110:
+		tonCutSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonCutSeq.Q THEN
+			tonCutSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 111); 
+		END_IF	
+
+    111:
+		lrEncoderPosOld:=ref_Encoder.NcToPlc.ActPos;
+		ref_WindMotor.Backward:=TRUE;
+		ref_Puller.i.Enable:=TRUE;
+		IF ref_Puller.o.PowerOn THEN
+		   CutSeq(Execute:= TRUE, Next:= 120);  
+		END_IF  
+				
+	120:
+		tonCutSeq(IN:=TRUE , PT:=T#10S , Q=> , ET=> );		
+		ref_Puller.i.JogP:=TRUE;
+		IF ref_Encoder.NcToPlc.ActPos-lrEncoderPosOld > ref_Puller.i.Pos-6 THEN
+			ref_Puller.i.JogP:=FALSE; 
+			tonCutSeq(IN:=FALSE , PT:=T#10S , Q=> , ET=> );
+            CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 130); 	
+			ELSE IF tonCutSeq.Q THEN
+			        glb_MembraneAlarm:=TRUE;
+					ref_Puller.i.JogP:=FALSE; 
+					tonCutSeq(IN:=FALSE , PT:=T#10S , Q=> , ET=> );
+					CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 121); 				  
+			     END_IF	
+		END_IF
+    121:
+		IF NOT glb_MembraneAlarm THEN
+			CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 110); 
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping THEN
+			CutSeq(Execute:= TRUE, Next:= Seq_StoppingDone);     
+		END_IF			
+	130:
+		tonCutSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonCutSeq.Q THEN
+			tonCutSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 140); 
+		END_IF	
+		
+	140:		
+		IF ref_diCutFlag.7 THEN
+		   CutSeq(Execute:= TRUE, Next:= 141); 
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping THEN
+		   CutSeq(Execute:= TRUE, Next:= Seq_Stopping);  
+		END_IF	
+	141:
+        IF glb_Un01Box.Box[HMI_Seal1No].Seal1 THEN//IF ref_diSealFlag.10 THEN
+           CutSeq(Execute:= TRUE, Next:= 142);
+        ELSE 
+           CutSeq(Execute:= TRUE, Next:= 150); 
+        END_IF
+		
+    142:     
+         IF SealCylinderDown.i.OutSensor OR glb_Un01Box.Box[HMI_Seal1No].Seal1 THEN
+	     //IF SealCylinderDown.i.OutSensor OR NOT ref_diSealFlag.10 THEN
+			CutSeq(Execute:= TRUE, Next:= 150);   
+		 END_IF
+		 IF Ref_MachineStateModel.Sts_Stopping THEN
+		    CutSeq(Execute:= TRUE, Next:= Seq_Stopping);  
+		 END_IF	 
+		 
+	150: 
+		CutCylinderDown.i.ActiveIn:=FALSE;
+		CutCylinderDown.i.ActiveOut:=TRUE;
+		IF  CutCylinderDown.i.OutSensor AND NOT CutCylinderDown.o.Error  THEN
+		 	CutSeq(Execute:= TRUE, Next:= 160); 
+		END_IF	  
+	  
+	160:
+		CutCylinderUp.i.ActiveIn:=FALSE;
+		CutCylinderUp.i.ActiveOut:=TRUE;
+		IF  CutCylinderUp.i.OutSensor AND NOT CutCylinderUp.o.Error  THEN
+		 	CutSeq(Execute:= TRUE, Next:= 161); 
+		END_IF		
+		
+	161:	
+		tonCutSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonCutSeq.Q THEN
+			tonCutSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 170); 
+		END_IF	
+
+	170:
+		CutCylinderUp.i.ActiveIn:=TRUE;
+		CutCylinderUp.i.ActiveOut:=FALSE;
+		IF CutCylinderUp.i.InSensor AND NOT CutCylinderUp.o.Error THEN
+		    CutSeq(Execute:= TRUE, Next:= 171); 
+		END_IF		    
+ 
+    171: 
+		CutCylinderDown.i.ActiveIn:=TRUE;
+		CutCylinderDown.i.ActiveOut:=FALSE;
+		IF CutCylinderDown.i.InSensor AND NOT CutCylinderDown.o.Error  THEN
+		    CutSeq(Execute:= TRUE, Next:= 180); 
+		END_IF
+	
+	
+    180:
+		  ref_diCutFlag.7 :=FALSE;
+		  CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 110); 
+	 
+	 
+	 
+    Seq_Stopping:
+
+		ref_Puller.i.jogP:=FALSE;       
+        IF NOT ref_Puller.o.StandStill THEN
+		   ref_Puller.i.stop:=TRUE;       
+        ELSE
+		   ref_Puller.i.Stop:=FALSE;
+	       CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= Seq_StoppingDone);
+		END_IF   
+	 
+	 
+	Seq_StoppingDone:
+	
+		 ref_Puller.i.Enable:=FALSE;
+		 ref_WindMotor.Forward:=FALSE;
+		 ref_WindMotor.Backward:=FALSE;		 
+		 ref_Puller.i.JogP:=FALSE;
+		 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 CutSeq(Execute:= TRUE,Hold:=FALSE, Next:= 0); 
+		 END_IF		 
+ 
+END_CASE
+CutSeq.Hold := Ref_MachineStateModel.Sts_Held;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM04_Transfer" Id="{5afdbc26-ca18-4549-b238-2190ca52d4df}">
+      <Implementation>
+        <ST><![CDATA[TransferSeq(ExeCute:= TRUE, Next:= , Last=> , Now=> );
+CASE TransferSeq.Now OF
+	0:	
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= 110);  
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone);     
+	   END_IF	
+	   
+	110:
+	   TransferCyliderVert.i.ActiveIn:=TRUE;
+	   TransferCyliderVert.i.ActiveOut:=FALSE;	   
+	   IF TransferCyliderVert.i.InSensor AND NOT TransferCyliderVert.o.Error  THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= 120);  
+	   END_IF
+	   
+	120:
+
+	   TransferCyliderRota.i.ActiveIn:=TRUE;
+	   TransferCyliderRota.i.ActiveOut:=FALSE;	   
+	   IF  TransferCyliderRota.i.InSensor AND NOT TransferCyliderRota.o.Error  THEN
+		   TransferSeq(ExeCute:= TRUE, Next:= 130);  
+	   END_IF   
+	   
+	130:
+	   TransferCyliderHori.i.ActiveIn:=FALSE;
+	   TransferCyliderHori.i.ActiveOut:=TRUE;	   
+	   IF TransferCyliderHori.i.OutSensor AND NOT TransferCyliderHori.o.Error THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= 140);  
+	   END_IF   
+	
+	140://等待产品到达
+	   //IF ref_diTransferFlag.13 THEN
+	   IF glb_Un01Box.Box[HMI_TransferNo].Transfer THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= 150);  
+	   END_IF 
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= Seq_StoppingDone);    
+	   END_IF
+		
+	150:
+	   
+	   TransferCyliderVert.i.ActiveIn:=FALSE;
+	   TransferCyliderVert.i.ActiveOut:=TRUE;	
+	   IF TransferCyliderVert.i.OutSensor AND NOT TransferCyliderVert.o.Error THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= 160);  
+	   END_IF
+	   
+	160: //开真空
+		TransferVacuum1.i.ActiveIN:=TRUE;
+		TransferVacuum2.i.ActiveIN:=TRUE;
+		TransferVacuum3.i.ActiveIN:=TRUE;
+		TransferVacuum4.i.ActiveIN:=TRUE;
+		TransferVacuum5.i.ActiveIN:=TRUE;
+		TransferVacuum6.i.ActiveIN:=TRUE;
+		TransferVacuum7.i.ActiveIN:=TRUE;	
+		
+		tonTransferSeq(IN:=TRUE , PT:=T#2S , Q=> , ET=> );
+		IF tonTransferSeq.Q THEN
+			tonTransferSeq(IN:=FALSE , PT:=T#2S , Q=> , ET=> );
+			TransferSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 170);  
+		END_IF	
+			
+    170:
+	   TransferCyliderVert.i.ActiveIn:=TRUE;
+	   TransferCyliderVert.i.ActiveOut:=FALSE;
+	   IF TransferCyliderVert.i.InSensor AND NOT TransferCyliderVert.o.Error THEN
+		  TransferSeq(ExeCute:= TRUE, Next:= 171);  
+	   END_IF	
+	   
+	171://检查真空
+	    IF TransferVacuum1.i.Sensor AND TransferVacuum2.i.Sensor AND TransferVacuum3.i.Sensor AND 
+		TransferVacuum4.i.Sensor AND  TransferVacuum5.i.Sensor AND  TransferVacuum6.i.Sensor AND
+		TransferVacuum7.i.Sensor AND NOT TransferVacuum1.o.Error AND NOT TransferVacuum2.o.Error 
+		AND NOT TransferVacuum3.o.Error AND NOT TransferVacuum4.o.Error AND NOT TransferVacuum5.o.Error
+		AND NOT TransferVacuum6.o.Error AND NOT TransferVacuum7.o.Error THEN
+		TransferSeq(ExeCute:= TRUE, Next:= 172);
+		END_IF
+	172:
+		tonTransferSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonTransferSeq.Q THEN
+			tonTransferSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			TransferSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 173);  
+		END_IF		
+		
+	173:
+		ref_diTransferFlag.13 :=0;
+		ref_diGoodFlag.13 :=0;
+		ref_diNoGoodFlag.13 :=0;
+		glb_Un01Box.Box[HMI_TransferNo].Transfer:=FALSE;
+		glb_BoxTransferBuffer:=glb_Un01Box.Box[HMI_TransferNo];//纸盒数据复制到缓冲区
+		TransferSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 174);
+		
+    174:
+		MEMSET(destAddr:= ADR(glb_Un01Box.Box[HMI_TransferNo]), fillByte:= 0, n:= SIZEOF(glb_Un01Box.Box[11]));		
+		TransferSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 180);
+  		  
+	180:   
+		TransferCyliderHori.i.ActiveIn:=TRUE;
+		TransferCyliderHori.i.ActiveOut:=FALSE;
+		IF TransferCyliderHori.i.InSensor AND NOT TransferCyliderHori.o.Error  THEN
+		   TransferSeq(ExeCute:= TRUE, Next:= 181);  
+		END_IF	
+		
+    181:
+		tonTransferSeq(IN:=TRUE , PT:=T#1.5S , Q=> , ET=> );
+		IF tonTransferSeq.Q THEN
+			tonTransferSeq(IN:=FALSE , PT:=T#1.5S , Q=> , ET=> );
+			TransferSeq(ExeCute:= TRUE, Next:= 190);  
+		END_IF			
+		
+		
+    190:
+		IF ref_bTransferPut OR HMI_SkipTransferPut THEN
+		   TransferSeq(ExeCute:= TRUE, Next:= 200);  
+		END_IF
+	
+	200:
+		TransferCyliderVert.i.ActiveIn:=FALSE;
+		TransferCyliderVert.i.ActiveOut:=TRUE;
+		IF TransferCyliderVert.i.OutSensor AND NOT TransferCyliderVert.o.Error  THEN
+		   TransferSeq(ExeCute:= TRUE, Next:= 210);  
+		END_IF	
+	 
+		
+	210:  
+	   	TransferVacuum1.i.ActiveIN:=FALSE;
+		TransferVacuum2.i.ActiveIN:=FALSE;
+		TransferVacuum3.i.ActiveIN:=FALSE;
+		TransferVacuum4.i.ActiveIN:=FALSE;
+		TransferVacuum5.i.ActiveIN:=FALSE;
+		TransferVacuum6.i.ActiveIN:=FALSE;
+		TransferVacuum7.i.ActiveIN:=FALSE;
+		tonTransferSeq(IN:=TRUE , PT:=T#2S , Q=> , ET=> );
+		IF tonTransferSeq.Q THEN
+			tonTransferSeq(IN:=FALSE , PT:=T#2S , Q=> , ET=> );
+			TransferSeq(ExeCute:= TRUE, Next:= 220);  
+		END_IF	
+		
+	 220:
+		TransferCyliderVert.i.ActiveIn:=TRUE;
+		TransferCyliderVert.i.ActiveOut:=FALSE;	   
+		IF TransferCyliderVert.i.InSensor AND NOT TransferCyliderVert.o.Error  THEN
+		   TransferSeq(ExeCute:= TRUE, Next:= 221);  
+		END_IF
+	
+     221:
+		tonTransferSeq(IN:=TRUE , PT:=T#1.5S , Q=> , ET=> );
+		IF tonTransferSeq.Q THEN
+			tonTransferSeq(IN:=FALSE , PT:=T#1.5S , Q=> , ET=> );
+			TransferSeq(ExeCute:= TRUE, Next:= 230);  
+		END_IF	
+		
+	 230:
+	    glb_Un02Box.Box[0]:=glb_BoxTransferBuffer;//缓冲区纸盒传递到皮带7
+		glb_Un02Box.Box[0].PrintRequest:=TRUE;
+	    TransferSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 240); 	
+	 240:	
+		MEMSET(destAddr:= ADR(glb_BoxTransferBuffer), fillByte:= 0, n:= SIZEOF(glb_BoxTransferBuffer));
+		ref_bTransferPut:=FALSE;
+		glb_TransferCnt:=glb_TransferCnt+1;
+		TransferSeq(ExeCute:= TRUE,Hold:=FALSE, Next:= 110);   
+	
+	Seq_StoppingDone:
+		 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 TransferSeq(ExeCute:= TRUE, Next:= 0);  
+		 END_IF		
+END_CASE
+TransferSeq.Hold := Ref_MachineStateModel.Sts_Held;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM05_Belt" Id="{8cc6120c-7120-43fb-9a9a-a6e501837b8e}">
+      <Implementation>
+        <ST><![CDATA[CASE BeltSeq.Now  OF	
+	0:	
+	   IF Ref_MachineStateModel.Sts_Resetting THEN
+		  BeltSeq(Execute:= TRUE, Next:= Seq_Resetting);   
+	   END_IF
+	
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  BeltSeq(Execute:= TRUE, Next:= 110);     
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping  THEN
+		  BeltSeq(Execute:= TRUE, Next:= Seq_Stopping);   
+	   END_IF
+	
+	Seq_Resetting:
+		IF NOT ref_Belt.o.PowerOn  THEN;
+		   ref_Belt.i.Enable:=TRUE;
+		END_IF	
+		IF NOT ref_Puller.o.PowerOn  THEN;
+		   ref_Puller.i.Enable:=TRUE;
+		END_IF		
+		IF ref_Belt.o.PowerOn AND ref_Puller.o.PowerOn AND HomeValve() THEN
+		   BeltSeq(Execute:= TRUE, Next:= 20);   
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping  THEN
+		   BeltSeq(Execute:= TRUE, Next:= Seq_Stopping);   
+		END_IF	
+		
+	20:
+		IF NOT glb_AllAxisHomed_UN01  THEN
+			BeltSeq(Execute:= TRUE, Next:= 21);   
+			ELSE
+			BeltSeq(Execute:= TRUE, Next:= 30);   	  
+		END_IF
+		
+	21://回零复位
+	    glb_lrBoxTargetCnt:=0;
+		glb_lrBoxWrkCnt:=0;
+        MEMSET(destAddr:= ADR(glb_Un01Box), fillByte:= 0, n:= SIZEOF(glb_Un01Box));  
+	    BeltSeq(Execute:= TRUE, Next:= 22);     
+	   
+	22:
+	   tonBeltSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+	   IF tonBeltSeq.Q THEN
+		  tonBeltSeq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+		  ref_Belt.i.HomeMode:=0;//
+	      ref_Belt.i.Home:=TRUE;
+		  BeltSeq(Execute:= TRUE, Next:= 23);   
+	   END_IF
+	  
+	23:   
+	   IF ref_Belt.o.HomeDone THEN
+			ref_Belt.i.Home:=FALSE;
+			BeltSeq(Execute:= TRUE, Next:= 24);   
+	   ELSE IF Ref_MachineStateModel.Sts_Stopping  THEN
+		       ref_Belt.i.Home:=FALSE;
+               BeltSeq(Execute:= TRUE, Next:= Seq_Stopping);     
+	        END_IF
+	   END_IF
+	   
+	24:
+	    lrPosCnt:=1;
+		bBeltMove:=FALSE;
+		ref_Belt.i.Pos:=0;
+		ref_diTransferFlag:=0;
+        ref_diCutFlag:=0; 		
+        ref_diSealFlag:=0; 
+	    ref_diDropFlag:=0;
+        ref_diPullFlag:=0;
+        BeltSeq(Execute:= TRUE, Next:= 25);   
+		
+	25:
+        IF ref_Belt.o.StandStill THEN
+		   BeltSeq(Execute:= TRUE, Next:= 30);   
+	    END_IF
+		
+    30:	//生产复位
+	    ref_Belt.i.MoveAbs:=TRUE;
+	    BeltSeq(Execute:= TRUE, Next:= 31);   	
+		
+	31:
+    	IF  ref_Belt.o.CmdDone THEN
+		    ref_Belt.i.MoveAbs:=FALSE;
+            BeltSeq(Execute:= TRUE, Next:= Seq_ResettingDone);    	
+		END_IF
+
+   
+	110:
+		   IF NOT glb_Un01Box.Box[HMI_TransferNo].Transfer // ref_diTransferFalg.12
+           AND NOT glb_Un01Box.Box[HMI_Seal2No].Seal2 //  ref_diSealFlag.10  
+		   AND NOT glb_Un01Box.Box[HMI_Seal1No].Seal1 //  ref_diSealFlag.10 
+		   AND NOT ref_diCutFlag.7 
+		   AND NOT ref_diDropFlag.2
+		   AND NOT glb_Un01Box.Box[HMI_Check1No].Check1
+		   AND NOT bRejectActive
+		   AND bBeltMove THEN
+			  BeltSeq(Execute:= TRUE, Next:= 120);   
+		   END_IF
+		   IF Ref_MachineStateModel.Sts_Stopping  THEN
+			  BeltSeq(Execute:= TRUE, Next:= Seq_Stopping);   
+		   END_IF
+       
+	120: 
+		ref_belt.i.Pos:=222.25*LrPosCnt; 
+		ref_belt.i.MoveABS:=TRUE;
+		BeltSeq(Execute:= TRUE, Next:= 130);
+		
+	130: 	
+        IF ref_belt.o.CmdDone THEN
+		   ref_belt.i.MoveABS:=FALSE;	
+		   BeltSeq(Execute:= TRUE,Hold:=FALSE, Next:= 140);		
+		END_IF
+	    
+	140: 
+	    LrPosCnt:=LrPosCnt+1;
+		bRejectActive:=TRUE;
+        ref_diDropFlag:=SHL(ref_diDropFlag,1);	
+		ref_diCutFlag:=SHL(ref_diSealFlag,1);	
+		ref_diSealFlag:=SHL(ref_diSealFlag,1);	
+		ref_diTransferFlag:=SHL(ref_diTransferFlag,1);
+
+        ref_diGoodFlag:=SHL(ref_diGoodFlag,1);	
+		ref_diNogoodFlag:=SHL(ref_diNogoodFlag,1);	
+	
+		FOR iBox:= 63 TO 1 BY -1 DO
+			glb_Un01Box.Box[iBox]:=glb_Un01Box.Box[iBox-1];
+		END_FOR		
+     	BeltSeq(Execute:= TRUE,Hold:=FALSE, Next:= 150);
+		
+    150:    
+		glb_Un01Box.Box[0].Valid:=FALSE;
+		glb_Un01Box.Box[0].Drop:=FALSE;
+		glb_Un01Box.Box[0].Cut:=FALSE;
+		glb_Un01Box.Box[0].Seal1:=FALSE;
+		glb_Un01Box.Box[0].Seal2:=FALSE;			
+		glb_Un01Box.Box[0].Transfer:=FALSE;
+		glb_Un01Box.Box[0].Check1:=FALSE;
+	    BeltSeq(Execute:= TRUE,Hold:=FALSE, Next:= 160);
+		
+	160:	
+		bBeltMove:=FALSE;		
+	    BeltSeq(Execute:= TRUE,Hold:=FALSE, Next:= 110);
+	
+    Seq_Stopping:
+        IF NOT ref_belt.o.StandStill THEN
+		   ref_belt.i.stop:=TRUE;       
+        ELSE
+		   ref_belt.i.Stop:=FALSE;
+	       BeltSeq(Execute:= TRUE, Next:= Seq_StoppingDone);
+		END_IF   
+	
+	Seq_ResettingDone:
+		IF NOT Ref_MachineStateModel.Sts_Resetting THEN
+			BeltSeq(Execute:= TRUE, Next:= 0);
+		END_IF	
+	
+    Seq_stoppingDone:	
+	     ref_belt.i.disable:=TRUE;
+		 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 BeltSeq(Execute:= TRUE, Next:= 0);
+		 END_IF	
+		
+END_CASE 
+BeltSeq.Hold := Ref_MachineStateModel.Sts_Held;
+]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM06_Seal" Id="{9709b848-ad44-4d30-bd7a-2e34fb491fae}">
+      <Implementation>
+        <ST><![CDATA[bBoxSealView:=
+glb_Un01Box.Box[1].Seal1 OR glb_Un01Box.Box[2].Seal1 OR glb_Un01Box.Box[3].Seal1 OR glb_Un01Box.Box[4].Seal1 OR
+ glb_Un01Box.Box[5].Seal1 OR glb_Un01Box.Box[6].Seal1 OR glb_Un01Box.Box[7].Seal1 OR glb_Un01Box.Box[8].Seal1 OR
+ glb_Un01Box.Box[9].Seal1 OR glb_Un01Box.Box[10].Seal1 ;
+
+CASE SealSeq.Now OF	
+	0:
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  SealSeq(Execute:= TRUE, Next:= 110);  
+          //SealSeq(Execute:= TRUE, Next:= 0);   
+		  //ref_diSealFlag.11 :=FALSE;
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping THEN
+		  SealSeq(Execute:= TRUE, Next:= Seq_StoppingDone);     
+	   END_IF	
+	
+	110:   	
+		IF glb_Un01Box.Box[HMI_Seal1No].Seal1 THEN//ref_diSealFlag.10 THEN
+		   SealSeq(Execute:= TRUE, Next:= 120); 
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping THEN
+		   SealSeq(Execute:= TRUE, Next:= Seq_StoppingDone);  
+		END_IF	
+		
+	120: 
+		SealCylinderDown.i.ActiveIn:=FALSE;
+		SealCylinderDown.i.ActiveOut:=TRUE;
+		IF  SealCylinderDown.i.OutSensor AND NOT SealCylinderDown.o.Error  THEN
+		 	SealSeq(Execute:= TRUE, Next:= 121); 
+		END_IF	  
+		
+	121:
+		tonSealSeq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonSealSeq.Q THEN
+			tonSealSeq(IN:=FALSE , PT:=T#1S, Q=> , ET=> );
+			SealSeq(Execute:= TRUE,Hold:=FALSE, Next:= 130); 
+		END_IF	
+ 
+	130:
+		SealCylinderUp.i.ActiveIn:=FALSE;
+		SealCylinderUp.i.ActiveOut:=TRUE;
+		SealSeq(Execute:= TRUE,Hold:=FALSE, Next:= 140); 
+	  
+	  	  
+	140://封口保压
+		tonSealSeq(IN:=TRUE , PT:=DINT_TO_TIME(HMI_SealTime) , Q=> , ET=> );
+		IF tonSealSeq.Q THEN
+			tonSealSeq(IN:=FALSE , PT:=DINT_TO_TIME(HMI_SealTime) , Q=> , ET=> );
+			SealSeq(Execute:= TRUE,Hold:=FALSE, Next:= 150); 
+		END_IF	
+   
+    150: 
+	
+		SealCylinderUp.i.ActiveIn:=TRUE;
+		SealCylinderUp.i.ActiveOut:=FALSE;
+		IF SealCylinderUp.i.InSensor 
+		AND NOT SealCylinderUp.o.Error THEN
+		    SealSeq(Execute:= TRUE, Next:= 151); 
+		END_IF		
+		
+	151:
+	    IF HMI_arSealTime[1]<>0 THEN
+	       SealSeq(Execute:= TRUE, Next:= 160);		
+        ELSE
+	       SealSeq(Execute:= TRUE, Next:= 180);		
+		END_IF
+	
+
+ 
+	160:
+		SealCylinderUp.i.ActiveIn:=FALSE;
+		SealCylinderUp.i.ActiveOut:=TRUE;
+		SealSeq(Execute:= TRUE,Hold:=FALSE, Next:= 170); 
+	  
+	  	  
+	170://封口保压
+		tonSealSeq(IN:=TRUE , PT:=DINT_TO_TIME(HMI_arSealTime[1]) , Q=> , ET=> );
+		IF tonSealSeq.Q THEN
+			tonSealSeq(IN:=FALSE , PT:=DINT_TO_TIME(HMI_arSealTime[1]) , Q=> , ET=> );
+			SealSeq(Execute:= TRUE,Hold:=FALSE, Next:= 180); 
+		END_IF	
+		
+	180:
+		SealCylinderUp.i.ActiveIn:=TRUE;
+		SealCylinderUp.i.ActiveOut:=FALSE;		
+		SealCylinderDown.i.ActiveIn:=TRUE;
+		SealCylinderDown.i.ActiveOut:=FALSE;
+		IF SealCylinderDown.i.InSensor AND SealCylinderUp.i.InSensor 
+		AND NOT SealCylinderDown.o.Error 
+		AND NOT SealCylinderUp.o.Error THEN
+			SealSeq(Execute:= TRUE, Next:= 190); 
+		END_IF
+	
+  
+	190:
+		  ref_diSealFlag.10 :=FALSE;
+		  glb_Un01Box.Box[HMI_Seal1No].Seal1:=FALSE;
+		  SealSeq(Execute:= TRUE,Hold:=FALSE, Next:= 110); 
+
+
+	 
+	Seq_StoppingDone:
+		 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 SealSeq(Execute:= TRUE, Next:= 0); 
+		 END_IF		 
+ 
+END_CASE
+SealSeq.Hold := Ref_MachineStateModel.Sts_Held;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM07_Seal2" Id="{22bebdf9-f4b7-460f-8c31-580f937bff4c}">
+      <Implementation>
+        <ST><![CDATA[CASE Seal2Seq.Now OF	
+	0:
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  Seal2Seq(Execute:= TRUE, Next:= 110);  
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping THEN
+		  Seal2Seq(Execute:= TRUE, Next:= Seq_StoppingDone);     
+	   END_IF	
+	
+	110:   	
+		IF glb_Un01Box.Box[HMI_Seal2No].Seal2 THEN
+		   Seal2Seq(Execute:= TRUE, Next:= 111); 
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping THEN
+		   Seal2Seq(Execute:= TRUE, Next:= Seq_StoppingDone);  
+		END_IF	
+	111:
+        IF SealCylinderDown.i.OutSensor OR NOT glb_Un01Box.Box[HMI_Seal1No].Seal1 THEN
+		   Seal2Seq(Execute:= TRUE, Next:= 120);
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping THEN
+		   Seal2Seq(Execute:= TRUE, Next:= Seq_StoppingDone);  
+		END_IF	
+		
+	120: 
+		Seal2CylinderDown.i.ActiveIn:=FALSE;
+		Seal2CylinderDown.i.ActiveOut:=TRUE;
+		IF  Seal2CylinderDown.i.OutSensor AND NOT Seal2CylinderDown.o.Error  THEN
+		 	Seal2Seq(Execute:= TRUE, Next:= 121); 
+		END_IF	  
+		
+	121:
+		tonSeal2Seq(IN:=TRUE , PT:=T#1S , Q=> , ET=> );
+		IF tonSeal2Seq.Q THEN
+			tonSeal2Seq(IN:=FALSE , PT:=T#1S , Q=> , ET=> );
+			Seal2Seq(Execute:= TRUE,Hold:=FALSE, Next:= 130); 
+		END_IF	
+ 
+	130:
+		Seal2CylinderUp.i.ActiveIn:=FALSE;
+		Seal2CylinderUp.i.ActiveOut:=TRUE;
+		Seal2Seq(Execute:= TRUE,Hold:=FALSE, Next:= 140); 
+	  
+	  	  
+	140://封口保压
+		tonSeal2Seq(IN:=TRUE , PT:=DINT_TO_TIME(HMI_SealTime2) , Q=> , ET=> );
+		IF tonSeal2Seq.Q THEN
+			tonSeal2Seq(IN:=FALSE , PT:=DINT_TO_TIME(HMI_SealTime2) , Q=> , ET=> );
+			Seal2Seq(Execute:= TRUE,Hold:=FALSE, Next:= 150); 
+		END_IF	
+   
+    150: 
+		Seal2CylinderUp.i.ActiveIn:=TRUE;
+		Seal2CylinderUp.i.ActiveOut:=FALSE;
+		IF Seal2CylinderUp.i.InSensor 
+		AND NOT Seal2CylinderUp.o.Error THEN
+		    Seal2Seq(Execute:= TRUE, Next:= 180); 
+		END_IF		
+	(*	
+	160:
+		Seal2CylinderUp.i.ActiveIn:=FALSE;
+		Seal2CylinderUp.i.ActiveOut:=TRUE;
+		Seal2Seq(Execute:= TRUE,Hold:=FALSE, Next:= 170); 
+	  
+	  	  
+	170://封口保压
+		tonSeal2Seq(IN:=TRUE , PT:=DINT_TO_TIME(HMI_arSealTime[1]) , Q=> , ET=> );
+		IF tonSeal2Seq.Q THEN
+			tonSeal2Seq(IN:=FALSE , PT:=DINT_TO_TIME(HMI_arSealTime[1]) , Q=> , ET=> );
+			Seal2Seq(Execute:= TRUE,Hold:=FALSE, Next:= 180); 
+		END_IF	
+     *)
+	180:
+		Seal2CylinderUp.i.ActiveIn:=TRUE;
+		Seal2CylinderUp.i.ActiveOut:=FALSE;		
+		Seal2CylinderDown.i.ActiveIn:=TRUE;
+		Seal2CylinderDown.i.ActiveOut:=FALSE;
+		IF Seal2CylinderDown.i.InSensor AND Seal2CylinderUp.i.InSensor 
+		AND NOT Seal2CylinderDown.o.Error 
+		AND NOT Seal2CylinderUp.o.Error THEN
+			Seal2Seq(Execute:= TRUE, Next:= 190); 
+		END_IF
+	
+	190:
+		  glb_Un01Box.Box[HMI_Seal2No].Seal2:=FALSE;
+		  Seal2Seq(Execute:= TRUE,Hold:=FALSE, Next:= 110); 
+	 
+	Seq_StoppingDone:
+		 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 Seal2Seq(Execute:= TRUE, Next:= 0); 
+		 END_IF		 
+ 
+END_CASE
+Seal2Seq.Hold := Ref_MachineStateModel.Sts_Held;;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM08_Check1" Id="{a706141f-6005-45b7-ab77-982b45a84717}">
+      <Implementation>
+        <ST><![CDATA[CASE Check1Seq.Now OF	
+	0:
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  Check1Seq(Execute:= TRUE, Next:= 110);  
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping THEN
+		  Check1Seq(Execute:= TRUE, Next:= Seq_StoppingDone);     
+	   END_IF	
+	
+	110: 
+		IF glb_Un01Box.Box[HMI_Check1No].Check1 THEN
+		   Check1Seq(Execute:= TRUE, Next:= 120); 
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping THEN
+		   Check1Seq(Execute:= TRUE, Next:= Seq_StoppingDone);  
+		END_IF	
+		
+	120: 
+	    Check1Cylinder.i.ActiveIn:=FALSE;
+		Check1Cylinder.i.ActiveOut:=TRUE;
+		IF  Check1Cylinder.i.OutSensor AND NOT Check1Cylinder.o.Error  THEN
+		 	Check1Seq(Execute:= TRUE, Next:= 121); 
+		END_IF	  
+		
+	121:
+		tonCheck1Seq(IN:=TRUE , PT:=T#2S , Q=> , ET=> );
+		IF tonCheck1Seq.Q THEN
+			tonCheck1Seq(IN:=FALSE , PT:=T#2S , Q=> , ET=> );
+			Check1Seq(Execute:= TRUE,Hold:=FALSE, Next:= 130); 
+		END_IF	
+ 
+	130:
+	    IF NOT check1Sensor1.o.Value THEN
+           HMI_StopEvent[5].ID[20]:=TRUE;
+		END_IF
+	    IF NOT check1Sensor2.o.Value THEN
+           HMI_StopEvent[5].ID[21]:=TRUE;
+		END_IF
+   	    IF NOT check1Sensor3.o.Value THEN
+           HMI_StopEvent[5].ID[22]:=TRUE;
+		END_IF
+   	    IF NOT check1Sensor4.o.Value THEN
+           HMI_StopEvent[5].ID[23]:=TRUE;
+		END_IF
+   	    IF NOT check1Sensor5.o.Value THEN
+           HMI_StopEvent[5].ID[24]:=TRUE;
+		END_IF
+   	    IF NOT check1Sensor6.o.Value THEN
+           HMI_StopEvent[5].ID[25]:=TRUE;
+		END_IF
+   	    IF NOT check1Sensor7.o.Value THEN
+           HMI_StopEvent[5].ID[26]:=TRUE;
+		END_IF
+	    Check1Seq(Execute:= TRUE,Hold:=FALSE, Next:= 140);
+
+  	  
+	140:
+		Check1Cylinder.i.ActiveIn:=TRUE;
+		Check1Cylinder.i.ActiveOut:=FALSE;	
+		IF  Check1Cylinder.i.InSensor AND NOT Check1Cylinder.o.Error  THEN
+		    glb_Un01Box.Box[HMI_Check1No].Check1:=FALSE;
+	        Check1Seq(Execute:= TRUE,Hold:=FALSE, Next:= 110); 
+	     END_IF
+		 
+	Seq_StoppingDone:
+		 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 Check1Seq(Execute:= TRUE, Next:= 0); 
+		 END_IF		 
+END_CASE
+Check1Seq.Hold := Ref_MachineStateModel.Sts_Held;;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CM09_Check2_Reject" Id="{7196a471-5e22-48f8-b01a-31727ff55e38}">
+      <Implementation>
+        <ST><![CDATA[CASE RejectSeq.Now OF	
+	0:
+	   IF Ref_MachineStateModel.Sts_Execute  THEN
+		  RejectSeq(Execute:= TRUE, Next:= 110);  
+	   END_IF	
+	
+	   IF Ref_MachineStateModel.Sts_Stopping THEN
+		  RejectSeq(Execute:= TRUE, Next:= Seq_StoppingDone);     
+	   END_IF	
+	
+	110: 
+		IF bRejectActive THEN
+		   RejectSeq(Execute:= TRUE, Next:= 120); 
+		END_IF
+		IF Ref_MachineStateModel.Sts_Stopping THEN
+		   RejectSeq(Execute:= TRUE, Next:= Seq_StoppingDone);  
+		END_IF	
+		
+	120: 
+	    RejectCylinder.i.ActiveIn:=FALSE;
+		RejectCylinder.i.ActiveOut:=TRUE;
+		IF  RejectCylinder.i.OutSensor AND NOT RejectCylinder.o.Error  THEN
+		 	RejectSeq(Execute:= TRUE, Next:= 121); 
+		END_IF	  
+		
+	121:
+		tonRejectSeq(IN:=TRUE , PT:=T#1.5S , Q=> , ET=> );
+		IF tonRejectSeq.Q THEN
+			tonRejectSeq(IN:=FALSE , PT:=T#1.5S , Q=> , ET=> );
+			RejectSeq(Execute:= TRUE,Hold:=FALSE, Next:= 130); 
+		END_IF	
+ 
+	130:
+		RejectCylinder.i.ActiveIn:=TRUE;
+		RejectCylinder.i.ActiveOut:=FALSE;	
+		IF  RejectCylinder.i.InSensor AND NOT RejectCylinder.o.Error  THEN
+		    bRejectActive:=FALSE;
+	        RejectSeq(Execute:= TRUE,Hold:=FALSE, Next:= 110); 
+	     END_IF
+		 
+	Seq_StoppingDone:
+		 IF  NOT Ref_MachineStateModel.Sts_Stopping THEN
+			 RejectSeq(Execute:= TRUE, Next:= 0); 
+		 END_IF		 
+END_CASE
+RejectSeq.Hold := Ref_MachineStateModel.Sts_Held;;]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="HomeValve" Id="{a9d155cf-3ae6-446a-9410-4cfa63513673}">
+      <Declaration><![CDATA[METHOD HomeValve : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[	PullCylinder1.i.ActiveIn:=TRUE;
+	PullCylinder1.i.ActiveOut:=FALSE;
+	PullCylinder2.i.ActiveIn:=TRUE;
+	PullCylinder2.i.ActiveOut:=FALSE;
+	PullCylinder3.i.ActiveIn:=TRUE;
+	PullCylinder3.i.ActiveOut:=FALSE;
+	PullCylinder4.i.ActiveIn:=TRUE;
+	PullCylinder4.i.ActiveOut:=FALSE;
+	PullCylinder5.i.ActiveIn:=TRUE;
+	PullCylinder5.i.ActiveOut:=FALSE;
+	PullCylinder6.i.ActiveIn:=TRUE;
+	PullCylinder6.i.ActiveOut:=FALSE;
+	PullCylinder7.i.ActiveIn:=TRUE;
+	PullCylinder7.i.ActiveOut:=FALSE;
+	PullVacuum1.i.ActiveIN:=FALSE;
+	PullVacuum2.i.ActiveIN:=FALSE;
+	PullVacuum3.i.ActiveIN:=FALSE;
+	PullVacuum4.i.ActiveIN:=FALSE;
+	PullVacuum5.i.ActiveIN:=FALSE;
+	PullVacuum6.i.ActiveIN:=FALSE;
+	PullVacuum7.i.ActiveIN:=FALSE;
+	
+	DropCylinderUP.i.ActiveIn:=TRUE;
+	DropCylinderUP.i.ActiveOut:=FALSE;		
+	DropCylinderDown.i.ActiveIn:=TRUE;
+	DropCylinderDown.i.ActiveOut:=FALSE;
+
+    Check1Cylinder.i.ActiveIn:=TRUE;
+	Check1Cylinder.i.ActiveOut:=FALSE;
+ 
+	
+	CutCylinderUp.i.ActiveIn:=TRUE;
+	CutCylinderUp.i.ActiveOut:=FALSE;
+	CutCylinderDown.i.ActiveIn:=TRUE;
+	CutCylinderDown.i.ActiveOut:=FALSE;
+	
+	SealCylinderUp.i.ActiveIn:=TRUE;
+	SealCylinderUp.i.ActiveOut:=FALSE;
+	
+	SealCylinderDown.i.ActiveIn:=TRUE;
+	SealCylinderDown.i.ActiveOut:=FALSE;
+
+	Seal2CylinderUp.i.ActiveIn:=TRUE;
+	Seal2CylinderUp.i.ActiveOut:=FALSE;
+	
+	Seal2CylinderDown.i.ActiveIn:=TRUE;
+	Seal2CylinderDown.i.ActiveOut:=FALSE;
+
+	
+	TransferCyliderVert.i.ActiveIn:=TRUE;
+	TransferCyliderVert.i.ActiveOut:=FALSE;
+
+    IF 	TransferCyliderVert.i.InSensor THEN
+		TransferCyliderRota.i.ActiveIn:=TRUE;
+		TransferCyliderRota.i.ActiveOut:=FALSE;	
+        IF 	TransferCyliderRota.i.InSensor THEN
+		    TransferCyliderHori.i.ActiveIn:=TRUE;
+		    TransferCyliderHori.i.ActiveOut:=FALSE;
+        END_IF	
+	END_IF
+
+	TransferVacuum1.i.ActiveIN:=FALSE;
+	TransferVacuum2.i.ActiveIN:=FALSE;
+	TransferVacuum3.i.ActiveIN:=FALSE;
+	TransferVacuum4.i.ActiveIN:=FALSE;
+	TransferVacuum5.i.ActiveIN:=FALSE;
+	TransferVacuum6.i.ActiveIN:=FALSE;
+	TransferVacuum7.i.ActiveIN:=FALSE;	
+    
+HomeValve := PullCylinder1.i.InSensor AND NOT PullCylinder1.o.Error
+AND PullCylinder2.i.InSensor AND NOT PullCylinder2.o.Error
+AND PullCylinder3.i.InSensor AND NOT PullCylinder3.o.Error 
+AND PullCylinder4.i.InSensor AND NOT PullCylinder4.o.Error 
+AND PullCylinder5.i.InSensor AND NOT PullCylinder5.o.Error
+AND PullCylinder6.i.InSensor AND NOT PullCylinder6.o.Error 
+AND PullCylinder7.i.InSensor AND NOT PullCylinder7.o.Error
+AND DropCylinderUP.i.InSensor AND Check1Cylinder.i.InSensor
+AND  NOT Check1Cylinder.o.Error AND NOT DropCylinderUP.o.Error
+AND DropCylinderDown.i.InSensor AND NOT DropCylinderDown.o.Error 
+AND CutCylinderUp.i.InSensor AND NOT CutCylinderUp.o.Error 
+AND CutCylinderDown.i.InSensor AND NOT CutCylinderDown.o.Error 
+AND SealCylinderUp.i.InSensor AND NOT SealCylinderUp.o.Error 
+AND SealCylinderDown.i.InSensor AND NOT SealCylinderDown.o.Error 
+AND TransferCyliderHori.i.InSensor AND NOT TransferCyliderHori.o.Error
+AND TransferCyliderRota.i.InSensor AND NOT TransferCyliderRota.o.Error 
+AND TransferCyliderVert.i.InSensor AND NOT TransferCyliderVert.o.Error ; 
+
+
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Action Name="MainRoution" Id="{1804f88b-f08b-4e9f-b211-5912130595b7}">
+      <Implementation>
+        <ST><![CDATA[EM_No:=7;
+IF Ref_Unit.EM_Selected[EM_No] THEN
+	IF Ref_MachineStateModel.Sts_Holding THEN
+		Ref_Unit.EM_Holding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Holding_Done[EM_No]:=FALSE;
+	END_IF
+	IF Ref_MachineStateModel.Sts_UnHolding THEN
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnHolding_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Suspending THEN
+		Ref_Unit.EM_Suspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_Suspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_UnSuspending THEN
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=TRUE;
+		ELSE
+		Ref_Unit.EM_UnSuspending_Done[EM_No]:=FALSE;
+	END_IF
+	
+
+	IF Ref_MachineStateModel.Sts_Resetting AND beltSeq.Now=Seq_ResettingDone THEN
+	   Ref_Unit.EM_Resetting_Done[EM_No]:=TRUE;
+       ELSE   
+	   Ref_Unit.EM_Resetting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Clearing THEN
+	   Ref_Unit.EM_Clearing_Done[EM_No]:=TRUE;  
+    ELSE
+	   Ref_Unit.EM_Clearing_Done[EM_No]:=FALSE;
+	END_IF
+	
+
+	IF Ref_MachineStateModel.Sts_Starting THEN
+	   Ref_Unit.EM_Starting_Done[EM_No]:=TRUE;
+	ELSE
+	   Ref_Unit.EM_Starting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	IF Ref_MachineStateModel.Sts_Stopping
+    AND PullSeq.Now=Seq_StoppingDone
+	AND DropSeq.Now=Seq_StoppingDone
+	AND CutSeq.Now=Seq_StoppingDone
+	AND SealSeq.Now=Seq_StoppingDone	
+	AND TransferSeq.Now=Seq_StoppingDone
+	AND BeltSeq.Now=Seq_StoppingDone THEN
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=TRUE;
+	ELSE
+	   Ref_Unit.EM_Stopping_Done[EM_No]:=FALSE;
+	END_IF
+		
+	IF Ref_MachineStateModel.Sts_Aborting THEN
+		PullSeq(ExeCute:= TRUE, Next:= 0);
+		DropSeq(ExeCute:= TRUE, Next:= 0); 
+		CutSeq(Execute:= TRUE, Next:= 0); 
+		SealSeq(Execute:= TRUE, Next:= 0); 	
+		Seal2Seq(Execute:= TRUE, Next:= 0); 			
+		TransferSeq(ExeCute:= TRUE, Next:= 0);
+		BeltSeq(Execute:= TRUE, Next:= 0);
+	    Check1Seq(Execute:= TRUE, Next:= 0);	
+        RejectSeq(Execute:= TRUE, Next:= 0);	
+        IF ref_Belt.o.StandStill THEN
+		   ref_Belt.i.Stop:=TRUE;
+		END_IF
+		IF ref_Puller.o.StandStill THEN
+		   ref_Puller.i.Stop:=TRUE;
+		END_IF		
+        ReleaseValve();
+		IF tonAbortingWatchDog.Q THEN 
+		Ref_Unit.EM_Aborting_Done[EM_No]:=TRUE;
+		ref_Belt.i.Disable:=TRUE;
+		ref_Puller.i.Disable:=TRUE;	
+		END_IF
+	ELSE
+	    Ref_Unit.EM_Aborting_Done[EM_No]:=FALSE;
+	END_IF
+	
+	tonAbortingWatchDog(IN:= Ref_MachineStateModel.Sts_Aborting, PT:=T#3S , Q=> , ET=> );
+	CM01_Pull();
+	CM02_Drop();
+	CM03_Cut();
+	CM06_Seal();
+    CM07_Seal2();	
+	CM04_Transfer();
+	CM08_Check1();
+	CM09_check2_Reject();
+	CM05_Belt();
+	ELSE
+	PullSeq(ExeCute:= TRUE, Next:= 0);
+	DropSeq(ExeCute:= TRUE, Next:= 0); 
+	CutSeq(Execute:= TRUE, Next:= 0); 
+	SealSeq(Execute:= TRUE, Next:= 0); 
+	Seal2Seq(Execute:= TRUE, Next:= 0);	
+	TransferSeq(ExeCute:= TRUE, Next:= 0);
+	BeltSeq(Execute:= TRUE, Next:= 0);
+	Check1Seq(Execute:= TRUE, Next:= 0);
+	RejectSeq(Execute:= TRUE, Next:= 0);
+END_IF]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="ReleaseValve" Id="{9582fa08-d18d-4b62-a5a2-1a9add29c9bb}">
+      <Declaration><![CDATA[METHOD ReleaseValve : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[	PullCylinder1.i.ActiveIn:=FALSE;
+	PullCylinder1.i.ActiveOut:=FALSE;
+	PullCylinder2.i.ActiveIn:=FALSE;
+	PullCylinder2.i.ActiveOut:=FALSE;
+	PullCylinder3.i.ActiveIn:=FALSE;
+	PullCylinder3.i.ActiveOut:=FALSE;
+	PullCylinder4.i.ActiveIn:=FALSE;
+	PullCylinder4.i.ActiveOut:=FALSE;
+	PullCylinder5.i.ActiveIn:=FALSE;
+	PullCylinder5.i.ActiveOut:=FALSE;
+	PullCylinder6.i.ActiveIn:=FALSE;
+	PullCylinder6.i.ActiveOut:=FALSE;
+	PullCylinder7.i.ActiveIn:=FALSE;
+	PullCylinder7.i.ActiveOut:=FALSE;
+	PullVacuum1.i.ActiveIN:=FALSE;
+	PullVacuum2.i.ActiveIN:=FALSE;
+	PullVacuum3.i.ActiveIN:=FALSE;
+	PullVacuum4.i.ActiveIN:=FALSE;
+	PullVacuum5.i.ActiveIN:=FALSE;
+	PullVacuum6.i.ActiveIN:=FALSE;
+	PullVacuum7.i.ActiveIN:=FALSE;
+	DropCylinderUP.i.ActiveIn:=FALSE;
+	DropCylinderUP.i.ActiveOut:=FALSE;		
+	DropCylinderDown.i.ActiveIn:=FALSE;
+	DropCylinderDown.i.ActiveOut:=FALSE;	
+	CutCylinderUp.i.ActiveIn:=FALSE;
+	CutCylinderUp.i.ActiveOut:=FALSE;
+	CutCylinderDown.i.ActiveIn:=FALSE;
+	CutCylinderDown.i.ActiveOut:=FALSE;
+	
+	SealCylinderUp.i.ActiveIn:=FALSE;
+	SealCylinderUp.i.ActiveOut:=FALSE;
+	SealCylinderDown.i.ActiveIn:=FALSE;
+	SealCylinderDown.i.ActiveOut:=FALSE;	
+	
+	Seal2CylinderUp.i.ActiveIn:=FALSE;
+	Seal2CylinderUp.i.ActiveOut:=FALSE;
+	Seal2CylinderDown.i.ActiveIn:=FALSE;
+	Seal2CylinderDown.i.ActiveOut:=FALSE;	
+	
+	TransferCyliderHori.i.ActiveIn:=FALSE;
+	TransferCyliderHori.i.ActiveOut:=FALSE;
+	TransferCyliderRota.i.ActiveIn:=FALSE;
+	TransferCyliderRota.i.ActiveOut:=FALSE;	
+	TransferCyliderVert.i.ActiveIn:=FALSE;
+	TransferCyliderVert.i.ActiveOut:=FALSE;
+	TransferVacuum1.i.ActiveIN:=FALSE;
+	TransferVacuum2.i.ActiveIN:=FALSE;
+	TransferVacuum3.i.ActiveIN:=FALSE;
+	TransferVacuum4.i.ActiveIN:=FALSE;
+	TransferVacuum5.i.ActiveIN:=FALSE;
+	TransferVacuum6.i.ActiveIN:=FALSE;
+	TransferVacuum7.i.ActiveIN:=FALSE;
+    infeedCylinder.i.ActiveIn:=FALSE;
+	InfeedCylinder.i.ActiveOut:=FALSE;	
+	ReleaseValve:=TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Action Name="SR999_FaultHandler" Id="{a7af662b-a2e9-47cf-bdae-1d0eb9aed223}">
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="EM07_Belt6">
+      <LineId Id="575" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="544" Count="0" />
+      <LineId Id="1698" Count="0" />
+      <LineId Id="725" Count="0" />
+      <LineId Id="686" Count="0" />
+      <LineId Id="1583" Count="1" />
+      <LineId Id="1693" Count="0" />
+      <LineId Id="727" Count="0" />
+      <LineId Id="1255" Count="0" />
+      <LineId Id="1930" Count="0" />
+      <LineId Id="1256" Count="0" />
+      <LineId Id="1814" Count="0" />
+      <LineId Id="1812" Count="0" />
+      <LineId Id="1811" Count="0" />
+      <LineId Id="1257" Count="0" />
+      <LineId Id="1049" Count="0" />
+      <LineId Id="1808" Count="0" />
+      <LineId Id="1372" Count="0" />
+      <LineId Id="1377" Count="0" />
+      <LineId Id="1478" Count="0" />
+      <LineId Id="934" Count="14" />
+      <LineId Id="916" Count="0" />
+      <LineId Id="687" Count="4" />
+      <LineId Id="685" Count="0" />
+      <LineId Id="692" Count="0" />
+      <LineId Id="3010" Count="1" />
+      <LineId Id="3016" Count="4" />
+      <LineId Id="3022" Count="0" />
+      <LineId Id="3021" Count="0" />
+      <LineId Id="3009" Count="0" />
+      <LineId Id="669" Count="0" />
+      <LineId Id="661" Count="0" />
+      <LineId Id="3164" Count="0" />
+      <LineId Id="811" Count="0" />
+      <LineId Id="809" Count="0" />
+      <LineId Id="813" Count="0" />
+      <LineId Id="810" Count="0" />
+      <LineId Id="808" Count="0" />
+      <LineId Id="1925" Count="0" />
+      <LineId Id="1928" Count="0" />
+      <LineId Id="1926" Count="0" />
+      <LineId Id="2169" Count="0" />
+      <LineId Id="2171" Count="0" />
+      <LineId Id="2170" Count="0" />
+      <LineId Id="2723" Count="1" />
+      <LineId Id="815" Count="0" />
+      <LineId Id="2866" Count="0" />
+      <LineId Id="2865" Count="0" />
+      <LineId Id="711" Count="6" />
+      <LineId Id="681" Count="0" />
+      <LineId Id="482" Count="0" />
+      <LineId Id="827" Count="5" />
+      <LineId Id="2440" Count="8" />
+      <LineId Id="826" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="598" Count="0" />
+      <LineId Id="2044" Count="0" />
+      <LineId Id="1148" Count="0" />
+      <LineId Id="2049" Count="0" />
+      <LineId Id="2045" Count="0" />
+      <LineId Id="2050" Count="2" />
+      <LineId Id="2305" Count="0" />
+      <LineId Id="2304" Count="0" />
+      <LineId Id="2582" Count="0" />
+      <LineId Id="2294" Count="1" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM01_Pull">
+      <LineId Id="7" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="160" Count="1" />
+      <LineId Id="169" Count="1" />
+      <LineId Id="162" Count="0" />
+      <LineId Id="276" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="205" Count="0" />
+      <LineId Id="310" Count="1" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="312" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="217" Count="7" />
+      <LineId Id="184" Count="1" />
+      <LineId Id="202" Count="0" />
+      <LineId Id="103" Count="1" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="119" Count="4" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="269" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="113" Count="1" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="115" Count="1" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="243" Count="0" />
+      <LineId Id="407" Count="0" />
+      <LineId Id="392" Count="0" />
+      <LineId Id="396" Count="5" />
+      <LineId Id="395" Count="0" />
+      <LineId Id="244" Count="0" />
+      <LineId Id="267" Count="0" />
+      <LineId Id="390" Count="0" />
+      <LineId Id="387" Count="2" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="320" Count="0" />
+      <LineId Id="42" Count="2" />
+      <LineId Id="275" Count="0" />
+      <LineId Id="226" Count="6" />
+      <LineId Id="326" Count="1" />
+      <LineId Id="330" Count="0" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="412" Count="3" />
+      <LineId Id="410" Count="1" />
+      <LineId Id="409" Count="0" />
+      <LineId Id="346" Count="5" />
+      <LineId Id="341" Count="0" />
+      <LineId Id="325" Count="0" />
+      <LineId Id="329" Count="0" />
+      <LineId Id="307" Count="2" />
+      <LineId Id="233" Count="0" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="271" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="316" Count="3" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="272" Count="0" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="322" Count="0" />
+      <LineId Id="127" Count="3" />
+      <LineId Id="156" Count="1" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="363" Count="0" />
+      <LineId Id="273" Count="0" />
+      <LineId Id="366" Count="5" />
+      <LineId Id="365" Count="0" />
+      <LineId Id="357" Count="5" />
+      <LineId Id="352" Count="1" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="91" Count="5" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="66" Count="3" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="383" Count="1" />
+      <LineId Id="323" Count="0" />
+      <LineId Id="377" Count="1" />
+      <LineId Id="376" Count="0" />
+      <LineId Id="382" Count="0" />
+      <LineId Id="381" Count="0" />
+      <LineId Id="379" Count="0" />
+      <LineId Id="408" Count="0" />
+      <LineId Id="385" Count="1" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="375" Count="0" />
+      <LineId Id="237" Count="0" />
+      <LineId Id="372" Count="0" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="236" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="258" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="293" Count="2" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="296" Count="1" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="254" Count="0" />
+      <LineId Id="175" Count="0" />
+      <LineId Id="182" Count="1" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="314" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="8" Count="5" />
+      <LineId Id="16" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM02_Drop">
+      <LineId Id="16" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="106" Count="5" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="133" Count="2" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="143" Count="3" />
+      <LineId Id="136" Count="1" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="130" Count="1" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="163" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="241" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="88" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="44" Count="1" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="47" Count="1" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="52" Count="1" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="199" Count="0" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="239" Count="0" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="230" Count="3" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="180" Count="5" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="200" Count="0" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="240" Count="0" />
+      <LineId Id="228" Count="0" />
+      <LineId Id="237" Count="1" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="236" Count="0" />
+      <LineId Id="235" Count="0" />
+      <LineId Id="192" Count="5" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="189" Count="0" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="122" Count="1" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="93" Count="2" />
+      <LineId Id="56" Count="1" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="172" Count="1" />
+      <LineId Id="175" Count="1" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="98" Count="1" />
+      <LineId Id="113" Count="1" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="19" Count="2" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM03_Cut">
+      <LineId Id="4" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="98" Count="1" />
+      <LineId Id="109" Count="1" />
+      <LineId Id="100" Count="4" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="155" Count="3" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="223" Count="0" />
+      <LineId Id="220" Count="1" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="222" Count="0" />
+      <LineId Id="225" Count="3" />
+      <LineId Id="63" Count="1" />
+      <LineId Id="82" Count="2" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="23" Count="1" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="112" Count="1" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="196" Count="2" />
+      <LineId Id="200" Count="3" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="204" Count="2" />
+      <LineId Id="209" Count="1" />
+      <LineId Id="199" Count="0" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="29" Count="1" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="139" Count="1" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="144" Count="3" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="171" Count="5" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="167" Count="1" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="47" Count="1" />
+      <LineId Id="159" Count="1" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="177" Count="1" />
+      <LineId Id="185" Count="2" />
+      <LineId Id="191" Count="4" />
+      <LineId Id="179" Count="1" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="106" Count="1" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="131" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM04_Transfer">
+      <LineId Id="169" Count="0" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="136" Count="5" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="113" Count="4" />
+      <LineId Id="108" Count="1" />
+      <LineId Id="118" Count="2" />
+      <LineId Id="123" Count="1" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="253" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="149" Count="1" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="204" Count="5" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="42" Count="3" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="49" Count="1" />
+      <LineId Id="58" Count="1" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="215" Count="1" />
+      <LineId Id="213" Count="1" />
+      <LineId Id="217" Count="1" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="222" Count="3" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="195" Count="1" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="254" Count="0" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="243" Count="0" />
+      <LineId Id="249" Count="2" />
+      <LineId Id="197" Count="0" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="68" Count="3" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="261" Count="3" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="258" Count="1" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="91" Count="1" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="80" Count="3" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="93" Count="5" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="99" Count="3" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="162" Count="3" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="228" Count="1" />
+      <LineId Id="232" Count="3" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="241" Count="0" />
+      <LineId Id="244" Count="2" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="146" Count="2" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="170" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM05_Belt">
+      <LineId Id="2" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="157" Count="1" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="93" Count="9" />
+      <LineId Id="189" Count="1" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="195" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="108" Count="6" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="232" Count="0" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="118" Count="4" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="123" Count="7" />
+      <LineId Id="166" Count="2" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="131" Count="6" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="138" Count="16" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="84" Count="1" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="3" Count="1" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="229" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="233" Count="0" />
+      <LineId Id="235" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="48" Count="1" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="7" Count="1" />
+      <LineId Id="11" Count="2" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="14" Count="4" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="236" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="174" Count="1" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="227" Count="1" />
+      <LineId Id="196" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="200" Count="4" />
+      <LineId Id="197" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="198" Count="1" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="162" Count="2" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="58" Count="2" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="194" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="220" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM06_Seal">
+      <LineId Id="143" Count="0" />
+      <LineId Id="147" Count="2" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="2" Count="2" />
+      <LineId Id="152" Count="1" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="8" Count="6" />
+      <LineId Id="38" Count="12" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="136" Count="3" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="52" Count="13" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="66" Count="1" />
+      <LineId Id="99" Count="1" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="163" Count="1" />
+      <LineId Id="162" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="122" Count="10" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="68" Count="10" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="91" Count="1" />
+      <LineId Id="80" Count="1" />
+      <LineId Id="86" Count="4" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM07_Seal2">
+      <LineId Id="9" Count="3" />
+      <LineId Id="15" Count="13" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="106" Count="3" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="29" Count="58" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="91" Count="1" />
+      <LineId Id="95" Count="6" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM08_Check1">
+      <LineId Id="2" Count="16" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="132" Count="1" />
+      <LineId Id="30" Count="11" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="111" Count="1" />
+      <LineId Id="114" Count="17" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="88" Count="1" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="90" Count="3" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.CM09_Check2_Reject">
+      <LineId Id="2" Count="8" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="12" Count="7" />
+      <LineId Id="110" Count="4" />
+      <LineId Id="25" Count="1" />
+      <LineId Id="105" Count="4" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="59" Count="12" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.HomeValve">
+      <LineId Id="6" Count="20" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="27" Count="3" />
+      <LineId Id="136" Count="1" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="31" Count="2" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="87" Count="1" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="128" Count="3" />
+      <LineId Id="126" Count="1" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="111" Count="1" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="120" Count="1" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="60" Count="5" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="69" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="71" Count="3" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="75" Count="2" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="36" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.MainRoution">
+      <LineId Id="1" Count="0" />
+      <LineId Id="89" Count="22" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="201" Count="3" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="120" Count="1" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="162" Count="0" />
+      <LineId Id="122" Count="1" />
+      <LineId Id="128" Count="2" />
+      <LineId Id="194" Count="1" />
+      <LineId Id="131" Count="1" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="252" Count="2" />
+      <LineId Id="273" Count="0" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="196" Count="1" />
+      <LineId Id="138" Count="1" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="261" Count="2" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="274" Count="0" />
+      <LineId Id="264" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="280" Count="0" />
+      <LineId Id="283" Count="0" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="189" Count="1" />
+      <LineId Id="192" Count="1" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="179" Count="7" />
+      <LineId Id="269" Count="0" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="232" Count="2" />
+      <LineId Id="271" Count="0" />
+      <LineId Id="275" Count="0" />
+      <LineId Id="235" Count="0" />
+      <LineId Id="278" Count="0" />
+      <LineId Id="281" Count="0" />
+      <LineId Id="236" Count="1" />
+      <LineId Id="265" Count="2" />
+      <LineId Id="272" Count="0" />
+      <LineId Id="277" Count="0" />
+      <LineId Id="268" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="279" Count="0" />
+      <LineId Id="282" Count="0" />
+      <LineId Id="84" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.ReleaseValve">
+      <LineId Id="6" Count="28" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="57" Count="2" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="67" Count="2" />
+      <LineId Id="65" Count="1" />
+      <LineId Id="35" Count="11" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="47" Count="0" />
+    </LineIds>
+    <LineIds Name="EM07_Belt6.SR999_FaultHandler">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

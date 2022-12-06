@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="AOI_Bin" Id="{6ddbbda6-863c-40fe-b951-41f35b0212f2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_Bin
+VAR_INPUT
+	Trigger: BOOL;
+	BeltPos: LREAL;
+	PosOffset: LREAL;
+	RangeValue: LREAL:=10;
+	Valid: BOOL;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	rtTrig: R_trig;
+	i: USINT;
+	j: INT;
+	k: USINT;
+	arPosDiff: array[0..254] of LREAL;
+	lrPosDiff1: LREAL;
+	diInRangCnt: DINT;
+	h: INT;
+END_VAR
+VAR_IN_OUT
+	BinList: UDT_BinList;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[rtTrig(CLK:=Trigger , Q=> );
+
+IF rtTrig.Q THEN
+	BinList.Bin[0].lrlatchPos:=BeltPos;	
+    BinList.Bin[0].bValid:=Valid;
+  	FOR k:=254 TO 1 BY -1 DO
+		BinList.Bin[k].bValid:=binlist.Bin[k-1].bValid;
+		BinList.Bin[k].bReject:=binlist.Bin[k-1].bReject;
+		BinList.Bin[k].lrlatchPos:=binlist.Bin[k-1].lrlatchPos;
+	END_FOR
+    BinList.Bin[0].bValid:= FALSE;
+    BinList.Bin[0].bReject:= FALSE;	
+END_IF
+
+
+FOR i:=128 TO 1 BY -1 DO
+    IF BinList.Bin[i].bValid THEN
+       arPosDiff[i]:= BeltPos-BinList.bin[i].lrlatchPos;	
+  	END_IF
+END_FOR
+
+FOR j:=1 TO 20 DO
+   diInRangCnt:=0;
+   FOR i:=128 TO 1 BY -1 DO
+		IF arPosDiff[i]> BinList.arWorkPos[j] + PosOffset
+		AND arPosDiff[i] < (BinList.arWorkPos[j]+PosOffset+ RangeValue) THEN
+			diInRangCnt:=diInRangCnt+1;
+		END_IF 
+   END_FOR
+   IF diInRangCnt<>0 THEN
+	  BinList.arInRang[j]:=TRUE; 
+	  ELSE
+	  BinList.arInRang[j]:=FALSE;
+   END_IF
+   
+END_FOR
+
+
+
+IF BinList.Reset THEN
+	FOR h:=0 TO 254  DO
+		BinList.Bin[h].bValid:=FALSE;
+		BinList.Bin[h].bReject:=FALSE;
+	END_FOR
+END_IF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_Bin">
+      <LineId Id="19" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="24" Count="1" />
+      <LineId Id="298" Count="0" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="32" Count="2" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="240" Count="0" />
+      <LineId Id="237" Count="0" />
+      <LineId Id="231" Count="1" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="236" Count="0" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="243" Count="1" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="249" Count="0" />
+      <LineId Id="245" Count="1" />
+      <LineId Id="48" Count="4" />
+      <LineId Id="274" Count="1" />
+      <LineId Id="300" Count="0" />
+      <LineId Id="272" Count="1" />
+      <LineId Id="53" Count="113" />
+      <LineId Id="31" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

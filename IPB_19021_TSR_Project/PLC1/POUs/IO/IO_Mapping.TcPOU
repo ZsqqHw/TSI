@@ -1,0 +1,835 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="IO_Mapping" Id="{9ad96803-a7ce-4885-9b60-b746f2c5397c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM IO_Mapping
+VAR
+	i: INT;
+	rtsensor: R_trig;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CP02();CP03();CP04();CP05();CP07();CPX1();WPI1();WPI2();									
+									
+								
+	
+
+
+
+								
+
+	 
+	 
+	 
+
+
+
+
+]]></ST>
+    </Implementation>
+    <Action Name="CP02" Id="{f029257a-80a6-4c12-8680-eb0ee8f38499}">
+      <Implementation>
+        <ST><![CDATA[{region "CP02柜"}									
+DI_[1,1](	ON:= , 	OFF:= , 	LINK:=EL1008[1,1] , 	VALUE=> 	arDropCylinder[1].i.InSensor	);	(*	料仓1气缸原位	*)
+DI_[1,2](	ON:= , 	OFF:= , 	LINK:=EL1008[1,2] , 	VALUE=> 	arDropCylinder[1].i.OutSensor	);	(*	料仓1气缸工作位	*)
+DI_[1,3](	ON:= , 	OFF:= , 	LINK:=EL1008[1,3] , 	VALUE=> 	arHighSensor[1].i.Link	);	(*	料仓1少料	*)
+DI_[1,4](	ON:= , 	OFF:= , 	LINK:=EL1008[1,4] , 	VALUE=> 	arLowSensor[1].i.Link	);	(*	料仓1缺料	*)
+DI_[1,5](	ON:= , 	OFF:= , 	LINK:=EL1008[1,5] , 	VALUE=> 	arDropCylinder[2].i.InSensor	);	(*	料仓2气缸原位	*)
+DI_[1,6](	ON:= , 	OFF:= , 	LINK:=EL1008[1,6] , 	VALUE=> 	arDropCylinder[2].i.OutSensor	);	(*	料仓2气缸工作位	*)
+DI_[1,7](	ON:= , 	OFF:= , 	LINK:=EL1008[1,7] , 	VALUE=> 	arHighSensor[2].i.Link	);	(*	料仓2少料	*)
+DI_[1,8](	ON:= , 	OFF:= , 	LINK:=EL1008[1,8] , 	VALUE=> 	arLowSensor[2].i.Link	);	(*	料仓2缺料	*)
+DI_[2,1](	ON:= , 	OFF:= , 	LINK:=EL1008[2,1] , 	VALUE=> 	arDropCylinder[3].i.InSensor	);	(*	料仓3气缸原位	*)
+DI_[2,2](	ON:= , 	OFF:= , 	LINK:=EL1008[2,2] , 	VALUE=> 	arDropCylinder[3].i.OutSensor	);	(*	料仓3气缸工作位	*)
+DI_[2,3](	ON:= , 	OFF:= , 	LINK:=EL1008[2,3] , 	VALUE=> 	arHighSensor[3].i.Link	);	(*	料仓3少料	*)
+DI_[2,4](	ON:= , 	OFF:= , 	LINK:=EL1008[2,4] , 	VALUE=> 	arLowSensor[3].i.Link	);	(*	料仓3缺料	*)
+DI_[2,5](	ON:= , 	OFF:= , 	LINK:=EL1008[2,5] , 	VALUE=> 	arDropCylinder[4].i.InSensor	);	(*	料仓4气缸原位	*)
+DI_[2,6](	ON:= , 	OFF:= , 	LINK:=EL1008[2,6] , 	VALUE=> 	arDropCylinder[4].i.OutSensor	);	(*	料仓4气缸工作位	*)
+DI_[2,7](	ON:= , 	OFF:= , 	LINK:=EL1008[2,7] , 	VALUE=> 	arHighSensor[4].i.Link	);	(*	料仓4少料	*)
+DI_[2,8](	ON:= , 	OFF:= , 	LINK:=EL1008[2,8] , 	VALUE=> 	arLowSensor[4].i.Link	);	(*	料仓4缺料	*)
+DI_[3,1](	ON:= , 	OFF:= , 	LINK:=EL1008[3,1] , 	VALUE=> 	arDropCylinder[5].i.InSensor	);	(*	料仓5气缸原位	*)
+DI_[3,2](	ON:= , 	OFF:= , 	LINK:=EL1008[3,2] , 	VALUE=> 	arDropCylinder[5].i.OutSensor	);	(*	料仓5气缸工作位	*)
+DI_[3,3](	ON:= , 	OFF:= , 	LINK:=EL1008[3,3] , 	VALUE=> 	arHighSensor[5].i.Link	);	(*	料仓5少料	*)
+DI_[3,4](	ON:= , 	OFF:= , 	LINK:=EL1008[3,4] , 	VALUE=> 	arLowSensor[5].i.Link	);	(*	料仓5缺料	*)
+DI_[3,5](	ON:= , 	OFF:= , 	LINK:=EL1008[3,5] , 	VALUE=> 	arDropCylinder[6].i.InSensor	);	(*	料仓6气缸原位	*)
+DI_[3,6](	ON:= , 	OFF:= , 	LINK:=EL1008[3,6] , 	VALUE=> 	arDropCylinder[6].i.OutSensor	);	(*	料仓6气缸工作位	*)
+DI_[3,7](	ON:= , 	OFF:= , 	LINK:=EL1008[3,7] , 	VALUE=> 	arHighSensor[6].i.Link	);	(*	料仓6少料	*)
+DI_[3,8](	ON:= , 	OFF:= , 	LINK:=EL1008[3,8] , 	VALUE=> 	arLowSensor[6].i.Link	);	(*	料仓6缺料	*)
+DI_[4,1](	ON:= , 	OFF:= , 	LINK:=EL1008[4,1] , 	VALUE=> 	arDropCylinder[7].i.InSensor	);	(*	料仓7气缸原位	*)
+DI_[4,2](	ON:= , 	OFF:= , 	LINK:=EL1008[4,2] , 	VALUE=> 	arDropCylinder[7].i.OutSensor	);	(*	料仓7气缸工作位	*)
+DI_[4,3](	ON:= , 	OFF:= , 	LINK:=EL1008[4,3] , 	VALUE=> 	arHighSensor[7].i.Link	);	(*	料仓7少料	*)
+DI_[4,4](	ON:= , 	OFF:= , 	LINK:=EL1008[4,4] , 	VALUE=> 	arLowSensor[7].i.Link	);	(*	料仓7缺料	*)
+DI_[4,5](	ON:= , 	OFF:= , 	LINK:=EL1008[4,5] , 	VALUE=> 	arDropCylinder[8].i.InSensor	);	(*	料仓8气缸原位	*)
+DI_[4,6](	ON:= , 	OFF:= , 	LINK:=EL1008[4,6] , 	VALUE=> 	arDropCylinder[8].i.OutSensor	);	(*	料仓8气缸工作位	*)
+DI_[4,7](	ON:= , 	OFF:= , 	LINK:=EL1008[4,7] , 	VALUE=> 	arHighSensor[8].i.Link	);	(*	料仓8少料	*)
+DI_[4,8](	ON:= , 	OFF:= , 	LINK:=EL1008[4,8] , 	VALUE=> 	arLowSensor[8].i.Link	);	(*	料仓8缺料	*)
+DI_[5,1](	ON:= , 	OFF:= , 	LINK:=EL1008[5,1] , 	VALUE=> 	arDropCylinder[9].i.InSensor	);	(*	料仓9气缸原位	*)
+DI_[5,2](	ON:= , 	OFF:= , 	LINK:=EL1008[5,2] , 	VALUE=> 	arDropCylinder[9].i.OutSensor	);	(*	料仓9气缸工作位	*)
+DI_[5,3](	ON:= , 	OFF:= , 	LINK:=EL1008[5,3] , 	VALUE=> 	arHighSensor[9].i.Link	);	(*	料仓9少料	*)
+DI_[5,4](	ON:= , 	OFF:= , 	LINK:=EL1008[5,4] , 	VALUE=> 	arLowSensor[9].i.Link	);	(*	料仓9缺料	*)
+DI_[5,5](	ON:= , 	OFF:= , 	LINK:=EL1008[5,5] , 	VALUE=> 	arDropCylinder[10].i.InSensor	);	(*	料仓10气缸原位	*)
+DI_[5,6](	ON:= , 	OFF:= , 	LINK:=EL1008[5,6] , 	VALUE=> 	arDropCylinder[10].i.OutSensor	);	(*	料仓10气缸工作位	*)
+DI_[5,7](	ON:= , 	OFF:= , 	LINK:=EL1008[5,7] , 	VALUE=> 	arHighSensor[10].i.Link	);	(*	料仓10少料	*)
+DI_[5,8](	ON:= , 	OFF:= , 	LINK:=EL1008[5,8] , 	VALUE=> 	arLowSensor[10].i.Link	);	(*	料仓10缺料	*)
+DI_[6,1](	ON:= , 	OFF:= , 	LINK:=EL1008[6,1] , 	VALUE=> 	arDropSensor[1].i.Link	);	(*	工位1落料	*)
+DI_[6,2](	ON:= , 	OFF:= , 	LINK:=EL1008[6,2] , 	VALUE=> 	arDropSensor[2].i.Link	);	(*	工位2落料	*)
+DI_[6,3](	ON:= , 	OFF:= , 	LINK:=EL1008[6,3] , 	VALUE=> 	arDropSensor[3].i.Link	);	(*	工位3落料	*)
+DI_[6,4](	ON:= , 	OFF:= , 	LINK:=EL1008[6,4] , 	VALUE=> 	arDropSensor[4].i.Link	);	(*	工位4落料	*)
+DI_[6,5](	ON:= , 	OFF:= , 	LINK:=EL1008[6,5] , 	VALUE=> 	arDropSensor[5].i.Link	);	(*	工位5落料	*)
+DI_[6,6](	ON:= , 	OFF:= , 	LINK:=EL1008[6,6] , 	VALUE=> 	arDropSensor[6].i.Link	);	(*	工位6落料	*)
+DI_[6,7](	ON:= , 	OFF:= , 	LINK:=EL1008[6,7] , 	VALUE=> 	arDropSensor[7].i.Link	);	(*	工位7落料	*)
+DI_[6,8](	ON:= , 	OFF:= , 	LINK:=EL1008[6,8] , 	VALUE=> 	arDropSensor[8].i.Link	);	(*	工位8落料	*)
+DI_[7,1](	ON:= , 	OFF:= , 	LINK:=EL1008[7,1] , 	VALUE=> 	arDropSensor[9].i.Link	);	(*	工位9落料	*)
+DI_[7,2](	ON:= , 	OFF:= , 	LINK:=EL1008[7,2] , 	VALUE=> 	arDropSensor[10].i.Link	);	(*	工位10落料	*)
+DI_[7,3](	ON:= , 	OFF:= , 	LINK:=EL1008[7,3] , 	VALUE=> 	glb_arSafeRelayNo_UN01[1]	);	(*	安全继电器1反馈	*)
+DI_[7,4](	ON:= , 	OFF:= , 	LINK:=EL1008[7,4] , 	VALUE=> 	arSafeDoorSts[1]	);	(*	安全门1	*)
+DI_[7,5](	ON:= , 	OFF:= , 	LINK:=EL1008[7,5] , 	VALUE=> 	arSafeDoorSts[2]	);	(*	安全门2	*)
+DI_[7,6](	ON:= , 	OFF:= , 	LINK:=EL1008[7,6] , 	VALUE=> 	arSafeDoorSts[3]	);	(*	安全门3	*)
+DI_[7,7](	ON:= , 	OFF:= , 	LINK:=EL1008[7,7] , 	VALUE=> 	arSafeDoorSts[3]	);	(*	安全门4	*)
+DI_[7,8](	ON:= , 	OFF:= , 	LINK:=EL1008[7,8] , 	VALUE=> 	 	);	(*	预留急停反馈	*)
+DI_[29,1](	ON:= , 	OFF:= , 	LINK:=EL1008[29,1] , 	VALUE=> 	arRealAxisAdmin[41].i.HomeCali	);	(*	皮带1伺服原点	*)
+DI_[29,2](	ON:= , 	OFF:= , 	LINK:=EL1008[29,2] , 	VALUE=> 		);	(*		*)
+DI_[29,3](	ON:= , 	OFF:= , 	LINK:=EL1008[29,3] , 	VALUE=> 		);	(*		*)
+DI_[29,4](	ON:= , 	OFF:= , 	LINK:=EL1008[29,4] , 	VALUE=> 		);	(*		*)
+DI_[29,5](	ON:= , 	OFF:= , 	LINK:=EL1008[29,5] , 	VALUE=> 		);	(*		*)
+DI_[29,6](	ON:= , 	OFF:= , 	LINK:=EL1008[29,6] , 	VALUE=> 		);	(*		*)
+DI_[29,7](	ON:= , 	OFF:= , 	LINK:=EL1008[29,7] , 	VALUE=> 		);	(*		*)
+DI_[29,8](	ON:= , 	OFF:= , 	LINK:=EL1008[29,8] , 	VALUE=> 		);	(*		*)
+
+(*****************************************************************************************************)									
+DO_[1,1](	ON:= , 	OFF:= , 	LINK=>EL2008[1,1] , 	VALUE:= 	arDropCylinder[1].o.ValveIn	);	(*	料仓1气缸原位	*)
+DO_[1,2](	ON:= , 	OFF:= , 	LINK=>EL2008[1,2] , 	VALUE:= 	arDropCylinder[1].o.ValveOut	);	(*	料仓1气缸工作位	*)
+DO_[1,3](	ON:= , 	OFF:= , 	LINK=>EL2008[1,3] , 	VALUE:= 	arDropCylinder[2].o.ValveIn	);	(*	料仓2气缸原位	*)
+DO_[1,4](	ON:= , 	OFF:= , 	LINK=>EL2008[1,4] , 	VALUE:= 	arDropCylinder[2].o.ValveOut	);	(*	料仓2气缸工作位	*)
+DO_[1,5](	ON:= , 	OFF:= , 	LINK=>EL2008[1,5] , 	VALUE:= 	arDropCylinder[3].o.ValveIn	);	(*	料仓3气缸原位	*)
+DO_[1,6](	ON:= , 	OFF:= , 	LINK=>EL2008[1,6] , 	VALUE:= 	arDropCylinder[3].o.ValveOut	);	(*	料仓3气缸工作位	*)
+DO_[1,7](	ON:= , 	OFF:= , 	LINK=>EL2008[1,7] , 	VALUE:= 	arDropCylinder[4].o.ValveIn	);	(*	料仓4气缸原位	*)
+DO_[1,8](	ON:= , 	OFF:= , 	LINK=>EL2008[1,8] , 	VALUE:= 	arDropCylinder[4].o.ValveOut	);	(*	料仓4气缸工作位	*)
+DO_[2,1](	ON:= , 	OFF:= , 	LINK=>EL2008[2,1] , 	VALUE:= 	arDropCylinder[5].o.ValveIn	);	(*	料仓5气缸原位	*)
+DO_[2,2](	ON:= , 	OFF:= , 	LINK=>EL2008[2,2] , 	VALUE:= 	arDropCylinder[5].o.ValveOut	);	(*	料仓5气缸工作位	*)
+DO_[2,3](	ON:= , 	OFF:= , 	LINK=>EL2008[2,3] , 	VALUE:= 	arDropCylinder[6].o.ValveIn	);	(*	料仓6气缸原位	*)
+DO_[2,4](	ON:= , 	OFF:= , 	LINK=>EL2008[2,4] , 	VALUE:= 	arDropCylinder[6].o.ValveOut	);	(*	料仓6气缸工作位	*)
+DO_[2,5](	ON:= , 	OFF:= , 	LINK=>EL2008[2,5] , 	VALUE:= 	arDropCylinder[7].o.ValveIn	);	(*	料仓7气缸原位	*)
+DO_[2,6](	ON:= , 	OFF:= , 	LINK=>EL2008[2,6] , 	VALUE:= 	arDropCylinder[7].o.ValveOut	);	(*	料仓7气缸工作位	*)
+DO_[2,7](	ON:= , 	OFF:= , 	LINK=>EL2008[2,7] , 	VALUE:= 	arDropCylinder[8].o.ValveIn	);	(*	料仓8气缸原位	*)
+DO_[2,8](	ON:= , 	OFF:= , 	LINK=>EL2008[2,8] , 	VALUE:= 	arDropCylinder[8].o.ValveOut	);	(*	料仓8气缸工作位	*)
+DO_[3,1](	ON:= , 	OFF:= , 	LINK=>EL2008[3,1] , 	VALUE:= 	arDropCylinder[9].o.ValveIn	);	(*	料仓9气缸原位	*)
+DO_[3,2](	ON:= , 	OFF:= , 	LINK=>EL2008[3,2] , 	VALUE:= 	arDropCylinder[9].o.ValveOut	);	(*	料仓9气缸工作位	*)
+DO_[3,3](	ON:= , 	OFF:= , 	LINK=>EL2008[3,3] , 	VALUE:= 	arDropCylinder[10].o.ValveIn	);	(*	料仓10气缸原位	*)
+DO_[3,4](	ON:= , 	OFF:= , 	LINK=>EL2008[3,4] , 	VALUE:= 	arDropCylinder[10].o.ValveOut	);	(*	料仓10气缸工作位	*)
+DO_[3,5](	ON:= , 	OFF:= , 	LINK=>EL2008[3,5] , 	VALUE:=     arCounters[1].LineVibrator_Wrk	);	(*	料仓1直震启动	*)
+DO_[3,6](	ON:= , 	OFF:= , 	LINK=>EL2008[3,6] , 	VALUE:= 	arCounters[1].CircleVibrator_Wrk	);	(*	料仓1圆震启动	*)
+DO_[3,7](	ON:= , 	OFF:= , 	LINK=>EL2008[3,7] , 	VALUE:= 	arCounters[1].DropVibrator_Wrk	);	(*	料仓1落料启动	*)
+DO_[3,8](	ON:= , 	OFF:= , 	LINK=>EL2008[3,8] , 	VALUE:= 	arCounters[2].LineVibrator_Wrk	);	(*	料仓2直震启动	*)
+DO_[4,1](	ON:= , 	OFF:= , 	LINK=>EL2008[4,1] , 	VALUE:= 	arCounters[2].CircleVibrator_Wrk	);	(*	料仓2圆震启动	*)
+DO_[4,2](	ON:= , 	OFF:= , 	LINK=>EL2008[4,2] , 	VALUE:= 	arCounters[2].DropVibrator_Wrk	);	(*	料仓2落料启动	*)
+DO_[4,3](	ON:= , 	OFF:= , 	LINK=>EL2008[4,3] , 	VALUE:= 	arCounters[3].LineVibrator_Wrk	);	(*	料仓3直震启动	*)
+DO_[4,4](	ON:= , 	OFF:= , 	LINK=>EL2008[4,4] , 	VALUE:= 	arCounters[3].CircleVibrator_Wrk	);	(*	料仓3圆震启动	*)
+DO_[4,5](	ON:= , 	OFF:= , 	LINK=>EL2008[4,5] , 	VALUE:= 	arCounters[3].DropVibrator_Wrk	);	(*	料仓3落料启动	*)
+DO_[4,6](	ON:= , 	OFF:= , 	LINK=>EL2008[4,6] , 	VALUE:= 	arCounters[4].LineVibrator_Wrk	);	(*	料仓4直震启动	*)
+DO_[4,7](	ON:= , 	OFF:= , 	LINK=>EL2008[4,7] , 	VALUE:= 	arCounters[4].CircleVibrator_Wrk	);	(*	料仓4圆震启动	*)
+DO_[4,8](	ON:= , 	OFF:= , 	LINK=>EL2008[4,8] , 	VALUE:= 	arCounters[4].DropVibrator_Wrk	);	(*	料仓4落料启动	*)
+DO_[5,1](	ON:= , 	OFF:= , 	LINK=>EL2008[5,1] , 	VALUE:= 	arCounters[5].LineVibrator_Wrk	);	(*	料仓5直震启动	*)
+DO_[5,2](	ON:= , 	OFF:= , 	LINK=>EL2008[5,2] , 	VALUE:= 	arCounters[5].CircleVibrator_Wrk	);	(*	料仓5圆震启动	*)
+DO_[5,3](	ON:= , 	OFF:= , 	LINK=>EL2008[5,3] , 	VALUE:= 	arCounters[5].DropVibrator_Wrk	);	(*	料仓5落料启动	*)
+DO_[5,4](	ON:= , 	OFF:= , 	LINK=>EL2008[5,4] , 	VALUE:= 	arCounters[6].LineVibrator_Wrk	);	(*	料仓6直震启动	*)
+DO_[5,5](	ON:= , 	OFF:= , 	LINK=>EL2008[5,5] , 	VALUE:= 	arCounters[6].CircleVibrator_Wrk	);	(*	料仓6圆震启动	*)
+DO_[5,6](	ON:= , 	OFF:= , 	LINK=>EL2008[5,6] , 	VALUE:= 	arCounters[6].DropVibrator_Wrk	);	(*	料仓6落料启动	*)
+DO_[5,7](	ON:= , 	OFF:= , 	LINK=>EL2008[5,7] , 	VALUE:= 	arCounters[7].LineVibrator_Wrk	);	(*	料仓7直震启动	*)
+DO_[5,8](	ON:= , 	OFF:= , 	LINK=>EL2008[5,8] , 	VALUE:= 	arCounters[7].CircleVibrator_Wrk	);	(*	料仓7圆震启动	*)
+DO_[6,1](	ON:= , 	OFF:= , 	LINK=>EL2008[6,1] , 	VALUE:= 	arCounters[7].DropVibrator_Wrk	);	(*	料仓7落料启动	*)
+DO_[6,2](	ON:= , 	OFF:= , 	LINK=>EL2008[6,2] , 	VALUE:= 	arCounters[8].LineVibrator_Wrk	);	(*	料仓8直震启动	*)
+DO_[6,3](	ON:= , 	OFF:= , 	LINK=>EL2008[6,3] , 	VALUE:= 	arCounters[8].CircleVibrator_Wrk	);	(*	料仓8圆震启动	*)
+DO_[6,4](	ON:= , 	OFF:= , 	LINK=>EL2008[6,4] , 	VALUE:= 	arCounters[8].DropVibrator_Wrk	);	(*	料仓8落料启动	*)
+DO_[6,5](	ON:= , 	OFF:= , 	LINK=>EL2008[6,5] , 	VALUE:= 	arCounters[9].LineVibrator_Wrk	);	(*	料仓9直震启动	*)
+DO_[6,6](	ON:= , 	OFF:= , 	LINK=>EL2008[6,6] , 	VALUE:= 	arCounters[9].CircleVibrator_Wrk	);	(*	料仓9圆震启动	*)
+DO_[6,7](	ON:= , 	OFF:= , 	LINK=>EL2008[6,7] , 	VALUE:= 	arCounters[9].DropVibrator_Wrk	);	(*	料仓9落料启动	*)
+DO_[6,8](	ON:= , 	OFF:= , 	LINK=>EL2008[6,8] , 	VALUE:= 	arCounters[10].LineVibrator_Wrk	);	(*	料仓10直震启动	*)
+DO_[7,1](	ON:= , 	OFF:= , 	LINK=>EL2008[7,1] , 	VALUE:= 	arCounters[10].CircleVibrator_Wrk	);	(*	料仓10圆震启动	*)
+DO_[7,2](	ON:= , 	OFF:= , 	LINK=>EL2008[7,2] , 	VALUE:= 	arCounters[10].DropVibrator_Wrk	);	(*	料仓10落料启动	*)
+DO_[7,3](	ON:= , 	OFF:= , 	LINK=>EL2008[7,3] , 	VALUE:= 	glb_bSafetyReset	);	(*	安全继电器1复位	*)
+DO_[7,4](	ON:= , 	OFF:= , 	LINK=>EL2008[7,4] , 	VALUE:= 	glb_arLightRed_UN01[1]	);	(*	备用	*)
+DO_[7,5](	ON:= , 	OFF:= , 	LINK=>EL2008[7,5] , 	VALUE:= 	glb_arLightYellow_UN01[1]	);	(*	备用	*)
+DO_[7,6](	ON:= , 	OFF:= , 	LINK=>EL2008[7,6] , 	VALUE:= 	glb_arLightGreen_UN01[1]	);	(*	备用	*)
+DO_[7,7](	ON:= , 	OFF:= , 	LINK=>EL2008[7,7] , 	VALUE:= 	glb_arLightAlarm_UN01[1]	);	(*	备用	*)
+DO_[7,8](	ON:= , 	OFF:= , 	LINK=>EL2008[7,8] , 	VALUE:= 		);	(*	备用	*)
+									
+{endregion}]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CP03" Id="{1fc0865a-a92f-4d25-9c30-6c2c93a172d4}">
+      <Implementation>
+        <ST><![CDATA[{region "CP03柜"}									
+DI_[8,1](	ON:= , 	OFF:= , 	LINK:=EL1008[8,1] , 	VALUE=> 	arDropCylinder[11].i.InSensor	);	(*	料仓11气缸原位	*)
+DI_[8,2](	ON:= , 	OFF:= , 	LINK:=EL1008[8,2] , 	VALUE=> 	arDropCylinder[11].i.OutSensor	);	(*	料仓11气缸工作位	*)
+DI_[8,3](	ON:= , 	OFF:= , 	LINK:=EL1008[8,3] , 	VALUE=> 	arHighSensor[11].i.Link	);	(*	料仓11少料	*)
+DI_[8,4](	ON:= , 	OFF:= , 	LINK:=EL1008[8,4] , 	VALUE=> 	arLowSensor[11].i.Link	);	(*	料仓11缺料	*)
+DI_[8,5](	ON:= , 	OFF:= , 	LINK:=EL1008[8,5] , 	VALUE=> 	arDropCylinder[12].i.InSensor	);	(*	料仓12气缸原位	*)
+DI_[8,6](	ON:= , 	OFF:= , 	LINK:=EL1008[8,6] , 	VALUE=> 	arDropCylinder[12].i.OutSensor	);	(*	料仓12气缸工作位	*)
+DI_[8,7](	ON:= , 	OFF:= , 	LINK:=EL1008[8,7] , 	VALUE=> 	arHighSensor[12].i.Link	);	(*	料仓12少料	*)
+DI_[8,8](	ON:= , 	OFF:= , 	LINK:=EL1008[8,8] , 	VALUE=> 	arLowSensor[12].i.Link	);	(*	料仓12缺料	*)
+DI_[9,1](	ON:= , 	OFF:= , 	LINK:=EL1008[9,1] , 	VALUE=> 	arDropCylinder[13].i.InSensor	);	(*	料仓13气缸原位	*)
+DI_[9,2](	ON:= , 	OFF:= , 	LINK:=EL1008[9,2] , 	VALUE=> 	arDropCylinder[13].i.OutSensor	);	(*	料仓13气缸工作位	*)
+DI_[9,3](	ON:= , 	OFF:= , 	LINK:=EL1008[9,3] , 	VALUE=> 	arHighSensor[13].i.Link	);	(*	料仓13少料	*)
+DI_[9,4](	ON:= , 	OFF:= , 	LINK:=EL1008[9,4] , 	VALUE=> 	arLowSensor[13].i.Link	);	(*	料仓13缺料	*)
+DI_[9,5](	ON:= , 	OFF:= , 	LINK:=EL1008[9,5] , 	VALUE=> 	arDropCylinder[14].i.InSensor	);	(*	料仓14气缸原位	*)
+DI_[9,6](	ON:= , 	OFF:= , 	LINK:=EL1008[9,6] , 	VALUE=> 	arDropCylinder[14].i.OutSensor	);	(*	料仓14气缸工作位	*)
+DI_[9,7](	ON:= , 	OFF:= , 	LINK:=EL1008[9,7] , 	VALUE=> 	arHighSensor[14].i.Link	);	(*	料仓14少料	*)
+DI_[9,8](	ON:= , 	OFF:= , 	LINK:=EL1008[9,8] , 	VALUE=> 	arLowSensor[14].i.Link	);	(*	料仓14缺料	*)
+DI_[10,1](	ON:= , 	OFF:= , 	LINK:=EL1008[10,1] , 	VALUE=> 	arDropCylinder[15].i.InSensor	);	(*	料仓15气缸原位	*)
+DI_[10,2](	ON:= , 	OFF:= , 	LINK:=EL1008[10,2] , 	VALUE=> 	arDropCylinder[15].i.OutSensor	);	(*	料仓15气缸工作位	*)
+DI_[10,3](	ON:= , 	OFF:= , 	LINK:=EL1008[10,3] , 	VALUE=> 	arHighSensor[15].i.Link	);	(*	料仓15少料	*)
+DI_[10,4](	ON:= , 	OFF:= , 	LINK:=EL1008[10,4] , 	VALUE=> 	arLowSensor[15].i.Link	);	(*	料仓15缺料	*)
+DI_[10,5](	ON:= , 	OFF:= , 	LINK:=EL1008[10,5] , 	VALUE=> 	arDropCylinder[16].i.InSensor	);	(*	料仓16气缸原位	*)
+DI_[10,6](	ON:= , 	OFF:= , 	LINK:=EL1008[10,6] , 	VALUE=> 	arDropCylinder[16].i.OutSensor	);	(*	料仓16气缸工作位	*)
+DI_[10,7](	ON:= , 	OFF:= , 	LINK:=EL1008[10,7] , 	VALUE=> 	arHighSensor[16].i.Link	);	(*	料仓16少料	*)
+DI_[10,8](	ON:= , 	OFF:= , 	LINK:=EL1008[10,8] , 	VALUE=> 	arLowSensor[16].i.Link	);	(*	料仓16缺料	*)
+DI_[11,1](	ON:= , 	OFF:= , 	LINK:=EL1008[11,1] , 	VALUE=> 	arDropCylinder[17].i.InSensor	);	(*	料仓17气缸原位	*)
+DI_[11,2](	ON:= , 	OFF:= , 	LINK:=EL1008[11,2] , 	VALUE=> 	arDropCylinder[17].i.OutSensor	);	(*	料仓17气缸工作位	*)
+DI_[11,3](	ON:= , 	OFF:= , 	LINK:=EL1008[11,3] , 	VALUE=> 	arHighSensor[17].i.Link	);	(*	料仓17少料	*)
+DI_[11,4](	ON:= , 	OFF:= , 	LINK:=EL1008[11,4] , 	VALUE=> 	arLowSensor[17].i.Link	);	(*	料仓17缺料	*)
+DI_[11,5](	ON:= , 	OFF:= , 	LINK:=EL1008[11,5] , 	VALUE=> 	arDropCylinder[18].i.InSensor	);	(*	料仓18气缸原位	*)
+DI_[11,6](	ON:= , 	OFF:= , 	LINK:=EL1008[11,6] , 	VALUE=> 	arDropCylinder[18].i.OutSensor	);	(*	料仓18气缸工作位	*)
+DI_[11,7](	ON:= , 	OFF:= , 	LINK:=EL1008[11,7] , 	VALUE=> 	arHighSensor[18].i.Link	);	(*	料仓18少料	*)
+DI_[11,8](	ON:= , 	OFF:= , 	LINK:=EL1008[11,8] , 	VALUE=> 	arLowSensor[18].i.Link	);	(*	料仓18缺料	*)
+DI_[12,1](	ON:= , 	OFF:= , 	LINK:=EL1008[12,1] , 	VALUE=> 	arDropCylinder[19].i.InSensor	);	(*	料仓19气缸原位	*)
+DI_[12,2](	ON:= , 	OFF:= , 	LINK:=EL1008[12,2] , 	VALUE=> 	arDropCylinder[19].i.OutSensor	);	(*	料仓19气缸工作位	*)
+DI_[12,3](	ON:= , 	OFF:= , 	LINK:=EL1008[12,3] , 	VALUE=> 	arHighSensor[19].i.Link	);	(*	料仓19少料	*)
+DI_[12,4](	ON:= , 	OFF:= , 	LINK:=EL1008[12,4] , 	VALUE=> 	arLowSensor[19].i.Link	);	(*	料仓19缺料	*)
+DI_[12,5](	ON:= , 	OFF:= , 	LINK:=EL1008[12,5] , 	VALUE=> 	arDropCylinder[20].i.InSensor	);	(*	料仓20气缸原位	*)
+DI_[12,6](	ON:= , 	OFF:= , 	LINK:=EL1008[12,6] , 	VALUE=> 	arDropCylinder[20].i.OutSensor	);	(*	料仓20气缸工作位	*)
+DI_[12,7](	ON:= , 	OFF:= , 	LINK:=EL1008[12,7] , 	VALUE=> 	arHighSensor[20].i.Link	);	(*	料仓20少料	*)
+DI_[12,8](	ON:= , 	OFF:= , 	LINK:=EL1008[12,8] , 	VALUE=> 	arLowSensor[20].i.Link	);	(*	料仓20缺料	*)		
+DI_[13,1](	ON:= , 	OFF:= , 	LINK:=EL1008[13,1] , 	VALUE=> 	arDropSensor[11].i.Link	);	(*	工位11落料	*)
+DI_[13,2](	ON:= , 	OFF:= , 	LINK:=EL1008[13,2] , 	VALUE=> 	arDropSensor[12].i.Link	);	(*	工位12落料	*)
+DI_[13,3](	ON:= , 	OFF:= , 	LINK:=EL1008[13,3] , 	VALUE=> 	arDropSensor[13].i.Link	);	(*	工位13落料	*)
+DI_[13,4](	ON:= , 	OFF:= , 	LINK:=EL1008[13,4] , 	VALUE=> 	arDropSensor[14].i.Link	);	(*	工位14落料	*)
+DI_[13,5](	ON:= , 	OFF:= , 	LINK:=EL1008[13,5] , 	VALUE=> 	arDropSensor[15].i.Link	);	(*	工位15落料	*)
+DI_[13,6](	ON:= , 	OFF:= , 	LINK:=EL1008[13,6] , 	VALUE=> 	arDropSensor[16].i.Link	);	(*	工位16落料	*)
+DI_[13,7](	ON:= , 	OFF:= , 	LINK:=EL1008[13,7] , 	VALUE=> 	arDropSensor[17].i.Link	);	(*	工位17落料	*)
+DI_[13,8](	ON:= , 	OFF:= , 	LINK:=EL1008[13,8] , 	VALUE=> 	arDropSensor[18].i.Link	);	(*	工位18落料	*)
+DI_[14,1](	ON:= , 	OFF:= , 	LINK:=EL1008[14,1] , 	VALUE=> 	arDropSensor[19].i.Link	);	(*	工位19落料	*)
+DI_[14,2](	ON:= , 	OFF:= , 	LINK:=EL1008[14,2] , 	VALUE=> 	arDropSensor[20].i.Link	);	(*	工位20落料	*)
+DI_[14,3](	ON:= , 	OFF:= , 	LINK:=EL1008[14,3] , 	VALUE=> 	arSafeDoorSts[5]	);	(*	安全门5	*)
+DI_[14,4](	ON:= , 	OFF:= , 	LINK:=EL1008[14,4] , 	VALUE=> 	arSafeDoorSts[6]	);	(*	安全门6	*)
+DI_[14,5](	ON:= , 	OFF:= , 	LINK:=EL1008[14,5] , 	VALUE=> 	arSafeDoorSts[7]	);	(*	安全门7	*)
+DI_[14,6](	ON:= , 	OFF:= , 	LINK:=EL1008[14,6] , 	VALUE=> 	arSafeDoorSts[8]	);	(*	安全门8	*)
+DI_[14,7](	ON:= , 	OFF:= , 	LINK:=EL1008[14,7] , 	VALUE=> 	arSafeDoorSts[9]	);	(*	安全门9	*)
+DI_[14,8](	ON:= , 	OFF:= , 	LINK:=EL1008[14,8] , 	VALUE=> 	glb_bAirFeedback_UN01[2]	);	(*	数粒系统气压反馈	*)
+DI_[30,1](	ON:= , 	OFF:= , 	LINK:=EL1008[30,1] , 	VALUE=> 	arDropBufferCyclinder[1].i.InSensor	);	(*	备用	*)
+DI_[30,2](	ON:= , 	OFF:= , 	LINK:=EL1008[30,2] , 	VALUE=> 		);	(*	备用	*)
+DI_[30,3](	ON:= , 	OFF:= , 	LINK:=EL1008[30,3] , 	VALUE=> 		);	(*	备用	*)
+DI_[30,4](	ON:= , 	OFF:= , 	LINK:=EL1008[30,4] , 	VALUE=> 		);	(*	备用	*)
+DI_[30,5](	ON:= , 	OFF:= , 	LINK:=EL1008[30,5] , 	VALUE=> 		);	(*	备用	*)
+DI_[30,6](	ON:= , 	OFF:= , 	LINK:=EL1008[30,6] , 	VALUE=> 		);	(*	备用	*)
+DI_[30,7](	ON:= , 	OFF:= , 	LINK:=EL1008[30,7] , 	VALUE=> 		);	(*	备用	*)
+DI_[30,8](	ON:= , 	OFF:= , 	LINK:=EL1008[30,8] , 	VALUE=> 		);	(*	备用	*)
+
+
+arDropBufferCyclinder[1].i.OutSensor:= NOT arDropBufferCyclinder[1].i.InSensor;
+arDropBufferCyclinder[2].i.OutSensor:= NOT arDropBufferCyclinder[2].i.InSensor;		  
+(*****************************************************************************************************)									
+DO_[8,1](	ON:= , 	OFF:= , 	LINK=>EL2008[8,1] , 	VALUE:= 	arDropCylinder[11].o.ValveIn	);	(*	料仓11气缸原位	*)
+DO_[8,2](	ON:= , 	OFF:= , 	LINK=>EL2008[8,2] , 	VALUE:= 	arDropCylinder[11].o.ValveOut	);	(*	料仓11气缸工作位	*)
+DO_[8,3](	ON:= , 	OFF:= , 	LINK=>EL2008[8,3] , 	VALUE:= 	arDropCylinder[12].o.ValveIn	);	(*	料仓12气缸原位	*)
+DO_[8,4](	ON:= , 	OFF:= , 	LINK=>EL2008[8,4] , 	VALUE:= 	arDropCylinder[12].o.ValveOut	);	(*	料仓12气缸工作位	*)
+DO_[8,5](	ON:= , 	OFF:= , 	LINK=>EL2008[8,5] , 	VALUE:= 	arDropCylinder[13].o.ValveIn	);	(*	料仓13气缸原位	*)
+DO_[8,6](	ON:= , 	OFF:= , 	LINK=>EL2008[8,6] , 	VALUE:= 	arDropCylinder[13].o.ValveOut	);	(*	料仓13气缸工作位	*)
+DO_[8,7](	ON:= , 	OFF:= , 	LINK=>EL2008[8,7] , 	VALUE:= 	arDropCylinder[14].o.ValveIn	);	(*	料仓14气缸原位	*)
+DO_[8,8](	ON:= , 	OFF:= , 	LINK=>EL2008[8,8] , 	VALUE:= 	arDropCylinder[14].o.ValveOut	);	(*	料仓14气缸工作位	*)
+DO_[9,1](	ON:= , 	OFF:= , 	LINK=>EL2008[9,1] , 	VALUE:= 	arDropCylinder[15].o.ValveIn	);	(*	料仓15气缸原位	*)
+DO_[9,2](	ON:= , 	OFF:= , 	LINK=>EL2008[9,2] , 	VALUE:= 	arDropCylinder[15].o.ValveOut	);	(*	料仓15气缸工作位	*)
+DO_[9,3](	ON:= , 	OFF:= , 	LINK=>EL2008[9,3] , 	VALUE:= 	arDropCylinder[16].o.ValveIn	);	(*	料仓16气缸原位	*)
+DO_[9,4](	ON:= , 	OFF:= , 	LINK=>EL2008[9,4] , 	VALUE:= 	arDropCylinder[16].o.ValveOut	);	(*	料仓16气缸工作位	*)
+DO_[9,5](	ON:= , 	OFF:= , 	LINK=>EL2008[9,5] , 	VALUE:= 	arDropCylinder[17].o.ValveIn	);	(*	料仓17气缸原位	*)
+DO_[9,6](	ON:= , 	OFF:= , 	LINK=>EL2008[9,6] , 	VALUE:= 	arDropCylinder[17].o.ValveOut	);	(*	料仓17气缸工作位	*)
+DO_[9,7](	ON:= , 	OFF:= , 	LINK=>EL2008[9,7] , 	VALUE:= 	arDropCylinder[18].o.ValveIn	);	(*	料仓18气缸原位	*)
+DO_[9,8](	ON:= , 	OFF:= , 	LINK=>EL2008[9,8] , 	VALUE:= 	arDropCylinder[18].o.ValveOut	);	(*	料仓18气缸工作位	*)
+DO_[10,1](	ON:= , 	OFF:= , 	LINK=>EL2008[10,1] , 	VALUE:= 	arDropCylinder[19].o.ValveIn	);	(*	料仓19气缸原位	*)
+DO_[10,2](	ON:= , 	OFF:= , 	LINK=>EL2008[10,2] , 	VALUE:= 	arDropCylinder[19].o.ValveOut	);	(*	料仓19气缸工作位	*)
+DO_[10,3](	ON:= , 	OFF:= , 	LINK=>EL2008[10,3] , 	VALUE:= 	arDropCylinder[20].o.ValveIn	);	(*	料仓20气缸原位	*)
+DO_[10,4](	ON:= , 	OFF:= , 	LINK=>EL2008[10,4] , 	VALUE:= 	arDropCylinder[20].o.ValveOut	);	(*	料仓20气缸工作位	*)
+DO_[10,5](	ON:= , 	OFF:= , 	LINK=>EL2008[10,5] , 	VALUE:= 	arCounters[11].LineVibrator_Wrk	);	(*	料仓11直震启动	*)
+DO_[10,6](	ON:= , 	OFF:= , 	LINK=>EL2008[10,6] , 	VALUE:= 	arCounters[11].CircleVibrator_Wrk	);	(*	料仓11圆震启动	*)
+DO_[10,7](	ON:= , 	OFF:= , 	LINK=>EL2008[10,7] , 	VALUE:= 	arCounters[11].DropVibrator_Wrk	);	(*	料仓11落料启动	*)
+DO_[10,8](	ON:= , 	OFF:= , 	LINK=>EL2008[10,8] , 	VALUE:= 	arCounters[12].LineVibrator_Wrk	);	(*	料仓12直震启动	*)
+DO_[11,1](	ON:= , 	OFF:= , 	LINK=>EL2008[11,1] , 	VALUE:= 	arCounters[12].CircleVibrator_Wrk	);	(*	料仓12圆震启动	*)
+DO_[11,2](	ON:= , 	OFF:= , 	LINK=>EL2008[11,2] , 	VALUE:= 	arCounters[12].DropVibrator_Wrk	);	(*	料仓12落料启动	*)
+DO_[11,3](	ON:= , 	OFF:= , 	LINK=>EL2008[11,3] , 	VALUE:= 	arCounters[13].LineVibrator_Wrk	);	(*	料仓13直震启动	*)
+DO_[11,4](	ON:= , 	OFF:= , 	LINK=>EL2008[11,4] , 	VALUE:= 	arCounters[13].CircleVibrator_Wrk	);	(*	料仓13圆震启动	*)
+DO_[11,5](	ON:= , 	OFF:= , 	LINK=>EL2008[11,5] , 	VALUE:= 	arCounters[13].DropVibrator_Wrk	);	(*	料仓13落料启动	*)
+DO_[11,6](	ON:= , 	OFF:= , 	LINK=>EL2008[11,6] , 	VALUE:= 	arCounters[14].LineVibrator_Wrk	);	(*	料仓14直震启动	*)
+DO_[11,7](	ON:= , 	OFF:= , 	LINK=>EL2008[11,7] , 	VALUE:= 	arCounters[14].CircleVibrator_Wrk	);	(*	料仓14圆震启动	*)
+DO_[11,8](	ON:= , 	OFF:= , 	LINK=>EL2008[11,8] , 	VALUE:= 	arCounters[14].DropVibrator_Wrk	);	(*	料仓14落料启动	*)
+DO_[12,1](	ON:= , 	OFF:= , 	LINK=>EL2008[12,1] , 	VALUE:= 	arCounters[15].LineVibrator_Wrk	);	(*	料仓15直震启动	*)
+DO_[12,2](	ON:= , 	OFF:= , 	LINK=>EL2008[12,2] , 	VALUE:= 	arCounters[15].CircleVibrator_Wrk	);	(*	料仓15圆震启动	*)
+DO_[12,3](	ON:= , 	OFF:= , 	LINK=>EL2008[12,3] , 	VALUE:= 	arCounters[15].DropVibrator_Wrk	);	(*	料仓15落料启动	*)
+DO_[12,4](	ON:= , 	OFF:= , 	LINK=>EL2008[12,4] , 	VALUE:= 	arCounters[16].LineVibrator_Wrk	);	(*	料仓16直震启动	*)
+DO_[12,5](	ON:= , 	OFF:= , 	LINK=>EL2008[12,5] , 	VALUE:= 	arCounters[16].CircleVibrator_Wrk	);	(*	料仓16圆震启动	*)
+DO_[12,6](	ON:= , 	OFF:= , 	LINK=>EL2008[12,6] , 	VALUE:= 	arCounters[16].DropVibrator_Wrk	);	(*	料仓16落料启动	*)
+DO_[12,7](	ON:= , 	OFF:= , 	LINK=>EL2008[12,7] , 	VALUE:= 	arCounters[17].LineVibrator_Wrk	);	(*	料仓17直震启动	*)
+DO_[12,8](	ON:= , 	OFF:= , 	LINK=>EL2008[12,8] , 	VALUE:= 	arCounters[17].CircleVibrator_Wrk	);	(*	料仓17圆震启动	*)
+DO_[13,1](	ON:= , 	OFF:= , 	LINK=>EL2008[13,1] , 	VALUE:= 	arCounters[17].DropVibrator_Wrk	);	(*	料仓17落料启动	*)
+DO_[13,2](	ON:= , 	OFF:= , 	LINK=>EL2008[13,2] , 	VALUE:= 	arCounters[18].LineVibrator_Wrk	);	(*	料仓18直震启动	*)
+DO_[13,3](	ON:= , 	OFF:= , 	LINK=>EL2008[13,3] , 	VALUE:= 	arCounters[18].CircleVibrator_Wrk	);	(*	料仓18圆震启动	*)
+DO_[13,4](	ON:= , 	OFF:= , 	LINK=>EL2008[13,4] , 	VALUE:= 	arCounters[18].DropVibrator_Wrk	);	(*	料仓18落料启动	*)
+DO_[13,5](	ON:= , 	OFF:= , 	LINK=>EL2008[13,5] , 	VALUE:= 	arCounters[19].LineVibrator_Wrk	);	(*	料仓19直震启动	*)
+DO_[13,6](	ON:= , 	OFF:= , 	LINK=>EL2008[13,6] , 	VALUE:= 	arCounters[19].CircleVibrator_Wrk	);	(*	料仓19圆震启动	*)
+DO_[13,7](	ON:= , 	OFF:= , 	LINK=>EL2008[13,7] , 	VALUE:= 	arCounters[19].DropVibrator_Wrk	);	(*	料仓19落料启动	*)
+DO_[13,8](	ON:= , 	OFF:= , 	LINK=>EL2008[13,8] , 	VALUE:= 	arCounters[20].LineVibrator_Wrk	);	(*	料仓20直震启动	*)
+DO_[14,1](	ON:= , 	OFF:= , 	LINK=>EL2008[14,1] , 	VALUE:= 	arCounters[20].CircleVibrator_Wrk	);	(*	料仓20圆震启动	*)
+DO_[14,2](	ON:= , 	OFF:= , 	LINK=>EL2008[14,2] , 	VALUE:= 	arCounters[20].DropVibrator_Wrk	);	(*	料仓20落料启动	*)
+DO_[14,3](	ON:= , 	OFF:= , 	LINK=>EL2008[14,3] , 	VALUE:= 	glb_arLightRelay_UN01[1]	);	(*设备照明灯继电器1	*)
+DO_[14,4](	ON:= , 	OFF:= , 	LINK=>EL2008[14,4] , 	VALUE:= 	glb_bCounterAirValve_UN01	);	(*数粒系统气压阀	*)
+DO_[14,5](	ON:= , 	OFF:= , 	LINK=>EL2008[14,5] , 	VALUE:=     arDropBufferCyclinder[1].o.ValveOut);	(**)
+DO_[14,6](	ON:= , 	OFF:= , 	LINK=>EL2008[14,6] , 	VALUE:= 	arDropBufferCyclinder[2].o.ValveOut);	(**)
+DO_[14,7](	ON:= , 	OFF:= , 	LINK=>EL2008[14,7] , 	VALUE:= 	);	(**)
+DO_[14,8](	ON:= , 	OFF:= , 	LINK=>EL2008[14,8] , 	VALUE:= 	);	(**)									
+{endregion}]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CP04" Id="{fc191c70-f0e1-48f9-bc7e-d1d2e189f806}">
+      <Implementation>
+        <ST><![CDATA[{region "CP04柜"}									
+DI_[15,1](	ON:= , 	OFF:= , 	LINK:=EL1008[15,1] , 	VALUE=> 	arDropCylinder[21].i.InSensor	);	(*	料仓21气缸原位	*)
+DI_[15,2](	ON:= , 	OFF:= , 	LINK:=EL1008[15,2] , 	VALUE=> 	arDropCylinder[21].i.OutSensor	);	(*	料仓21气缸工作位	*)
+DI_[15,3](	ON:= , 	OFF:= , 	LINK:=EL1008[15,3] , 	VALUE=> 	arHighSensor[21].i.Link	);	(*	料仓21少料	*)
+DI_[15,4](	ON:= , 	OFF:= , 	LINK:=EL1008[15,4] , 	VALUE=> 	arLowSensor[21].i.Link	);	(*	料仓21缺料	*)
+DI_[15,5](	ON:= , 	OFF:= , 	LINK:=EL1008[15,5] , 	VALUE=> 	arDropCylinder[22].i.InSensor	);	(*	料仓22气缸原位	*)
+DI_[15,6](	ON:= , 	OFF:= , 	LINK:=EL1008[15,6] , 	VALUE=> 	arDropCylinder[22].i.OutSensor	);	(*	料仓22气缸工作位	*)
+DI_[15,7](	ON:= , 	OFF:= , 	LINK:=EL1008[15,7] , 	VALUE=> 	arHighSensor[22].i.Link	);	(*	料仓22少料	*)
+DI_[15,8](	ON:= , 	OFF:= , 	LINK:=EL1008[15,8] , 	VALUE=> 	arLowSensor[22].i.Link	);	(*	料仓22缺料	*)
+DI_[16,1](	ON:= , 	OFF:= , 	LINK:=EL1008[16,1] , 	VALUE=> 	arDropCylinder[23].i.InSensor	);	(*	料仓23气缸原位	*)
+DI_[16,2](	ON:= , 	OFF:= , 	LINK:=EL1008[16,2] , 	VALUE=> 	arDropCylinder[23].i.OutSensor	);	(*	料仓23气缸工作位	*)
+DI_[16,3](	ON:= , 	OFF:= , 	LINK:=EL1008[16,3] , 	VALUE=> 	arHighSensor[23].i.Link	);	(*	料仓23少料	*)
+DI_[16,4](	ON:= , 	OFF:= , 	LINK:=EL1008[16,4] , 	VALUE=> 	arLowSensor[23].i.Link	);	(*	料仓23缺料	*)
+DI_[16,5](	ON:= , 	OFF:= , 	LINK:=EL1008[16,5] , 	VALUE=> 	arDropCylinder[24].i.InSensor	);	(*	料仓24气缸原位	*)
+DI_[16,6](	ON:= , 	OFF:= , 	LINK:=EL1008[16,6] , 	VALUE=> 	arDropCylinder[24].i.OutSensor	);	(*	料仓24气缸工作位	*)
+DI_[16,7](	ON:= , 	OFF:= , 	LINK:=EL1008[16,7] , 	VALUE=> 	arHighSensor[24].i.Link	);	(*	料仓24少料	*)
+DI_[16,8](	ON:= , 	OFF:= , 	LINK:=EL1008[16,8] , 	VALUE=> 	arLowSensor[24].i.Link	);	(*	料仓24缺料	*)
+DI_[17,1](	ON:= , 	OFF:= , 	LINK:=EL1008[17,1] , 	VALUE=> 	arDropCylinder[25].i.InSensor	);	(*	料仓25气缸原位	*)
+DI_[17,2](	ON:= , 	OFF:= , 	LINK:=EL1008[17,2] , 	VALUE=> 	arDropCylinder[25].i.OutSensor	);	(*	料仓25气缸工作位	*)
+DI_[17,3](	ON:= , 	OFF:= , 	LINK:=EL1008[17,3] , 	VALUE=> 	arHighSensor[25].i.Link	);	(*	料仓25少料	*)
+DI_[17,4](	ON:= , 	OFF:= , 	LINK:=EL1008[17,4] , 	VALUE=> 	arLowSensor[25].i.Link	);	(*	料仓25缺料	*)
+DI_[17,5](	ON:= , 	OFF:= , 	LINK:=EL1008[17,5] , 	VALUE=> 	arDropCylinder[26].i.InSensor	);	(*	料仓26气缸原位	*)
+DI_[17,6](	ON:= , 	OFF:= , 	LINK:=EL1008[17,6] , 	VALUE=> 	arDropCylinder[26].i.OutSensor	);	(*	料仓26气缸工作位	*)
+DI_[17,7](	ON:= , 	OFF:= , 	LINK:=EL1008[17,7] , 	VALUE=> 	arHighSensor[26].i.Link	);	(*	料仓26少料	*)
+DI_[17,8](	ON:= , 	OFF:= , 	LINK:=EL1008[17,8] , 	VALUE=> 	arLowSensor[26].i.Link	);	(*	料仓26缺料	*)
+DI_[18,1](	ON:= , 	OFF:= , 	LINK:=EL1008[18,1] , 	VALUE=> 	arDropCylinder[27].i.InSensor	);	(*	料仓27气缸原位	*)
+DI_[18,2](	ON:= , 	OFF:= , 	LINK:=EL1008[18,2] , 	VALUE=> 	arDropCylinder[27].i.OutSensor	);	(*	料仓27气缸工作位	*)
+DI_[18,3](	ON:= , 	OFF:= , 	LINK:=EL1008[18,3] , 	VALUE=> 	arHighSensor[27].i.Link	);	(*	料仓27少料	*)
+DI_[18,4](	ON:= , 	OFF:= , 	LINK:=EL1008[18,4] , 	VALUE=> 	arLowSensor[27].i.Link	);	(*	料仓27缺料	*)
+DI_[18,5](	ON:= , 	OFF:= , 	LINK:=EL1008[18,5] , 	VALUE=> 	arDropCylinder[28].i.InSensor	);	(*	料仓28气缸原位	*)
+DI_[18,6](	ON:= , 	OFF:= , 	LINK:=EL1008[18,6] , 	VALUE=> 	arDropCylinder[28].i.OutSensor	);	(*	料仓28气缸工作位	*)
+DI_[18,7](	ON:= , 	OFF:= , 	LINK:=EL1008[18,7] , 	VALUE=> 	arHighSensor[28].i.Link	);	(*	料仓28少料	*)
+DI_[18,8](	ON:= , 	OFF:= , 	LINK:=EL1008[18,8] , 	VALUE=> 	arLowSensor[28].i.Link	);	(*	料仓28缺料	*)
+DI_[19,1](	ON:= , 	OFF:= , 	LINK:=EL1008[19,1] , 	VALUE=> 	arDropCylinder[29].i.InSensor	);	(*	料仓29气缸原位	*)
+DI_[19,2](	ON:= , 	OFF:= , 	LINK:=EL1008[19,2] , 	VALUE=> 	arDropCylinder[29].i.OutSensor	);	(*	料仓29气缸工作位	*)
+DI_[19,3](	ON:= , 	OFF:= , 	LINK:=EL1008[19,3] , 	VALUE=> 	arHighSensor[29].i.Link	);	(*	料仓29少料	*)
+DI_[19,4](	ON:= , 	OFF:= , 	LINK:=EL1008[19,4] , 	VALUE=> 	arLowSensor[29].i.Link	);	(*	料仓29缺料	*)
+DI_[19,5](	ON:= , 	OFF:= , 	LINK:=EL1008[19,5] , 	VALUE=> 	arDropCylinder[30].i.InSensor	);	(*	料仓30气缸原位	*)
+DI_[19,6](	ON:= , 	OFF:= , 	LINK:=EL1008[19,6] , 	VALUE=> 	arDropCylinder[30].i.OutSensor	);	(*	料仓30气缸工作位	*)
+DI_[19,7](	ON:= , 	OFF:= , 	LINK:=EL1008[19,7] , 	VALUE=> 	arHighSensor[30].i.Link	);	(*	料仓30少料	*)
+DI_[19,8](	ON:= , 	OFF:= , 	LINK:=EL1008[19,8] , 	VALUE=> 	arLowSensor[30].i.Link	);	(*	料仓30缺料	*)
+DI_[20,1](	ON:= , 	OFF:= , 	LINK:=EL1008[20,1] , 	VALUE=> 	arDropSensor[21].i.Link	);	(*	工位21落料	*)
+DI_[20,2](	ON:= , 	OFF:= , 	LINK:=EL1008[20,2] , 	VALUE=> 	arDropSensor[22].i.Link	);	(*	工位22落料	*)
+DI_[20,3](	ON:= , 	OFF:= , 	LINK:=EL1008[20,3] , 	VALUE=> 	arDropSensor[23].i.Link	);	(*	工位23落料	*)
+DI_[20,4](	ON:= , 	OFF:= , 	LINK:=EL1008[20,4] , 	VALUE=> 	arDropSensor[24].i.Link	);	(*	工位24落料	*)
+DI_[20,5](	ON:= , 	OFF:= , 	LINK:=EL1008[20,5] , 	VALUE=> 	arDropSensor[25].i.Link	);	(*	工位25落料	*)
+DI_[20,6](	ON:= , 	OFF:= , 	LINK:=EL1008[20,6] , 	VALUE=> 	arDropSensor[26].i.Link	);	(*	工位26落料	*)
+DI_[20,7](	ON:= , 	OFF:= , 	LINK:=EL1008[20,7] , 	VALUE=> 	arDropSensor[27].i.Link	);	(*	工位27落料	*)
+DI_[20,8](	ON:= , 	OFF:= , 	LINK:=EL1008[20,8] , 	VALUE=> 	arDropSensor[28].i.Link	);	(*	工位28落料	*)
+DI_[21,1](	ON:= , 	OFF:= , 	LINK:=EL1008[21,1] , 	VALUE=> 	arDropSensor[29].i.Link	);	(*	工位29落料	*)
+DI_[21,2](	ON:= , 	OFF:= , 	LINK:=EL1008[21,2] , 	VALUE=> 	arDropSensor[30].i.Link	);	(*	工位30落料	*)
+DI_[21,3](	ON:= , 	OFF:= , 	LINK:=EL1008[21,3] , 	VALUE=> 	arSafeDoorSts[10]	);	(*	安全门10	*)
+DI_[21,4](	ON:= , 	OFF:= , 	LINK:=EL1008[21,4] , 	VALUE=> 	arSafeDoorSts[11]	);	(*	安全门11	*)
+DI_[21,5](	ON:= , 	OFF:= , 	LINK:=EL1008[21,5] , 	VALUE=> 	arSafeDoorSts[12]	);	(*	安全门12	*)
+DI_[21,6](	ON:= , 	OFF:= , 	LINK:=EL1008[21,6] , 	VALUE=> 	arSafeDoorSts[13]	);	(*	安全门13	*)
+DI_[21,7](	ON:= , 	OFF:= , 	LINK:=EL1008[21,7] , 	VALUE=> 	arSafeDoorSts[14]	);	(*	安全门14	*)
+DI_[21,8](	ON:= , 	OFF:= , 	LINK:=EL1008[21,8] , 	VALUE=> 		);	(*	预留急停反馈*)
+DI_[31,1](	ON:= , 	OFF:= , 	LINK:=EL1008[31,1] , 	VALUE=> 		);	(*	备用	*)
+DI_[31,2](	ON:= , 	OFF:= , 	LINK:=EL1008[31,2] , 	VALUE=> 		);	(*	备用	*)
+DI_[31,3](	ON:= , 	OFF:= , 	LINK:=EL1008[31,3] , 	VALUE=> 		);	(*	备用	*)
+DI_[31,4](	ON:= , 	OFF:= , 	LINK:=EL1008[31,4] , 	VALUE=> 		);	(*	备用	*)
+DI_[31,5](	ON:= , 	OFF:= , 	LINK:=EL1008[31,5] , 	VALUE=> 		);	(*	备用	*)
+DI_[31,6](	ON:= , 	OFF:= , 	LINK:=EL1008[31,6] , 	VALUE=> 		);	(*	备用	*)
+DI_[31,7](	ON:= , 	OFF:= , 	LINK:=EL1008[31,7] , 	VALUE=> 		);	(*	备用	*)
+DI_[31,8](	ON:= , 	OFF:= , 	LINK:=EL1008[31,8] , 	VALUE=> 		);	(*	备用	*)
+
+	 
+		  
+			   
+					
+						 
+							  
+								   
+(*****************************************************************************************************)									
+DO_[15,1](	ON:= , 	OFF:= , 	LINK=>EL2008[15,1] , 	VALUE:= 	arDropCylinder[21].o.ValveIn	);	(*	料仓21气缸原位	*)
+DO_[15,2](	ON:= , 	OFF:= , 	LINK=>EL2008[15,2] , 	VALUE:= 	arDropCylinder[21].o.ValveOut	);	(*	料仓21气缸工作位	*)
+DO_[15,3](	ON:= , 	OFF:= , 	LINK=>EL2008[15,3] , 	VALUE:= 	arDropCylinder[22].o.ValveIn	);	(*	料仓22气缸原位	*)
+DO_[15,4](	ON:= , 	OFF:= , 	LINK=>EL2008[15,4] , 	VALUE:= 	arDropCylinder[22].o.ValveOut	);	(*	料仓22气缸工作位	*)
+DO_[15,5](	ON:= , 	OFF:= , 	LINK=>EL2008[15,5] , 	VALUE:= 	arDropCylinder[23].o.ValveIn	);	(*	料仓23气缸原位	*)
+DO_[15,6](	ON:= , 	OFF:= , 	LINK=>EL2008[15,6] , 	VALUE:= 	arDropCylinder[23].o.ValveOut	);	(*	料仓23气缸工作位	*)
+DO_[15,7](	ON:= , 	OFF:= , 	LINK=>EL2008[15,7] , 	VALUE:= 	arDropCylinder[24].o.ValveIn	);	(*	料仓24气缸原位	*)
+DO_[15,8](	ON:= , 	OFF:= , 	LINK=>EL2008[15,8] , 	VALUE:= 	arDropCylinder[24].o.ValveOut	);	(*	料仓24气缸工作位	*)
+DO_[16,1](	ON:= , 	OFF:= , 	LINK=>EL2008[16,1] , 	VALUE:= 	arDropCylinder[25].o.ValveIn	);	(*	料仓25气缸原位	*)
+DO_[16,2](	ON:= , 	OFF:= , 	LINK=>EL2008[16,2] , 	VALUE:= 	arDropCylinder[25].o.ValveOut	);	(*	料仓25气缸工作位	*)
+DO_[16,3](	ON:= , 	OFF:= , 	LINK=>EL2008[16,3] , 	VALUE:= 	arDropCylinder[26].o.ValveIn	);	(*	料仓26气缸原位	*)
+DO_[16,4](	ON:= , 	OFF:= , 	LINK=>EL2008[16,4] , 	VALUE:= 	arDropCylinder[26].o.ValveOut	);	(*	料仓26气缸工作位	*)
+DO_[16,5](	ON:= , 	OFF:= , 	LINK=>EL2008[16,5] , 	VALUE:= 	arDropCylinder[27].o.ValveIn	);	(*	料仓27气缸原位	*)
+DO_[16,6](	ON:= , 	OFF:= , 	LINK=>EL2008[16,6] , 	VALUE:= 	arDropCylinder[27].o.ValveOut	);	(*	料仓27气缸工作位	*)
+DO_[16,7](	ON:= , 	OFF:= , 	LINK=>EL2008[16,7] , 	VALUE:= 	arDropCylinder[28].o.ValveIn	);	(*	料仓28气缸原位	*)
+DO_[16,8](	ON:= , 	OFF:= , 	LINK=>EL2008[16,8] , 	VALUE:= 	arDropCylinder[28].o.ValveOut	);	(*	料仓28气缸工作位	*)
+DO_[17,1](	ON:= , 	OFF:= , 	LINK=>EL2008[17,1] , 	VALUE:= 	arDropCylinder[29].o.ValveIn	);	(*	料仓29气缸原位	*)
+DO_[17,2](	ON:= , 	OFF:= , 	LINK=>EL2008[17,2] , 	VALUE:= 	arDropCylinder[29].o.ValveOut	);	(*	料仓29气缸工作位	*)
+DO_[17,3](	ON:= , 	OFF:= , 	LINK=>EL2008[17,3] , 	VALUE:= 	arDropCylinder[30].o.ValveIn	);	(*	料仓30气缸原位	*)
+DO_[17,4](	ON:= , 	OFF:= , 	LINK=>EL2008[17,4] , 	VALUE:= 	arDropCylinder[30].o.ValveOut	);	(*	料仓30气缸工作位	*)
+DO_[17,5](	ON:= , 	OFF:= , 	LINK=>EL2008[17,5] , 	VALUE:= 	arCounters[21].LineVibrator_Wrk	);	(*	料仓21直震启动	*)
+DO_[17,6](	ON:= , 	OFF:= , 	LINK=>EL2008[17,6] , 	VALUE:= 	arCounters[21].CircleVibrator_Wrk	);	(*	料仓21圆震启动	*)
+DO_[17,7](	ON:= , 	OFF:= , 	LINK=>EL2008[17,7] , 	VALUE:= 	arCounters[21].DropVibrator_Wrk	);	(*	料仓21落料启动	*)
+DO_[17,8](	ON:= , 	OFF:= , 	LINK=>EL2008[17,8] , 	VALUE:= 	arCounters[22].LineVibrator_Wrk	);	(*	料仓22直震启动	*)
+DO_[18,1](	ON:= , 	OFF:= , 	LINK=>EL2008[18,1] , 	VALUE:= 	arCounters[22].CircleVibrator_Wrk	);	(*	料仓22圆震启动	*)
+DO_[18,2](	ON:= , 	OFF:= , 	LINK=>EL2008[18,2] , 	VALUE:= 	arCounters[22].DropVibrator_Wrk	);	(*	料仓22落料启动	*)
+DO_[18,3](	ON:= , 	OFF:= , 	LINK=>EL2008[18,3] , 	VALUE:= 	arCounters[23].LineVibrator_Wrk	);	(*	料仓23直震启动	*)
+DO_[18,4](	ON:= , 	OFF:= , 	LINK=>EL2008[18,4] , 	VALUE:= 	arCounters[23].CircleVibrator_Wrk	);	(*	料仓23圆震启动	*)
+DO_[18,5](	ON:= , 	OFF:= , 	LINK=>EL2008[18,5] , 	VALUE:= 	arCounters[23].DropVibrator_Wrk	);	(*	料仓23落料启动	*)
+DO_[18,6](	ON:= , 	OFF:= , 	LINK=>EL2008[18,6] , 	VALUE:= 	arCounters[24].LineVibrator_Wrk	);	(*	料仓24直震启动	*)
+DO_[18,7](	ON:= , 	OFF:= , 	LINK=>EL2008[18,7] , 	VALUE:= 	arCounters[24].CircleVibrator_Wrk	);	(*	料仓24圆震启动	*)
+DO_[18,8](	ON:= , 	OFF:= , 	LINK=>EL2008[18,8] , 	VALUE:= 	arCounters[24].DropVibrator_Wrk	);	(*	料仓24落料启动	*)
+DO_[19,1](	ON:= , 	OFF:= , 	LINK=>EL2008[19,1] , 	VALUE:= 	arCounters[25].LineVibrator_Wrk	);	(*	料仓25直震启动	*)
+DO_[19,2](	ON:= , 	OFF:= , 	LINK=>EL2008[19,2] , 	VALUE:= 	arCounters[25].CircleVibrator_Wrk	);	(*	料仓25圆震启动	*)
+DO_[19,3](	ON:= , 	OFF:= , 	LINK=>EL2008[19,3] , 	VALUE:= 	arCounters[25].DropVibrator_Wrk	);	(*	料仓25落料启动	*)
+DO_[19,4](	ON:= , 	OFF:= , 	LINK=>EL2008[19,4] , 	VALUE:= 	arCounters[26].LineVibrator_Wrk	);	(*	料仓26直震启动	*)
+DO_[19,5](	ON:= , 	OFF:= , 	LINK=>EL2008[19,5] , 	VALUE:= 	arCounters[26].CircleVibrator_Wrk	);	(*	料仓26圆震启动	*)
+DO_[19,6](	ON:= , 	OFF:= , 	LINK=>EL2008[19,6] , 	VALUE:= 	arCounters[26].DropVibrator_Wrk	);	(*	料仓26落料启动	*)
+DO_[19,7](	ON:= , 	OFF:= , 	LINK=>EL2008[19,7] , 	VALUE:= 	arCounters[27].LineVibrator_Wrk	);	(*	料仓27直震启动	*)
+DO_[19,8](	ON:= , 	OFF:= , 	LINK=>EL2008[19,8] , 	VALUE:= 	arCounters[27].CircleVibrator_Wrk	);	(*	料仓27圆震启动	*)
+DO_[20,1](	ON:= , 	OFF:= , 	LINK=>EL2008[20,1] , 	VALUE:= 	arCounters[27].DropVibrator_Wrk	);	(*	料仓27落料启动	*)
+DO_[20,2](	ON:= , 	OFF:= , 	LINK=>EL2008[20,2] , 	VALUE:= 	arCounters[28].LineVibrator_Wrk	);	(*	料仓28直震启动	*)
+DO_[20,3](	ON:= , 	OFF:= , 	LINK=>EL2008[20,3] , 	VALUE:= 	arCounters[28].CircleVibrator_Wrk	);	(*	料仓28圆震启动	*)
+DO_[20,4](	ON:= , 	OFF:= , 	LINK=>EL2008[20,4] , 	VALUE:=     arCounters[28].DropVibrator_Wrk	);	(*	料仓28落料启动	*)
+DO_[20,5](	ON:= , 	OFF:= , 	LINK=>EL2008[20,5] , 	VALUE:= 	arCounters[29].LineVibrator_Wrk	);	(*	料仓29直震启动	*)
+DO_[20,6](	ON:= , 	OFF:= , 	LINK=>EL2008[20,6] , 	VALUE:= 	arCounters[29].CircleVibrator_Wrk	);	(*	料仓29圆震启动	*)
+DO_[20,7](	ON:= , 	OFF:= , 	LINK=>EL2008[20,7] , 	VALUE:= 	arCounters[29].DropVibrator_Wrk	);	(*	料仓29落料启动	*)
+DO_[20,8](	ON:= , 	OFF:= , 	LINK=>EL2008[20,8] , 	VALUE:= 	arCounters[30].LineVibrator_Wrk	);	(*	料仓30直震启动	*)
+DO_[21,1](	ON:= , 	OFF:= , 	LINK=>EL2008[21,1] , 	VALUE:= 	arCounters[30].CircleVibrator_Wrk	);	(*	料仓30圆震启动	*)
+DO_[21,2](	ON:= , 	OFF:= , 	LINK=>EL2008[21,2] , 	VALUE:= 	arCounters[30].DropVibrator_Wrk	);	(*	料仓30落料启动	*)
+DO_[21,3](	ON:= , 	OFF:= , 	LINK=>EL2008[21,3] , 	VALUE:= 	glb_arLightRed_UN01[2]	);	(*	备用	*)
+DO_[21,4](	ON:= , 	OFF:= , 	LINK=>EL2008[21,4] , 	VALUE:= 	glb_arLightYellow_UN01[2]	);	(*	备用	*)
+DO_[21,5](	ON:= , 	OFF:= , 	LINK=>EL2008[21,5] , 	VALUE:= 	glb_arLightGreen_UN01[2]	);	(*	备用	*)
+DO_[21,6](	ON:= , 	OFF:= , 	LINK=>EL2008[21,6] , 	VALUE:= 	glb_arLightAlarm_UN01[2]	);	(*	备用	*)
+DO_[21,7](	ON:= , 	OFF:= , 	LINK=>EL2008[21,7] , 	VALUE:= 		);	(*	备用	*)
+DO_[21,8](	ON:= , 	OFF:= , 	LINK=>EL2008[21,8] , 	VALUE:= 		);	(*	备用	*)
+									
+{endregion}	]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CP05" Id="{928ad58b-bd12-40cc-8cda-8e94450451a0}">
+      <Implementation>
+        <ST><![CDATA[{region "CP05柜"}									
+DI_[22,1](	ON:= , 	OFF:= , 	LINK:=EL1008[22,1] , 	VALUE=> 	arDropCylinder[31].i.InSensor	);	(*	料仓31气缸原位	*)
+DI_[22,2](	ON:= , 	OFF:= , 	LINK:=EL1008[22,2] , 	VALUE=> 	arDropCylinder[31].i.OutSensor	);	(*	料仓31气缸工作位	*)
+DI_[22,3](	ON:= , 	OFF:= , 	LINK:=EL1008[22,3] , 	VALUE=> 	arHighSensor[31].i.Link	);	(*	料仓31少料	*)
+DI_[22,4](	ON:= , 	OFF:= , 	LINK:=EL1008[22,4] , 	VALUE=> 	arLowSensor[31].i.Link	);	(*	料仓31缺料	*)
+DI_[22,5](	ON:= , 	OFF:= , 	LINK:=EL1008[22,5] , 	VALUE=> 	arDropCylinder[32].i.InSensor	);	(*	料仓32气缸原位	*)
+DI_[22,6](	ON:= , 	OFF:= , 	LINK:=EL1008[22,6] , 	VALUE=> 	arDropCylinder[32].i.OutSensor	);	(*	料仓32气缸工作位	*)
+DI_[22,7](	ON:= , 	OFF:= , 	LINK:=EL1008[22,7] , 	VALUE=> 	arHighSensor[32].i.Link	);	(*	料仓32少料	*)
+DI_[22,8](	ON:= , 	OFF:= , 	LINK:=EL1008[22,8] , 	VALUE=> 	arLowSensor[32].i.Link	);	(*	料仓32缺料	*)
+DI_[23,1](	ON:= , 	OFF:= , 	LINK:=EL1008[23,1] , 	VALUE=> 	arDropCylinder[33].i.InSensor	);	(*	料仓33气缸原位	*)
+DI_[23,2](	ON:= , 	OFF:= , 	LINK:=EL1008[23,2] , 	VALUE=> 	arDropCylinder[33].i.OutSensor	);	(*	料仓33气缸工作位	*)
+DI_[23,3](	ON:= , 	OFF:= , 	LINK:=EL1008[23,3] , 	VALUE=> 	arHighSensor[33].i.Link	);	(*	料仓33少料	*)
+DI_[23,4](	ON:= , 	OFF:= , 	LINK:=EL1008[23,4] , 	VALUE=> 	arLowSensor[33].i.Link	);	(*	料仓33缺料	*)
+DI_[23,5](	ON:= , 	OFF:= , 	LINK:=EL1008[23,5] , 	VALUE=> 	arDropCylinder[34].i.InSensor	);	(*	料仓34气缸原位	*)
+DI_[23,6](	ON:= , 	OFF:= , 	LINK:=EL1008[23,6] , 	VALUE=> 	arDropCylinder[34].i.OutSensor	);	(*	料仓34气缸工作位	*)
+DI_[23,7](	ON:= , 	OFF:= , 	LINK:=EL1008[23,7] , 	VALUE=> 	arHighSensor[34].i.Link	);	(*	料仓34少料	*)
+DI_[23,8](	ON:= , 	OFF:= , 	LINK:=EL1008[23,8] , 	VALUE=> 	arLowSensor[34].i.Link	);	(*	料仓34缺料	*)
+DI_[24,1](	ON:= , 	OFF:= , 	LINK:=EL1008[24,1] , 	VALUE=> 	arDropCylinder[35].i.InSensor	);	(*	料仓35气缸原位	*)
+DI_[24,2](	ON:= , 	OFF:= , 	LINK:=EL1008[24,2] , 	VALUE=> 	arDropCylinder[35].i.OutSensor	);	(*	料仓35气缸工作位	*)
+DI_[24,3](	ON:= , 	OFF:= , 	LINK:=EL1008[24,3] , 	VALUE=> 	arHighSensor[35].i.Link	);	(*	料仓35少料	*)
+DI_[24,4](	ON:= , 	OFF:= , 	LINK:=EL1008[24,4] , 	VALUE=> 	arLowSensor[35].i.Link	);	(*	料仓35缺料	*)
+DI_[24,5](	ON:= , 	OFF:= , 	LINK:=EL1008[24,5] , 	VALUE=> 	arDropCylinder[36].i.InSensor	);	(*	料仓36气缸原位	*)
+DI_[24,6](	ON:= , 	OFF:= , 	LINK:=EL1008[24,6] , 	VALUE=> 	arDropCylinder[36].i.OutSensor	);	(*	料仓36气缸工作位	*)
+DI_[24,7](	ON:= , 	OFF:= , 	LINK:=EL1008[24,7] , 	VALUE=> 	arHighSensor[36].i.Link	);	(*	料仓36少料	*)
+DI_[24,8](	ON:= , 	OFF:= , 	LINK:=EL1008[24,8] , 	VALUE=> 	arLowSensor[36].i.Link	);	(*	料仓36缺料	*)
+DI_[25,1](	ON:= , 	OFF:= , 	LINK:=EL1008[25,1] , 	VALUE=> 	arDropCylinder[37].i.InSensor	);	(*	料仓37气缸原位	*)
+DI_[25,2](	ON:= , 	OFF:= , 	LINK:=EL1008[25,2] , 	VALUE=> 	arDropCylinder[37].i.OutSensor	);	(*	料仓37气缸工作位	*)
+DI_[25,3](	ON:= , 	OFF:= , 	LINK:=EL1008[25,3] , 	VALUE=> 	arHighSensor[37].i.Link	);	(*	料仓37少料	*)
+DI_[25,4](	ON:= , 	OFF:= , 	LINK:=EL1008[25,4] , 	VALUE=> 	arLowSensor[37].i.Link	);	(*	料仓37缺料	*)
+DI_[25,5](	ON:= , 	OFF:= , 	LINK:=EL1008[25,5] , 	VALUE=> 	arDropCylinder[38].i.InSensor	);	(*	料仓38气缸原位	*)
+DI_[25,6](	ON:= , 	OFF:= , 	LINK:=EL1008[25,6] , 	VALUE=> 	arDropCylinder[38].i.OutSensor	);	(*	料仓38气缸工作位	*)
+DI_[25,7](	ON:= , 	OFF:= , 	LINK:=EL1008[25,7] , 	VALUE=> 	arHighSensor[38].i.Link	);	(*	料仓38少料	*)
+DI_[25,8](	ON:= , 	OFF:= , 	LINK:=EL1008[25,8] , 	VALUE=> 	arLowSensor[38].i.Link	);	(*	料仓38缺料	*)
+DI_[26,1](	ON:= , 	OFF:= , 	LINK:=EL1008[26,1] , 	VALUE=> 	arDropCylinder[39].i.InSensor	);	(*	料仓39气缸原位	*)
+DI_[26,2](	ON:= , 	OFF:= , 	LINK:=EL1008[26,2] , 	VALUE=> 	arDropCylinder[39].i.OutSensor	);	(*	料仓39气缸工作位	*)
+DI_[26,3](	ON:= , 	OFF:= , 	LINK:=EL1008[26,3] , 	VALUE=> 	arHighSensor[39].i.Link	);	(*	料仓39少料	*)
+DI_[26,4](	ON:= , 	OFF:= , 	LINK:=EL1008[26,4] , 	VALUE=> 	arLowSensor[39].i.Link	);	(*	料仓39缺料	*)
+DI_[26,5](	ON:= , 	OFF:= , 	LINK:=EL1008[26,5] , 	VALUE=> 	arDropCylinder[40].i.InSensor	);	(*	料仓40气缸原位	*)
+DI_[26,6](	ON:= , 	OFF:= , 	LINK:=EL1008[26,6] , 	VALUE=> 	arDropCylinder[40].i.OutSensor	);	(*	料仓40气缸工作位	*)
+DI_[26,7](	ON:= , 	OFF:= , 	LINK:=EL1008[26,7] , 	VALUE=> 	arHighSensor[40].i.Link	);	(*	料仓40少料	*)
+DI_[26,8](	ON:= , 	OFF:= , 	LINK:=EL1008[26,8] , 	VALUE=> 	arLowSensor[40].i.Link	);	(*	料仓40缺料	*)
+DI_[27,1](	ON:= , 	OFF:= , 	LINK:=EL1008[27,1] , 	VALUE=> 	arDropSensor[31].i.Link	);	(*	工位31落料	*)
+DI_[27,2](	ON:= , 	OFF:= , 	LINK:=EL1008[27,2] , 	VALUE=> 	arDropSensor[32].i.Link	);	(*	工位32落料	*)
+DI_[27,3](	ON:= , 	OFF:= , 	LINK:=EL1008[27,3] , 	VALUE=> 	arDropSensor[33].i.Link	);	(*	工位33落料	*)
+DI_[27,4](	ON:= , 	OFF:= , 	LINK:=EL1008[27,4] , 	VALUE=> 	arDropSensor[34].i.Link	);	(*	工位34落料	*)
+DI_[27,5](	ON:= , 	OFF:= , 	LINK:=EL1008[27,5] , 	VALUE=> 	arDropSensor[35].i.Link	);	(*	工位35落料	*)
+DI_[27,6](	ON:= , 	OFF:= , 	LINK:=EL1008[27,6] , 	VALUE=> 	arDropSensor[36].i.Link	);	(*	工位36落料	*)
+DI_[27,7](	ON:= , 	OFF:= , 	LINK:=EL1008[27,7] , 	VALUE=> 	arDropSensor[37].i.Link	);	(*	工位37落料	*)
+DI_[27,1](	ON:= , 	OFF:= , 	LINK:=EL1008[27,8] , 	VALUE=> 	arDropSensor[38].i.Link	);	(*	工位38落料	*)
+DI_[28,1](	ON:= , 	OFF:= , 	LINK:=EL1008[28,1] , 	VALUE=> 	arDropSensor[39].i.Link	);	(*	工位39落料	*)
+DI_[28,2](	ON:= , 	OFF:= , 	LINK:=EL1008[28,2] , 	VALUE=> 	arDropSensor[40].i.Link	);	(*	工位40落料	*)
+DI_[28,3](	ON:= , 	OFF:= , 	LINK:=EL1008[28,3] , 	VALUE=> 	arSafeDoorSts[15]	);	(*	安全门15	*)
+DI_[28,4](	ON:= , 	OFF:= , 	LINK:=EL1008[28,4] , 	VALUE=> 	arSafeDoorSts[16]	);	(*	安全门16	*)
+DI_[28,5](	ON:= , 	OFF:= , 	LINK:=EL1008[28,5] , 	VALUE=> 	arSafeDoorSts[17]	);	(*	安全门17	*)
+DI_[28,6](	ON:= , 	OFF:= , 	LINK:=EL1008[28,6] , 	VALUE=> 	arSafeDoorSts[18]	);	(*	安全门18	*)
+DI_[28,7](	ON:= , 	OFF:= , 	LINK:=EL1008[28,7] , 	VALUE=> 		);	(*		*)
+DI_[28,8](	ON:= , 	OFF:= , 	LINK:=EL1008[28,8] , 	VALUE=> 	arRealAxisAdmin[42].i.HomeCali	);	(*	皮带2原点	*)
+DI_[32,1](	ON:= , 	OFF:= , 	LINK:=EL1008[32,1] , 	VALUE=> 	arRealAxisAdmin[43].i.HomeCali	);	(*	皮带3原点	*)
+DI_[32,2](	ON:= , 	OFF:= , 	LINK:=EL1008[32,2] , 	VALUE=> 	arDropBufferCyclinder[2].i.InSensor	);	(*	备用	*)
+DI_[32,3](	ON:= , 	OFF:= , 	LINK:=EL1008[32,3] , 	VALUE=> 		);	(*	备用	*)
+DI_[32,4](	ON:= , 	OFF:= , 	LINK:=EL1008[32,4] , 	VALUE=> 		);	(*	备用	*)
+DI_[32,5](	ON:= , 	OFF:= , 	LINK:=EL1008[32,5] , 	VALUE=> 		);	(*	备用	*)
+DI_[32,6](	ON:= , 	OFF:= , 	LINK:=EL1008[32,6] , 	VALUE=> 		);	(*	备用	*)
+DI_[32,7](	ON:= , 	OFF:= , 	LINK:=EL1008[32,7] , 	VALUE=> 		);	(*	备用	*)
+DI_[32,8](	ON:= , 	OFF:= , 	LINK:=EL1008[32,8] , 	VALUE=> 		);	(*	备用	*)
+
+(*****************************************************************************************************)									
+DO_[22,1](	ON:= , 	OFF:= , 	LINK=>EL2008[22,1] , 	VALUE:= 	arDropCylinder[31].o.ValveIn	);	(*	料仓31气缸原位	*)
+DO_[22,2](	ON:= , 	OFF:= , 	LINK=>EL2008[22,2] , 	VALUE:= 	arDropCylinder[31].o.ValveOut	);	(*	料仓31气缸工作位	*)
+DO_[22,3](	ON:= , 	OFF:= , 	LINK=>EL2008[22,3] , 	VALUE:= 	arDropCylinder[32].o.ValveIn	);	(*	料仓32气缸原位	*)
+DO_[22,4](	ON:= , 	OFF:= , 	LINK=>EL2008[22,4] , 	VALUE:= 	arDropCylinder[32].o.ValveOut	);	(*	料仓32气缸工作位	*)
+DO_[22,5](	ON:= , 	OFF:= , 	LINK=>EL2008[22,5] , 	VALUE:= 	arDropCylinder[33].o.ValveIn	);	(*	料仓33气缸原位	*)
+DO_[22,6](	ON:= , 	OFF:= , 	LINK=>EL2008[22,6] , 	VALUE:= 	arDropCylinder[33].o.ValveOut	);	(*	料仓33气缸工作位	*)
+DO_[22,7](	ON:= , 	OFF:= , 	LINK=>EL2008[22,7] , 	VALUE:= 	arDropCylinder[34].o.ValveIn	);	(*	料仓34气缸原位	*)
+DO_[22,8](	ON:= , 	OFF:= , 	LINK=>EL2008[22,8] , 	VALUE:= 	arDropCylinder[34].o.ValveOut	);	(*	料仓34气缸工作位	*)
+DO_[23,1](	ON:= , 	OFF:= , 	LINK=>EL2008[23,1] , 	VALUE:= 	arDropCylinder[35].o.ValveIn	);	(*	料仓35气缸原位	*)
+DO_[23,2](	ON:= , 	OFF:= , 	LINK=>EL2008[23,2] , 	VALUE:= 	arDropCylinder[35].o.ValveOut	);	(*	料仓35气缸工作位	*)
+DO_[23,3](	ON:= , 	OFF:= , 	LINK=>EL2008[23,3] , 	VALUE:= 	arDropCylinder[36].o.ValveIn	);	(*	料仓36气缸原位	*)
+DO_[23,4](	ON:= , 	OFF:= , 	LINK=>EL2008[23,4] , 	VALUE:= 	arDropCylinder[36].o.ValveOut	);	(*	料仓36气缸工作位	*)
+DO_[23,5](	ON:= , 	OFF:= , 	LINK=>EL2008[23,5] , 	VALUE:= 	arDropCylinder[37].o.ValveIn	);	(*	料仓37气缸原位	*)
+DO_[23,6](	ON:= , 	OFF:= , 	LINK=>EL2008[23,6] , 	VALUE:= 	arDropCylinder[37].o.ValveOut	);	(*	料仓37气缸工作位	*)
+DO_[23,7](	ON:= , 	OFF:= , 	LINK=>EL2008[23,7] , 	VALUE:= 	arDropCylinder[38].o.ValveIn	);	(*	料仓38气缸原位	*)
+DO_[23,8](	ON:= , 	OFF:= , 	LINK=>EL2008[23,8] , 	VALUE:= 	arDropCylinder[38].o.ValveOut	);	(*	料仓38气缸工作位	*)
+DO_[24,1](	ON:= , 	OFF:= , 	LINK=>EL2008[24,1] , 	VALUE:= 	arDropCylinder[39].o.ValveIn	);	(*	料仓39气缸原位	*)
+DO_[24,2](	ON:= , 	OFF:= , 	LINK=>EL2008[24,2] , 	VALUE:= 	arDropCylinder[39].o.ValveOut	);	(*	料仓39气缸工作位	*)
+DO_[24,3](	ON:= , 	OFF:= , 	LINK=>EL2008[24,3] , 	VALUE:= 	arDropCylinder[40].o.ValveIn	);	(*	料仓40气缸原位	*)
+DO_[24,4](	ON:= , 	OFF:= , 	LINK=>EL2008[24,4] , 	VALUE:= 	arDropCylinder[40].o.ValveOut	);	(*	料仓40气缸工作位	*)
+DO_[24,5](	ON:= , 	OFF:= , 	LINK=>EL2008[24,5] , 	VALUE:= 	arCounters[31].LineVibrator_Wrk	);	(*	料仓31直震启动	*)
+DO_[24,6](	ON:= , 	OFF:= , 	LINK=>EL2008[24,6] , 	VALUE:= 	arCounters[31].CircleVibrator_Wrk	);	(*	料仓31圆震启动	*)
+DO_[24,7](	ON:= , 	OFF:= , 	LINK=>EL2008[24,7] , 	VALUE:= 	arCounters[31].DropVibrator_Wrk	);	(*	料仓31落料启动	*)
+DO_[24,8](	ON:= , 	OFF:= , 	LINK=>EL2008[24,8] , 	VALUE:= 	arCounters[32].LineVibrator_Wrk	);	(*	料仓32直震启动	*)
+DO_[25,1](	ON:= , 	OFF:= , 	LINK=>EL2008[25,1] , 	VALUE:= 	arCounters[32].CircleVibrator_Wrk	);	(*	料仓32圆震启动	*)
+DO_[25,2](	ON:= , 	OFF:= , 	LINK=>EL2008[25,2] , 	VALUE:= 	arCounters[32].DropVibrator_Wrk	);	(*	料仓32落料启动	*)
+DO_[25,3](	ON:= , 	OFF:= , 	LINK=>EL2008[25,3] , 	VALUE:= 	arCounters[33].LineVibrator_Wrk	);	(*	料仓33直震启动	*)
+DO_[25,4](	ON:= , 	OFF:= , 	LINK=>EL2008[25,4] , 	VALUE:= 	arCounters[33].CircleVibrator_Wrk	);	(*	料仓33圆震启动	*)
+DO_[25,5](	ON:= , 	OFF:= , 	LINK=>EL2008[25,5] , 	VALUE:= 	arCounters[33].DropVibrator_Wrk	);	(*	料仓33落料启动	*)
+DO_[25,6](	ON:= , 	OFF:= , 	LINK=>EL2008[25,6] , 	VALUE:= 	arCounters[34].LineVibrator_Wrk	);	(*	料仓34直震启动	*)
+DO_[25,7](	ON:= , 	OFF:= , 	LINK=>EL2008[25,7] , 	VALUE:= 	arCounters[34].CircleVibrator_Wrk	);	(*	料仓34圆震启动	*)
+DO_[25,8](	ON:= , 	OFF:= , 	LINK=>EL2008[25,8] , 	VALUE:= 	arCounters[34].DropVibrator_Wrk	);	(*	料仓34落料启动	*)
+DO_[26,1](	ON:= , 	OFF:= , 	LINK=>EL2008[26,1] , 	VALUE:= 	arCounters[35].LineVibrator_Wrk	);	(*	料仓35直震启动	*)
+DO_[26,2](	ON:= , 	OFF:= , 	LINK=>EL2008[26,2] , 	VALUE:= 	arCounters[35].CircleVibrator_Wrk	);	(*	料仓35圆震启动	*)
+DO_[26,3](	ON:= , 	OFF:= , 	LINK=>EL2008[26,3] , 	VALUE:= 	arCounters[35].DropVibrator_Wrk	);	(*	料仓35落料启动	*)
+DO_[26,4](	ON:= , 	OFF:= , 	LINK=>EL2008[26,4] , 	VALUE:= 	arCounters[36].LineVibrator_Wrk	);	(*	料仓36直震启动	*)
+DO_[26,5](	ON:= , 	OFF:= , 	LINK=>EL2008[26,5] , 	VALUE:= 	arCounters[36].CircleVibrator_Wrk	);	(*	料仓36圆震启动	*)
+DO_[26,6](	ON:= , 	OFF:= , 	LINK=>EL2008[26,6] , 	VALUE:= 	arCounters[36].DropVibrator_Wrk	);	(*	料仓36落料启动	*)
+DO_[26,7](	ON:= , 	OFF:= , 	LINK=>EL2008[26,7] , 	VALUE:= 	arCounters[37].LineVibrator_Wrk	);	(*	料仓37直震启动	*)
+DO_[26,8](	ON:= , 	OFF:= , 	LINK=>EL2008[26,8] , 	VALUE:= 	arCounters[37].CircleVibrator_Wrk	);	(*	料仓37圆震启动	*)
+DO_[27,1](	ON:= , 	OFF:= , 	LINK=>EL2008[27,1] , 	VALUE:= 	arCounters[37].DropVibrator_Wrk	);	(*	料仓37落料启动	*)
+DO_[27,2](	ON:= , 	OFF:= , 	LINK=>EL2008[27,2] , 	VALUE:= 	arCounters[38].LineVibrator_Wrk	);	(*	料仓38直震启动	*)
+DO_[27,3](	ON:= , 	OFF:= , 	LINK=>EL2008[27,3] , 	VALUE:= 	arCounters[38].CircleVibrator_Wrk	);	(*	料仓38圆震启动	*)
+DO_[27,4](	ON:= , 	OFF:= , 	LINK=>EL2008[27,4] , 	VALUE:= 	arCounters[38].DropVibrator_Wrk	);	(*	料仓38落料启动	*)
+DO_[27,5](	ON:= , 	OFF:= , 	LINK=>EL2008[27,5] , 	VALUE:= 	arCounters[39].LineVibrator_Wrk	);	(*	料仓39直震启动	*)
+DO_[27,6](	ON:= , 	OFF:= , 	LINK=>EL2008[27,6] , 	VALUE:= 	arCounters[39].CircleVibrator_Wrk	);	(*	料仓39圆震启动	*)
+DO_[27,7](	ON:= , 	OFF:= , 	LINK=>EL2008[27,7] , 	VALUE:= 	arCounters[39].DropVibrator_Wrk	);	(*	料仓39落料启动	*)
+DO_[27,8](	ON:= , 	OFF:= , 	LINK=>EL2008[27,8] , 	VALUE:= 	arCounters[40].LineVibrator_Wrk	);	(*	料仓40直震启动	*)
+DO_[28,1](	ON:= , 	OFF:= , 	LINK=>EL2008[28,1] , 	VALUE:= 	arCounters[40].CircleVibrator_Wrk	);	(*	料仓40圆震启动	*)
+DO_[28,2](	ON:= , 	OFF:= , 	LINK=>EL2008[28,2] , 	VALUE:= 	arCounters[40].DropVibrator_Wrk	);	(*	料仓40落料启动	*)
+DO_[28,3](	ON:= , 	OFF:= , 	LINK=>EL2008[28,3] , 	VALUE:= 	glb_arLightRelay_UN01[2]	);	(*	数粒系统2设备照明继电器	*)
+DO_[28,4](	ON:= , 	OFF:= , 	LINK=>EL2008[28,4] , 	VALUE:= 		);	(*	备用	*)
+DO_[28,5](	ON:= , 	OFF:= , 	LINK=>EL2008[28,5] , 	VALUE:= 		);	(*	备用	*)
+DO_[28,6](	ON:= , 	OFF:= , 	LINK=>EL2008[28,6] , 	VALUE:= 		);	(*	备用	*)
+DO_[28,7](	ON:= , 	OFF:= , 	LINK=>EL2008[28,7] , 	VALUE:= 		);	(*	备用	*)
+DO_[28,8](	ON:= , 	OFF:= , 	LINK=>EL2008[28,8] , 	VALUE:= 		);	(*	备用	*)
+									
+{endregion}]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CP07" Id="{8040d4cd-703a-4e2e-9cae-4cb18ea57c8f}">
+      <Implementation>
+        <ST><![CDATA[{region CP07}
+DI_[33,1]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,1] , 	VALUE=> glb_bModeSwitch_UN01		);	(*	手自动选择	*)
+DI_[33,2]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,2] , 	VALUE=> glb_bStartButton_UN01		);	(*	启动	*)
+DI_[33,3]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,3] , 	VALUE=> glb_bStopButton_UN01		);	(*	停止	*)
+DI_[33,4]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,4] , 	VALUE=> glb_bResetButton_UN01		);	(*	复位	*)
+DI_[33,5]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,5] , 	VALUE=> glb_diEstopButton_UN01.0		);	(*	急停	*)
+DI_[33,6]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,6] , 	VALUE=> glb_bAirFeedback_UN01[1]		);	(*	总气压反馈	*)
+DI_[33,7]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,7] , 	VALUE=> arSafeDoorSts[19]		);	(*	安全门19	*)
+DI_[33,8]	(	ON:= , 	OFF:= , 	LINK:=EL1008[33,8] , 	VALUE=> arSafeDoorSts[20]		);	(*	安全门20	*)
+DI_[34,1]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,1] , 	VALUE=> arSafeDoorSts[21]		);	(*	安全门21	*)
+DI_[34,2]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,2] , 	VALUE=> arSafeDoorSts[22]		);	(*	安全门22	*)
+DI_[34,3]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,3] , 	VALUE=> arSafeDoorSts[23]		);	(*	安全门23	*)
+DI_[34,4]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,4] , 	VALUE=> arPackCylinder[41].i.InSensor		    );	(*	铝杯检测气缸In	*)
+DI_[34,5]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,5] , 	VALUE=> arPackCylinder[41].i.OutSensor		    );	(*	铝杯检测气缸OUT	*)
+DI_[34,6]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,6] , 	VALUE=> arPackSensor[41].i.Link	    	    );	(*铝杯检测接近开关1		*)
+DI_[34,7]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,7] , 	VALUE=> arPackSensor[42].i.Link			    );	(*铝杯检测接近开关2		*)
+DI_[34,8]	(	ON:= , 	OFF:= , 	LINK:=EL1008[34,8] , 	VALUE=> arPackSensor[43].i.Link			    );	(*铝杯检测接近开关3		*)
+DI_[35,1]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,1] , 	VALUE=> arPackSensor[44].i.Link	        	);	(*铝杯检测接近开关4	    *)
+DI_[35,2]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,2] , 	VALUE=> arPackSensor[45].i.Link	    		);	(*铝杯检测接近开关5  	*)
+DI_[35,3]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,3] , 	VALUE=> arPackSensor[46].i.Link	    		);	(*铝杯检测接近开关6 	*)
+DI_[35,4]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,4] , 	VALUE=> arPackSensor[47].i.Link	    		);	(*铝杯检测接近开关7  	*)
+DI_[35,5]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,5] , 	VALUE=>     		);	(*	*)
+DI_[35,6]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,6] , 	VALUE=>     		);	(*	*)
+DI_[35,7]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,7] , 	VALUE=>     		);	(*	*)
+DI_[35,8]	(	ON:= , 	OFF:= , 	LINK:=EL1008[35,8] , 	VALUE=> 		    );	(*	*)
+DI_[36,1]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,1] , 	VALUE=> arPackVacuum[1].i.Sensor		);	(*	拉料气缸1真空反馈	*)
+DI_[36,2]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,2] , 	VALUE=> arPackVacuum[2].i.Sensor		);	(*	拉料气缸2真空反馈	*)
+DI_[36,3]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,3] , 	VALUE=> arPackVacuum[3].i.Sensor		);	(*	拉料气缸3真空反馈	*)
+DI_[36,4]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,4] , 	VALUE=> arPackVacuum[4].i.Sensor		);	(*	拉料气缸4真空反馈	*)
+DI_[36,5]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,5] , 	VALUE=> arPackVacuum[5].i.Sensor		);	(*	拉料气缸5真空反馈	*)
+DI_[36,6]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,6] , 	VALUE=> arPackVacuum[6].i.Sensor		);	(*	拉料气缸6真空反馈	*)
+DI_[36,7]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,7] , 	VALUE=> arPackVacuum[7].i.Sensor		);	(*	拉料气缸7真空反馈	*)
+DI_[36,8]	(	ON:= , 	OFF:= , 	LINK:=EL1008[36,8] , 	VALUE=> arPackVacuum[11].i.Sensor		);	(*	平移气缸1真空反馈	*)
+DI_[37,1]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,1] , 	VALUE=> arPackVacuum[12].i.Sensor		);	(*	平移气缸2真空反馈	*)
+DI_[37,2]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,2] , 	VALUE=> arPackVacuum[13].i.Sensor		);	(*	平移气缸3真空反馈	*)
+DI_[37,3]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,3] , 	VALUE=> arPackVacuum[14].i.Sensor		);	(*	平移气缸4真空反馈	*)
+DI_[37,4]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,4] , 	VALUE=> arPackVacuum[15].i.Sensor		);	(*	平移气缸5真空反馈	*)
+DI_[37,5]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,5] , 	VALUE=> arPackVacuum[16].i.Sensor		);	(*	平移气缸6真空反馈	*)
+DI_[37,6]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,6] , 	VALUE=> arPackVacuum[17].i.Sensor		);	(*	平移气缸7真空反馈	*)
+DI_[37,7]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,7] , 	VALUE=> 		);	(*	*)
+DI_[37,8]	(	ON:= , 	OFF:= , 	LINK:=EL1008[37,8] , 	VALUE=> 		);	(*	*)
+	 
+(*************************************************************************************************************)
+DO_[29,1]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,1] , 	VALUE:= glb_arLightRed_UN01[3] 		);	(*	三色灯红	*)
+DO_[29,2]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,2] , 	VALUE:= glb_arLightYellow_UN01[3] 		);	(*	三色灯黄	*)
+DO_[29,3]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,3] , 	VALUE:= glb_arLightGreen_UN01[3]		);	(*	三色灯绿	*)
+DO_[29,4]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,4] , 	VALUE:= glb_arLightAlarm_UN01[3]		);	(*	三色灯蜂鸣器	*)
+DO_[29,5]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,5] , 	VALUE:= glb_bPackAirValve_UN01 		);	(*	总气压阀	*)
+DO_[29,6]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,6] , 	VALUE:= arPackMotor[1].Forward		);	(*	力矩电机正转	*)
+DO_[29,7]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,7] , 	VALUE:= arPackMotor[1].Backward		);	(*	力矩电机反转	*)
+DO_[29,8]	(	ON:= , 	OFF:= , 	LINK=>EL2008[29,8] , 	VALUE:= arPackHeatRealy[1]		);	(*	加热棒1	*)
+DO_[30,1]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,1] , 	VALUE:= arPackHeatRealy[2]		);	(*	加热棒2	*)
+DO_[30,2]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,2] , 	VALUE:= arPackHeatRealy[3]		);	(*	加热棒3	*)
+DO_[30,3]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,3] , 	VALUE:= arPackHeatRealy[4]		);	(*	加热棒4	*)
+DO_[30,4]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,4] , 	VALUE:= arPackHeatRealy[5]		);	(*	加热棒5	*)
+DO_[30,5]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,5] , 	VALUE:= arPackHeatRealy[6]		);	(*	加热棒6	*)
+DO_[30,6]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,6] , 	VALUE:= arPackHeatRealy[7]		);	(*	加热棒7	*)
+DO_[30,7]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,7] , 	VALUE:= arPackVacuum[1].o.ValveIn		);	(*	拉料气缸1真空吸	*)
+DO_[30,8]	(	ON:= , 	OFF:= , 	LINK=>EL2008[30,8] , 	VALUE:= arPackVacuum[1].o.ValveOut		);	(*	拉料气缸1真空吹	*)
+DO_[31,1]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,1] , 	VALUE:= arPackVacuum[11].o.ValveIn	);	(*	平移真空1吸	*)
+DO_[31,2]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,2] , 	VALUE:= arPackVacuum[11].o.ValveOut		);	(*	平移真空1吹	*)
+DO_[31,3]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,3] , 	VALUE:= glb_bStartBottonLight_UN01		);	(*	启动按钮指示灯	*)
+DO_[31,4]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,4] , 	VALUE:= glb_bStopBottonLight_UN01			);	(*	停止按钮指示灯	*)
+DO_[31,5]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,5] , 	VALUE:= glb_bResetBottonLight_UN01		);	(*	复位按钮指示灯	*)
+DO_[31,6]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,6] , 	VALUE:= arPackCylinder[17].o.ValveOut		);	(*	药盒封口气缸OUT	*)
+DO_[31,7]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,7] , 	VALUE:= arPackHeatRealy[8]		);	(*	加热棒8	*)
+DO_[31,8]	(	ON:= , 	OFF:= , 	LINK=>EL2008[31,8] , 	VALUE:= arPackCylinder[18].o.ValveOut		);	(*	药盒封口2上气缸OUT	*)
+DO_[32,1]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,1] , 	VALUE:= arPackCylinder[19].o.ValveOut		);	(*	药盒封口2下气缸OUT	*)
+DO_[32,2]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,2] , 	VALUE:= arPackCylinder[20].o.ValveOut		);	(*	剔除气缸20210420	*)
+DO_[32,3]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,3] , 	VALUE:= 		);	(*	预留	*)
+DO_[32,4]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,4] , 	VALUE:= 		);	(*	预留	*)
+DO_[32,5]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,5] , 	VALUE:= 		);	(*	预留	*)
+DO_[32,6]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,6] , 	VALUE:= 		);	(*	预留	*)
+DO_[32,7]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,7] , 	VALUE:= 		);	(*	预留	*)
+DO_[32,8]	(	ON:= , 	OFF:= , 	LINK=>EL2008[32,8] , 	VALUE:= 		);	(*	预留	*)
+	 					
+{endregion}]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="CPX1" Id="{02d01665-be65-477f-a427-05aa5a5e740e}">
+      <Implementation>
+        <ST><![CDATA[{region 现场IO1}
+DI_[50,1](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,1] , 	VALUE=> arPackCylinder[17].i.InSensor		);	(*	冲裁气缸	IN	*)
+DI_[50,2](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,2] , 	VALUE=> arPackCylinder[17].i.OutSensor		);	(*	冲裁气缸	OUT	*)
+DI_[50,3](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,3] , 	VALUE=> arPackCylinder[15].i.InSensor		);	(*	料板支撑气缸	IN	*)
+DI_[50,4](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,4] , 	VALUE=> arPackCylinder[15].i.OutSensor		);	(*	料板支撑气缸	OUT	*)
+DI_[50,5](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,5] , 	VALUE=> arPackCylinder[14].i.InSensor		);	(*	移载无杆气缸	IN	*)
+DI_[50,6](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,6] , 	VALUE=> arPackCylinder[14].i.OutSensor		);	(*	移载无杆气缸	OUT	*)
+DI_[50,7](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,7] , 	VALUE=> arPackCylinder[16].i.InSensor		);	(*	移载垂移滑台	IN	*)
+DI_[50,8](	ON:= , 	OFF:= , 	LINK:=CPX8_1[1,8] , 	VALUE=> arPackCylinder[16].i.OutSensor		);	(*	移载垂移滑台	OUT	*)
+DI_[51,1](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,1] , 	VALUE=> arPackCylinder[13].i.InSensor		);	(*	单排旋转气缸	IN	*)
+DI_[51,2](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,2] , 	VALUE=> arPackCylinder[13].i.OutSensor		);	(*	单排旋转气缸	OUT	*)
+DI_[51,3](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,3] , 	VALUE=> arRealAxisAdmin[46].i.HomeCali	    );	(*	皮带6原点		*)
+DI_[51,4](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,4] , 	VALUE=> arPackCylinder[10].i.InSensor		);	(*	封口上气缸 IN   *)arPackCylinder[10].i.OutSensor:=NOT arPackCylinder[10].i.InSensor;
+DI_[51,5](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,5] , 	VALUE=> arPackCylinder[18].i.InSensor		);	(*	封口2上气缸 IN  *)arPackCylinder[18].i.OutSensor:=NOT arPackCylinder[18].i.InSensor;
+DI_[51,6](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,6] , 	VALUE=> arPackCylinder[11].i.InSensor		);	(*	封口下气缸 IN 	*)
+DI_[51,7](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,7] , 	VALUE=> arPackCylinder[11].i.OutSensor		);	(*	封口下气缸 OUT  *)
+DI_[51,8](	ON:= , 	OFF:= , 	LINK:=CPX8_1[2,8] , 	VALUE=> arRealAxisAdmin[48].i.HomeCali     	);	(*	皮带7原点         20210420   	*)
+DI_[52,1](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,1] , 	VALUE=> arPackCylinder[1].i.InSensor		);	(*	吸盒气缸1	IN	*)
+DI_[52,2](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,2] , 	VALUE=> 		);	(*	吸盒气缸1	OUT arPackCylinder[1].i.OutSensor	*)
+DI_[52,3](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,3] , 	VALUE=> arPackCylinder[2].i.InSensor		);	(*	吸盒气缸2	IN	*)
+DI_[52,4](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,4] , 	VALUE=> 		);	(*	吸盒气缸2	OUT	arPackCylinder[2].i.OutSensor*)
+DI_[52,5](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,5] , 	VALUE=> arPackCylinder[3].i.InSensor		);	(*	吸盒气缸3	IN	*)
+DI_[52,6](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,6] , 	VALUE=> 		);	(*	吸盒气缸3	OUT	arPackCylinder[3].i.OutSensor*)
+DI_[52,7](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,7] , 	VALUE=> arPackCylinder[4].i.InSensor		);	(*	吸盒气缸4	IN	*)
+DI_[52,8](	ON:= , 	OFF:= , 	LINK:=CPX8_1[3,8] , 	VALUE=> 		);	(*	吸盒气缸4	OUT	arPackCylinder[4].i.OutSensor*)
+DI_[53,1](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,1] , 	VALUE=> arPackCylinder[5].i.InSensor		);	(*	吸盒气缸5	IN	*)
+DI_[53,2](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,2] , 	VALUE=> 		);	(*	吸盒气缸5	OUT	arPackCylinder[5].i.OutSensor*)
+DI_[53,3](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,3] , 	VALUE=> arPackCylinder[6].i.InSensor		);	(*	吸盒气缸6	IN	*)
+DI_[53,4](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,4] , 	VALUE=> 		);	(*	吸盒气缸6	OUT	arPackCylinder[6].i.OutSensor*)
+DI_[53,5](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,5] , 	VALUE=> arPackCylinder[7].i.InSensor	    );	(*	吸盒气缸7	IN	*)
+DI_[53,6](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,6] , 	VALUE=> 		);	(*	吸盒气缸7	OUT	arPackCylinder[7].i.OutSensor*)
+DI_[53,7](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,7] , 	VALUE=> arPackCylinder[19].i.InSensor		);	(*	封口2下气缸 IN	*)
+DI_[53,8](	ON:= , 	OFF:= , 	LINK:=CPX8_1[4,8] , 	VALUE=> arPackCylinder[19].i.OutSensor		);	(*	封口2下气缸 OUT	*)//热封2
+DI_[54,1](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,1] , 	VALUE=> arPackCylinder[8].i.InSensor		);	(*	放药气缸	IN	*)
+DI_[54,2](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,2] , 	VALUE=> arPackCylinder[8].i.OutSensor		);	(*	放药气缸	OUT	*)
+DI_[54,3](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,3] , 	VALUE=> arPackCylinder[12].i.InSensor		);	(*	药品输送气缸		*)
+DI_[54,4](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,4] , 	VALUE=> 		);	(*	药品输送气缸	OUT	*)
+DI_[54,5](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,5] , 	VALUE=> arPackCylinder[9].i.InSensor		);	(*	工位转换气缸	IN	*)
+DI_[54,6](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,6] , 	VALUE=> arPackCylinder[9].i.OutSensor		);	(*	工位转换气缸	OUT	*)
+DI_[54,7](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,7] , 	VALUE=> 		);	(*			*)
+DI_[54,8](	ON:= , 	OFF:= , 	LINK:=CPX8_1[5,8] , 	VALUE=> 		);	(*			*)
+DI_[55,1](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,1] , 	VALUE=> arPackSensor[1].i.Link		);	(*	盒子检测光电1		*)
+DI_[55,2](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,2] , 	VALUE=> arPackSensor[2].i.Link		);	(*	盒子检测光电2		*)
+DI_[55,3](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,3] , 	VALUE=> arPackSensor[3].i.Link		);	(*	盒子检测光电3		*)
+DI_[55,4](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,4] , 	VALUE=> arPackSensor[4].i.Link		);	(*	盒子检测光电4		*)
+DI_[55,5](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,5] , 	VALUE=> arPackSensor[5].i.Link		);	(*	盒子检测光电5		*)
+DI_[55,6](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,6] , 	VALUE=> arPackSensor[6].i.Link		);	(*	盒子检测光电6		*)
+DI_[55,7](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,7] , 	VALUE=> arPackSensor[7].i.Link		);	(*	盒子检测光电7		*)
+DI_[55,8](	ON:= , 	OFF:= , 	LINK:=CPX8_1[6,8] , 	VALUE=> arPackSensor[8].i.Link		);	(*	盒子检测光电8		*)
+DI_[56,1](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,1] , 	VALUE=> arPackSensor[9].i.Link		);	(*	盒子检测光电9		*)
+DI_[56,2](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,2] , 	VALUE=> arPackSensor[10].i.Link		);	(*	盒子检测光电10		*)
+DI_[56,3](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,3] , 	VALUE=> arPackSensor[11].i.Link		);	(*	盒子检测光电11		*)
+DI_[56,4](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,4] , 	VALUE=> arPackSensor[12].i.Link		);	(*	盒子检测光电12		*)
+DI_[56,5](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,5] , 	VALUE=> arPackSensor[13].i.Link		);	(*	盒子检测光电13		*)
+DI_[56,6](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,6] , 	VALUE=> arPackSensor[14].i.Link		);	(*	盒子检测光电14		*)
+DI_[56,7](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,7] , 	VALUE=> arRealAxisAdmin[44].i.HomeCali		);	(*	差速线接近开关1		*)
+DI_[56,8](	ON:= , 	OFF:= , 	LINK:=CPX8_1[7,8] , 	VALUE=> arRealAxisAdmin[45].i.HomeCali		);	(*	差速线接近开关2		*)
+
+{endregion}]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="WPI1" Id="{a5434970-7c6f-44ec-97c8-8d6385dc4084}">
+      <Implementation>
+        <ST><![CDATA[{region WPI_1}
+DO_[50,1]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,1] , 	VALUE:= arPackCylinder[1].o.ValveIn	);	//	吸盒气缸1In
+DO_[50,2]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,2] , 	VALUE:= arPackCylinder[1].o.ValveOut	);	//	吸盒气缸1Out
+DO_[50,3]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,3] , 	VALUE:= arPackCylinder[2].o.ValveIn	);	//	吸盒气缸2In
+DO_[50,4]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,4] , 	VALUE:= arPackCylinder[2].o.ValveOut	);	//	吸盒气缸2Out
+DO_[50,5]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,5] , 	VALUE:= arPackCylinder[3].o.ValveIn	);	//	吸盒气缸3In
+DO_[50,6]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,6] , 	VALUE:= arPackCylinder[3].o.ValveOut	);	//	吸盒气缸3Out
+DO_[50,7]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,7] , 	VALUE:= arPackCylinder[4].o.ValveIn	);	//	吸盒气缸4In
+DO_[50,8]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[1,8] , 	VALUE:= arPackCylinder[4].o.ValveOut	);	//	吸盒气缸4Out
+DO_[51,1]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,1] , 	VALUE:= arPackCylinder[5].o.ValveIn	);	//	吸盒气缸5In
+DO_[51,2]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,2] , 	VALUE:= arPackCylinder[5].o.ValveOut	);	//	吸盒气缸5Out
+DO_[51,3]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,3] , 	VALUE:= arPackCylinder[6].o.ValveIn	);	//	吸盒气缸6In
+DO_[51,4]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,4] , 	VALUE:= arPackCylinder[6].o.ValveOut	);	//	吸盒气缸6Out
+DO_[51,5]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,5] , 	VALUE:= arPackCylinder[7].o.ValveIn	    );	//	吸盒气缸7In
+DO_[51,6]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,6] , 	VALUE:= arPackCylinder[7].o.ValveOut	);	//	吸盒气缸7Out
+DO_[51,7]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,7] , 	VALUE:= arPackCylinder[8].o.ValveIn   	);	//	放药气缸In
+DO_[51,8]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[2,8] , 	VALUE:= arPackCylinder[8].o.ValveOut	);	//	放药气缸Out
+DO_[52,1]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,1] ,	VALUE:= arPackCylinder[9].o.ValveIn	    );	//	工位转换In
+DO_[52,2]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,2] ,	VALUE:= arPackCylinder[9].o.ValveOut	);	//	工位转换Out
+DO_[52,3]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,3] ,	VALUE:= arPackCylinder[10].o.ValveIn	);	//	封口上气缸IN
+DO_[52,4]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,4] ,	VALUE:= arPackCylinder[10].o.ValveOut	);	//	封口上气缸Out
+DO_[52,5]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,5] ,	VALUE:= arPackCylinder[11].o.ValveIn	);	//	封口下气缸IN
+DO_[52,6]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,6] ,	VALUE:= arPackCylinder[11].o.ValveOut	);	//	封口下气缸OUT
+DO_[52,7]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,7] ,	VALUE:= arPackCylinder[12].o.ValveIn	);	//	药品输送In
+DO_[52,8]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[3,8] ,	VALUE:= arPackCylinder[12].o.ValveOut	);	//	药品输送Out
+DO_[53,1]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,1] ,	VALUE:= 	);		
+DO_[53,2]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,2] ,	VALUE:= 	);		
+DO_[53,3]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,3] ,	VALUE:= 	);		
+DO_[53,4]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,4] ,	VALUE:= 	);		
+DO_[53,5]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,5] ,	VALUE:= 	);		
+DO_[53,6]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,6] ,	VALUE:= 	);		
+DO_[53,7]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,7] ,	VALUE:= 	);		
+DO_[53,8]	(	ON:= , 	OFF:= , 	LINK=>WPI_1[4,8] ,	VALUE:= 	);		
+{endregion}]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="WPI2" Id="{ac527957-38b0-4dc9-b0fe-027d590afc9c}">
+      <Implementation>
+        <ST><![CDATA[{region WPI_2}
+DO_[54,1] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,1] ,	VALUE:= arPackCylinder[16].o.ValveOut		);	(* 单控阀	单排旋转气缸OUT	变更 移载垂移气缸OUT*)
+DO_[54,2] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,2] ,	VALUE:= arPackCylinder[14].o.ValveIn		);	(*	移载无杆气缸IN	*)
+DO_[54,3] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,3] ,	VALUE:= arPackCylinder[14].o.ValveOut		);	(*	移载无杆气缸OUT	*)
+DO_[54,4] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,4] ,	VALUE:= arPackCylinder[15].o.ValveIn		);	(*	料板支撑气缸IN	*)
+DO_[54,5] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,5] ,	VALUE:= arPackCylinder[15].o.ValveOut		);	(*	料板支撑气缸OUT	*)
+DO_[54,6] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,6] ,	VALUE:= arPackCylinder[13].o.ValveIn		);	(*	移载垂移气缸IN 变更 单排旋转气缸OUT*)
+DO_[54,7] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,7] ,	VALUE:= arPackCylinder[13].o.ValveOut		);	(*	移载垂移气缸OUT 变更 单排旋转气缸OUT	*)
+DO_[54,8] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[1,8] ,	VALUE:= arPackCylinder[41].o.ValveIn		);	(*  铝杯检测气缸IN	*)
+DO_[55,1] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,1] ,	VALUE:= arPackCylinder[41].o.ValveOut		);	(*  铝杯检测气缸OUT	*)
+DO_[55,2] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,2] ,	VALUE:= 		);	(*	    *)
+DO_[55,3] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,3] ,	VALUE:= 		);	(*		*)
+DO_[55,4] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,4] ,	VALUE:= 		);	(*		*)
+DO_[55,5] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,5] ,	VALUE:= 		);	(*		*)
+DO_[55,6] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,6] ,	VALUE:= 		);	(*		*)
+DO_[55,7] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,7] ,	VALUE:= 		);	(*		*)
+DO_[55,8] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[2,8] ,	VALUE:= 		);	(*		*)
+DO_[56,1] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,1] ,	VALUE:= 		);	(*		*)
+DO_[56,2] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,2] ,	VALUE:= 		);	(*		*)
+DO_[56,3] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,3] ,	VALUE:= 		);	(*		*)
+DO_[56,4] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,4] ,	VALUE:= 		);	(*		*)
+DO_[56,5] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,5] ,	VALUE:= 		);	(*		*)
+DO_[56,6] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,6] ,	VALUE:= 		);	(*		*)
+DO_[56,7] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,7] ,	VALUE:= 		);	(*		*)
+DO_[56,8] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[3,8] ,	VALUE:= 		);	(*		*)
+DO_[57,1] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,1] ,	VALUE:= 		);	(*		*)
+DO_[57,2] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,2] ,	VALUE:= 		);	(*		*)
+DO_[57,3] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,3] ,	VALUE:= 		);	(*		*)
+DO_[57,4] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,4] ,	VALUE:= 		);	(*		*)
+DO_[57,5] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,5] ,	VALUE:= 		);	(*		*)
+DO_[57,6] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,6] ,	VALUE:= 		);	(*		*)
+DO_[57,7] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,7] ,	VALUE:= 		);	(*		*)
+DO_[57,8] 	 (	ON:= , 	OFF:= , 	LINK=>WPI_2[4,8] ,	VALUE:= 		);	(*		*)
+
+
+{endregion}
+	 ]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="IO_Mapping">
+      <LineId Id="130" Count="0" />
+      <LineId Id="251" Count="0" />
+      <LineId Id="383" Count="0" />
+      <LineId Id="508" Count="1" />
+      <LineId Id="585" Count="2" />
+      <LineId Id="646" Count="3" />
+      <LineId Id="684" Count="0" />
+      <LineId Id="720" Count="0" />
+      <LineId Id="795" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.CP02">
+      <LineId Id="2" Count="123" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.CP03">
+      <LineId Id="2" Count="64" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="68" Count="52" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.CP04">
+      <LineId Id="2" Count="130" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.CP05">
+      <LineId Id="2" Count="123" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.CP07">
+      <LineId Id="2" Count="40" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="43" Count="33" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.CPX1">
+      <LineId Id="2" Count="57" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.WPI1">
+      <LineId Id="2" Count="0" />
+      <LineId Id="69" Count="31" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IO_Mapping.WPI2">
+      <LineId Id="2" Count="0" />
+      <LineId Id="69" Count="31" />
+      <LineId Id="34" Count="2" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

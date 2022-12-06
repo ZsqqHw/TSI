@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <POU Name="AOI_SensorAdmin" Id="{fd193fc9-d0b1-49fa-8a87-c9f0b51061eb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_SensorAdmin
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	TON_Fliter: TON;
+
+END_VAR
+VAR_IN_OUT
+	Admin: UDT_SensorAdmin;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[TON_Fliter(IN:= admin.i.Link, PT:=DINT_TO_TIME(admin.i.FilterTime) , Q=>admin.o.Value , ET=> );
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_SensorAdmin">
+      <LineId Id="36" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="38" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

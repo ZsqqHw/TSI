@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <GVL Name="Global_Variables_NovRAM" Id="{317e0ec9-8410-4469-baa6-1fd5b0ece880}">
+    <Declaration><![CDATA[{attribute 'Tc2GvlVarNames'}
+VAR_GLOBAL
+
+	strArrMachineT_NovRAM	:	ARRAY[1..40] OF strMachineSimple;(*32台机器*)
+
+	iDataA_NovRAM			:ARRAY[1..160]OF UDINT;(*机器号，来自MES*)
+	iDataB_NovRAM			:ARRAY[1..160]OF UDINT;(*是否通电，来自D端口*)
+	iDataC_NovRAM			:ARRAY[1..160]OF UDINT;(*通电时间，来自D端口*)
+(*
+	iDataD		AT  %MW3700	:ARRAY[1..200]OF UDINT;(*作业数量，来自MES*)
+*)
+	iDataE_NovRAM			:ARRAY[1..160]OF UDINT;(*作业号ID，来自MES*)
+	iDataF_NovRAM			:ARRAY[1..160]OF UDINT;(*穴数，来自MES*)
+	iDataG_NovRAM			:ARRAY[1..160]OF UDINT;(*周期，来自A端口*)
+	iDataH_NovRAM			:ARRAY[1..160]OF UDINT;(*作业产量，周期与穴数相乘=DATAH+穴数*)
+	iDataI_NovRAM			:ARRAY[1..160]OF UDINT;(*作业废品，来自B端口*)
+	iDataJ_NovRAM			:ARRAY[1..160]OF UDINT;(*作业运行时间，来自C端口*)
+	iDataK_NovRAM			:ARRAY[1..160]OF UDINT;(*作业停机时间，来自C反端口*)
+(*0613，Modbus通讯问题，均分时间改为此处
+	iDataL		AT  %MW10100	:ARRAY[1..200]OF UDINT;(*E*)
+	iDataM		AT  %MW10900	:ARRAY[1..200]OF UDINT;(*F*)
+	iDataN		AT  %MW11700	:ARRAY[1..200]OF UDINT;(*G*)
+	iDataO		AT  %MW12500	:ARRAY[1..200]OF UDINT;(*H*)
+*)
+	iDataL_NovRAM			:ARRAY[1..160]OF UDINT;(*E*)
+	iDataM_NovRAM			:ARRAY[1..160]OF UDINT;(*F*)
+	iDataN_NovRAM			:ARRAY[1..160]OF UDINT;(*G*)
+	iDataO_NovRAM			:ARRAY[1..160]OF UDINT;(*H*)
+
+	iDataP_NovRAM			:ARRAY[1..160]OF UDINT;(*班次ID*)
+	iDataQ_NovRAM			:ARRAY[1..160]OF UDINT;(*班次产量，=DataQ+穴数*)
+	iDataR_NovRAM			:ARRAY[1..160]OF UDINT;(*班次废品，来自B端口*)
+	iDataS_NovRAM			:ARRAY[1..160]OF UDINT;(*班次运行时间，来自C*)
+	iDataT_NovRAM			:ARRAY[1..160]OF UDINT;(*班次停机时间，来自C取反*)
+(*	0613，Modbus通讯问题，班次均分时间改为此处
+	iDataU		AT  %MW17300	:ARRAY[1..200]OF UDINT;(*E*)
+	iDataV		AT  %MW18100	:ARRAY[1..200]OF UDINT;(*F*)
+	iDataW		AT  %MW18900	:ARRAY[1..200]OF UDINT;(*G*)
+	iDataX		AT  %MW19700	:ARRAY[1..200]OF UDINT;(*H*)
+*)
+
+	iDataU_NovRAM			:ARRAY[1..160]OF UDINT;(*E*)
+	iDataV_NovRAM			:ARRAY[1..160]OF UDINT;(*F*)
+	iDataW_NovRAM			:ARRAY[1..160]OF UDINT;(*G*)
+	iDataX_NovRAM			:ARRAY[1..160]OF UDINT;(*H*)
+
+	iDataY_NovRAM			:ARRAY[1..160]OF UDINT;(*无运行时间上限设定值*)
+	iDataZ_NovRAM			:ARRAY[1..160]OF UDINT;(*无运行时间实际值*)
+	iDataAA_NovRAM			:ARRAY[1..160] OF UDINT;(*运行状态*)
+	iDataAB_NovRAM			:ARRAY[1..160] OF UDINT;(*控制字*)
+	iDataAC_NovRAM			:ARRAY[1..160] OF UDINT;(*计划停机时间*)
+	iDataAD_NovRAM			:ARRAY[1..160] OF UDINT;(*班次计划停机时间*)
+(**
+	iDataAE		AT	%MW25300	:ARRAY[1..200] OF UDINT;(*均分运行时间*)
+	iDataAF		AT	%MW26100	:ARRAY[1..200] OF UDINT;(*均分停机时间*)
+	iDataAG		AT	%MW26900	:ARRAY[1..200] OF UDINT;(*均分计划停机时间*)
+**)
+
+
+	iDataAE_NovRAM			:ARRAY[1..160] OF UDINT;(*均分运行时间*)
+	iDataAF_NovRAM			:ARRAY[1..160] OF UDINT;(*均分停机时间*)
+	iDataAG_NovRAM		:ARRAY[1..160] OF UDINT;(*均分计划停机时间*)
+
+
+	iDataAH_NovRAM			:ARRAY[1..160]OF UDINT;(*班次均分运行时间*)
+	iDataAI_NovRAM			:ARRAY[1..160]OF UDINT;(*班次均分停机时间*)
+	iDataAJ_NovRAM			:ARRAY[1..160]OF UDINT;(*班次均分计划停机时间*)
+
+	iDataAK_NovRAM			:ARRAY[1..160]OF UDINT;(*Machine RUNTIME*)
+	iDataAL_NovRAM			:ARRAY[1..160]OF UDINT;(*Machine DownTIME*)
+
+
+	iDataAM_NovRAM		:ARRAY[1..160]OF UDINT;(*Machine Cycle*)
+
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_CylinderOutput" Id="{273c19d9-c397-431c-9c57-cd8e26e9bbf1}">
+    <Declaration><![CDATA[TYPE UDT_CylinderOutput :
+STRUCT
+	ValveIn: BOOL;
+	ValveOut: BOOL;
+	Error: BOOL;
+	ErrorID: DINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

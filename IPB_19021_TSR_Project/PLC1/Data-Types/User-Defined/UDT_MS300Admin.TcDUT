@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_MS300Admin" Id="{843dfd79-30b4-4633-8ebf-149c466cff26}">
+    <Declaration><![CDATA[TYPE UDT_MS300Admin :
+STRUCT
+	MS300: UDT_MS300_REF;
+    i: UDT_MS300Input;
+	o: UDT_MS300OUTPUT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

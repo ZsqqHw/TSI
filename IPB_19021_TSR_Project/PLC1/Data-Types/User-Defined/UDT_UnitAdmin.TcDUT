@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_UnitAdmin" Id="{4f2d5677-3016-4803-978a-3bca5fef8582}">
+    <Declaration><![CDATA[TYPE UDT_UnitAdmin :
+STRUCT
+	Cmd: UDT_Unit_Cmd;
+	Sts: UDT_Unit_Status;
+	EM_Selected: ARRAY[0..64]OF BOOL;
+	EM_Clearing_Done: ARRAY[0..64]OF BOOL;//清除中
+	EM_Starting_Done: ARRAY[0..64]OF BOOL;//启动中
+	EM_Stopping_Done: ARRAY[0..64]OF BOOL;//停机中
+	EM_Aborting_Done: ARRAY[0..64]OF BOOL;//终止中
+	EM_Holding_Done: ARRAY[0..64]OF BOOL;//暂停中
+	EM_UnHolding_Done: ARRAY[0..64]OF BOOL;//解除暂停中
+	EM_Suspending_Done: ARRAY[0..64]OF BOOL;//挂起中
+	EM_UnSuspending_Done: ARRAY[0..64]OF BOOL;//解除挂起
+	EM_Resetting_Done: ARRAY[0..64]OF BOOL;//重置中
+	EM_Fault: ARRAY[0..64] OF BOOL;
+	EM_Warning: ARRAY[0..64] OF BOOL;
+	GeneralEvent: ARRAY[0..64] OF DINT;
+	WarningEvent: ARRAY[0..64] OF DINT;
+	StopEvent: ARRAY[0..64] OF DINT;  	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

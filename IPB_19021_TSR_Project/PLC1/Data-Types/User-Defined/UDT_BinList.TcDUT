@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.16">
+  <DUT Name="UDT_BinList" Id="{34d64548-72bb-4d23-9424-0d23fe43e1fd}">
+    <Declaration><![CDATA[TYPE UDT_BinList :
+STRUCT
+	Bin: ARRAY[0..255] OF  UDT_Bin;
+	arWorkPos: ARRAY[1..40] OF LREAL;
+	arInRang: ARRAY[1..40] OF BOOL;
+	Reset: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,506 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{c3a593b6-d545-4ca7-be42-ae46433b9513}</ProjectGuid>
+    <SubObjectsSortedByName>True</SubObjectsSortedByName>
+    <Name>PLC1</Name>
+    <ProgramVersion>3.1.4022.4</ProgramVersion>
+    <Application>{eff1a22f-571b-46ed-92e0-610ab158d4ae}</Application>
+    <TypeSystem>{0757ace9-ffe0-4a0a-b806-6070f6423c86}</TypeSystem>
+    <Implicit_Task_Info>{e2180421-ab61-47da-b2fe-0d6c53ed78ae}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{9beb437e-cdf0-4512-824f-5a162ab2daa6}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{3dc64fbd-74f4-4755-bf95-10a73fa776e8}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{8b893840-df03-4b75-ae0c-78a868ca6287}</LibraryReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Add-On-Instructions\AOI_AxisAdmin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_Bin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_CountersAdmin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_CylinderAdmin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_DeltaScaraRobot.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_HeatBase.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_MS300Admin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_SensorAdmin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_DI.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_DO.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_Heat.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_Timer.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\AOI_VacuumAdmin.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\BLINK.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\ethercatinfo_read.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\PackMlv3_StateModel.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\SequenceTransfer.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Add-On-Instructions\systeminfo_MDP_read.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\Condition.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\Seq_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\SocketConnect.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_BinBelt.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_BoxList.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Hmi_AxisView.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Hmi_OEE.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Recipe.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_MS300Output.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_MS300Input.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_DirectMotor.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_EL3312.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_EVENT.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_AxisAdmin.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_AxisInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_AxisOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Box.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_CM_Condition.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_CylinderAdmin.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_CylinderInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_CylinderOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_EM_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_EM_Cmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Counters.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Hmi_Input.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Hmi_Output.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_MS300Admin.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_MS300_REF.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Bin.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_BinList.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Scara.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Scara_DI.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Scara_DO.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_SensorAdmin.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_SensorInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_SensorOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_UnitAdmin.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Unit_Cmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_Unit_Status.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_VacuumAdmin.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_VacuumInput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data-Types\User-Defined\UDT_VacuumOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CommunicationTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GlobalTextList.TcGTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IOTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MotionTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlcTask1.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Debug\DebugPro.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\EtherCat\EtherCatStates.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\GVLs\ControllerTags.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="POUs\IO\IO_Mapping.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\MG\MotionControl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM01_Master.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM02_Follower1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM03_Follower2.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM04_Follower3.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM05_Counters.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM06_Follower4_5.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM07_Belt6.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\EM08_Belt7.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PackMaL_UN01\UN01.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckBounds.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckDivDInt.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckDivLInt.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckDivLReal.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckDivReal.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckLRangeSigned.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckLRangeUnsigned.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckPointer.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckRangeSigned.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\POUCheck\CheckRangeUnsigned.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Socket\Socket.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="VISUs\EM.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>视图管理器.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Part\Visualization_Cnt.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>视图管理器.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Part\Vis_Axis.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>视图管理器.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Part\Vis_PackMlv3.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>视图管理器.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Vis_MAIN.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>视图管理器.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Vis_RealAxis.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>视图管理器.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Vis_VirtualAxis.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>视图管理器.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="视图管理器.TcVMO">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data-Types\User-Defined" />
+    <Folder Include="Add-On-Instructions" />
+    <Folder Include="Data-Types" />
+    <Folder Include="POUs\EtherCat" />
+    <Folder Include="POUs\GVLs" />
+    <Folder Include="POUs\MG" />
+    <Folder Include="POUs\IO" />
+    <Folder Include="POUs\Debug" />
+    <Folder Include="POUs\Socket" />
+    <Folder Include="POUs\POUCheck" />
+    <Folder Include="POUs\PackMaL_UN01" />
+    <Folder Include="VISUs" />
+    <Folder Include="POUs" />
+    <Folder Include="VISUs\Part" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="System_VisuElemMeter">
+      <DefaultResolution>VisuElemMeter, 3.5.13.0 (System)</DefaultResolution>
+      <Namespace>VisuElemMeter</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElems">
+      <DefaultResolution>VisuElems, 3.5.13.40 (System)</DefaultResolution>
+      <Namespace>VisuElems</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemsSpecialControls">
+      <DefaultResolution>VisuElemsSpecialControls, 3.5.13.0 (System)</DefaultResolution>
+      <Namespace>VisuElemsSpecialControls</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemsWinControls">
+      <DefaultResolution>VisuElemsWinControls, 3.5.13.20 (System)</DefaultResolution>
+      <Namespace>VisuElemsWinControls</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuElemTextEditor">
+      <DefaultResolution>VisuElemTextEditor, 3.5.13.0 (System)</DefaultResolution>
+      <Namespace>VisuElemTextEditor</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="system_visuinputs">
+      <DefaultResolution>visuinputs, 3.5.13.0 (system)</DefaultResolution>
+      <Namespace>visuinputs</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="System_VisuNativeControl">
+      <DefaultResolution>VisuNativeControl, 3.5.13.0 (System)</DefaultResolution>
+      <Namespace>VisuNativeControl</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+      <ResolverGuid>2717eb6a-dd07-4c66-8d8d-cacebd7b18ae</ResolverGuid>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_EtherCAT">
+      <DefaultResolution>Tc2_EtherCAT, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_EtherCAT</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_IoFunctions">
+      <DefaultResolution>Tc2_IoFunctions, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_IoFunctions</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2_Camming">
+      <DefaultResolution>Tc2_MC2_Camming, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2_Camming</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MDP">
+      <DefaultResolution>Tc2_MDP, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MDP</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_TcpIp">
+      <DefaultResolution>Tc2_TcpIp, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_TcpIp</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="VisuDialogs">
+      <DefaultResolution>VisuDialogs, * (System)</DefaultResolution>
+      <Namespace>VisuDialogs</Namespace>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PLC1.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <LibraryReference Include="VisuSymbols,3.5.10.0,System">
+      <Namespace>VisuSymbols</Namespace>
+    </LibraryReference>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+        <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
+        <o>
+          <v n="Name">"{8F99A816-E488-41E4-9FA3-846536012284}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
+        <o>
+          <v n="Name">"{29BD8D0C-3586-4548-BB48-497B9A01693F}"</v>
+          <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+            <v>Rules</v>
+            <o>
+              <v n="Name">"Rules"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" />
+            </o>
+          </d>
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{40450F57-0AA3-4216-96F3-5444ECB29763}</v>
+        <o>
+          <v n="Name">"{40450F57-0AA3-4216-96F3-5444ECB29763}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>ActiveVisuProfile</v>
+            <v>IR0whWr8bwfwBwAAiD2qpQAAAABVAgAA37x72QAAAAABAAAAAAAAAAEaUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwACTHsAZgA5ADUAYgBiADQAMgA2AC0ANQA1ADIANAAtADQAYgA0ADUALQA5ADQAMAAwAC0AZgBiADAAZgAyAGUANwA3AGUANQAxAGIAfQADCE4AYQBtAGUABDBUAHcAaQBuAEMAQQBUACAAMwAuADEAIABCAHUAaQBsAGQAIAA0ADAAMgA0AC4ANwAFFlAAcgBvAGYAaQBsAGUARABhAHQAYQAGTHsAMQA2AGUANQA1AGIANgAwAC0ANwAwADQAMwAtADQAYQA2ADMALQBiADYANQBiAC0ANgAxADQANwAxADMAOAA3ADgAZAA0ADIAfQAHEkwAaQBiAHIAYQByAGkAZQBzAAhMewAzAGIAZgBkADUANAA1ADkALQBiADAANwBmAC0ANABkADYAZQAtAGEAZQAxAGEALQBhADgAMwAzADUANgBhADUANQAxADQAMgB9AAlMewA5AGMAOQA1ADgAOQA2ADgALQAyAGMAOAA1AC0ANAAxAGIAYgAtADgAOAA3ADEALQA4ADkANQBmAGYAMQBmAGUAZABlADEAYQB9AAoOVgBlAHIAcwBpAG8AbgALBmkAbgB0AAwKVQBzAGEAZwBlAA0KVABpAHQAbABlAA4aVgBpAHMAdQBFAGwAZQBtAE0AZQB0AGUAcgAPDkMAbwBtAHAAYQBuAHkAEAxTAHkAcwB0AGUAbQARElYAaQBzAHUARQBsAGUAbQBzABIwVgBpAHMAdQBFAGwAZQBtAHMAUwBwAGUAYwBpAGEAbABDAG8AbgB0AHIAbwBsAHMAEyhWAGkAcwB1AEUAbABlAG0AcwBXAGkAbgBDAG8AbgB0AHIAbwBsAHMAFCRWAGkAcwB1AEUAbABlAG0AVABlAHgAdABFAGQAaQB0AG8AcgAVIlYAaQBzAHUATgBhAHQAaQB2AGUAQwBvAG4AdAByAG8AbAAWFHYAaQBzAHUAaQBuAHAAdQB0AHMAFwxzAHkAcwB0AGUAbQAYGFYAaQBzAHUARQBsAGUAbQBCAGEAcwBlABkmRABlAHYAUABsAGEAYwBlAGgAbwBsAGQAZQByAHMAVQBzAGUAZAAaCGIAbwBvAGwAGyJQAGwAdQBnAGkAbgBDAG8AbgBzAHQAcgBhAGkAbgB0AHMAHEx7ADQAMwBkADUAMgBiAGMAZQAtADkANAAyAGMALQA0ADQAZAA3AC0AOQBlADkANAAtADEAYgBmAGQAZgAzADEAMABlADYAMwBjAH0AHRxBAHQATABlAGEAcwB0AFYAZQByAHMAaQBvAG4AHhRQAGwAdQBnAGkAbgBHAHUAaQBkAB8WUwB5AHMAdABlAG0ALgBHAHUAaQBkACBIYQBmAGMAZAA1ADQANAA2AC0ANAA5ADEANAAtADQAZgBlADcALQBiAGIANwA4AC0AOQBiAGYAZgBlAGIANwAwAGYAZAAxADcAIRRVAHAAZABhAHQAZQBJAG4AZgBvACJMewBiADAAMwAzADYANgBhADgALQBiADUAYwAwAC0ANABiADkAYQAtAGEAMAAwAGUALQBlAGIAOAA2ADAAMQAxADEAMAA0AGMAMwB9ACMOVQBwAGQAYQB0AGUAcwAkTHsAMQA4ADYAOABmAGYAYwA5AC0AZQA0AGYAYwAtADQANQAzADIALQBhAGMAMAA2AC0AMQBlADMAOQBiAGIANQA1ADcAYgA2ADkAfQAlTHsAYQA1AGIAZAA0ADgAYwAzAC0AMABkADEANwAtADQAMQBiADUALQBiADEANgA0AC0ANQBmAGMANgBhAGQAMgBiADkANgBiADcAfQAmFk8AYgBqAGUAYwB0AHMAVAB5AHAAZQAnVFUAcABkAGEAdABlAEwAYQBuAGcAdQBhAGcAZQBNAG8AZABlAGwARgBvAHIAQwBvAG4AdgBlAHIAdABpAGIAbABlAEwAaQBiAHIAYQByAGkAZQBzACgQTABpAGIAVABpAHQAbABlACkUTABpAGIAQwBvAG0AcABhAG4AeQAqHlUAcABkAGEAdABlAFAAcgBvAHYAaQBkAGUAcgBzACs4UwB5AHMAdABlAG0ALgBDAG8AbABsAGUAYwB0AGkAbwBuAHMALgBIAGEAcwBoAHQAYQBiAGwAZQAsEnYAaQBzAHUAZQBsAGUAbQBzAC1INgBjAGIAMQBjAGQAZQAxAC0AZAA1AGQAYwAtADQAYQAzAGIALQA5ADAANQA0AC0AMgAxAGYAYQA3ADUANgBhADMAZgBhADQALihJAG4AdABlAHIAZgBhAGMAZQBWAGUAcgBzAGkAbwBuAEkAbgBmAG8AL0x7AGMANgAxADEAZQA0ADAAMAAtADcAZgBiADkALQA0AGMAMwA1AC0AYgA5AGEAYwAtADQAZQAzADEANABiADUAOQA5ADYANAAzAH0AMBhNAGEAagBvAHIAVgBlAHIAcwBpAG8AbgAxGE0AaQBuAG8AcgBWAGUAcgBzAGkAbwBuADIMTABlAGcAYQBjAHkAMzBMAGEAbgBnAHUAYQBnAGUATQBvAGQAZQBsAFYAZQByAHMAaQBvAG4ASQBuAGYAbwA0MEwAbwBhAGQATABpAGIAcgBhAHIAaQBlAHMASQBuAHQAbwBQAHIAbwBqAGUAYwB0ADUaQwBvAG0AcABhAHQAaQBiAGkAbABpAHQAeQDQAAIaA9ADAS0E0AUGGgfQBwgaAUUHCQjQAAkaBEUKCwQDAAAABQAAAA0AAAAAAAAA0AwLrQIAAADQDQEtDtAPAS0Q0AAJGgRFCgsEAwAAAAUAAAANAAAAKAAAANAMC60BAAAA0A0BLRHQDwEtENAACRoERQoLBAMAAAAFAAAADQAAAAAAAADQDAutAgAAANANAS0S0A8BLRDQAAkaBEUKCwQDAAAABQAAAA0AAAAUAAAA0AwLrQIAAADQDQEtE9APAS0Q0AAJGgRFCgsEAwAAAAUAAAANAAAAAAAAANAMC60CAAAA0A0BLRTQDwEtENAACRoERQoLBAMAAAAFAAAADQAAAAAAAADQDAutAgAAANANAS0V0A8BLRDQAAkaBEUKCwQDAAAABQAAAA0AAAAAAAAA0AwLrQIAAADQDQEtFtAPAS0X0AAJGgRFCgsEAwAAAAUAAAANAAAAKAAAANAMC60EAAAA0A0BLRjQDwEtENAZGq0BRRscAdAAHBoCRR0LBAMAAAAFAAAADQAAAAAAAADQHh8tINAhIhoCRSMkAtAAJRoFRQoLBAMAAAADAAAAAAAAAAoAAADQJgutAAAAANADAS0n0CgBLRHQKQEtENAAJRoFRQoLBAMAAAADAAAAAAAAAAoAAADQJgutAQAAANADAS0n0CgBLRHQKQEtEJoqKwFFAAEC0AABLSzQAAEtF9AAHy0t0C4vGgPQMAutAQAAANAxC60XAAAA0DIarQDQMy8aA9AwC60CAAAA0DELrQMAAADQMhqtANA0Gq0A0DUarQA=</v>
+          </d>
+        </o>
+        <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
+        <o>
+          <v n="Name">"{192FAD59-8248-4824-A8DE-9177C94C195A}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{F66C7017-BDD8-4114-926C-81D6D687E35F}</v>
+        <o>
+          <v n="Name">"{F66C7017-BDD8-4114-926C-81D6D687E35F}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{246001F4-279D-43AC-B241-948EB31120E1}</v>
+        <o>
+          <v n="Name">"{246001F4-279D-43AC-B241-948EB31120E1}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String">
+            <v>GlobalVisuImageFilePath</v>
+            <v>"%APPLICATIONPATH%"</v>
+            <v>UnicodeStrings</v>
+            <v>false</v>
+          </d>
+        </o>
+      </d>
+      <d n="Values" t="Hashtable" />
+    </o>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>
