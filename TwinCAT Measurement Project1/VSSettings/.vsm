@@ -2,12 +2,5 @@
   <Title>TwinCAT Measurement Project1</Title>
   <Expanded>False</Expanded>
   <FileName></FileName>
-  <Children>
-    <Node>
-      <Title>Scope YT Project.tcscopex</Title>
-      <Expanded>False</Expanded>
-      <FileName></FileName>
-      <Children />
-    </Node>
-  </Children>
+  <Children />
 </Node>

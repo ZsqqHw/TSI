@@ -52,6 +52,7 @@ VAR
 	diCheckFaultCnt: DINT;
 	diFaultCnt: ARRAY[0..64] OF dint;
 	i: INT;
+	CntLost: DINT;
 END_VAR
 VAR_IN_OUT
 	Axis: UDT_AxisAdmin;//数粒伺服
@@ -153,15 +154,17 @@ CASE iAxisAct OF
 		   Speed:=1000/DINT_TO_REAL(ProcessTime);
 		END_IF
 	30:
+
 		toncheck(IN:= TRUE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );
 		
 	    IF NOT SkipAlarm AND toncheck.Q AND CntUp<1  THEN
 		   Error:=TRUE;
 		END_IF
+(*		
 		IF NOT CheckCnt AND toncheck.Q AND CntUp <> diLastTargetCnt THEN
 		   Error:=TRUE;
-		END_IF
-		
+		END_IF	
+*)	
 		IF toncheck.Q AND CntUp <> diLastTargetCnt THEN
 		   diCheckFaultCnt:=diCheckFaultCnt+1;
 		   diFaultCnt[i]:=CntUp;
@@ -171,11 +174,54 @@ CASE iAxisAct OF
 		   END_IF
 		END_IF
 		
-		
+(*		
 		IF (SkipAlarm AND CheckCnt)OR toncheck.Q THEN
 		   toncheck(IN:= FALSE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );
            iAxisAct:=100;
 		END_IF
+*)
+//20221206		
+        CntLost:=diLastTargetCnt-CntUp;
+		IF (SkipAlarm AND CheckCnt)OR 
+            toncheck.Q THEN
+		    toncheck(IN:= FALSE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );	
+			IF CntLost>0 THEN
+		       iAxisAct:=40;
+			ELSE
+               iAxisAct:=100;
+			END_IF
+		END_IF	
+		
+	40:		
+		CntUp:=0;
+	    lrPosAdd:=CntLost*360/24;
+	    Axis.i.Pos:=lrPosAdd;
+		iAxisAct:=41;		
+		
+	41:
+		
+	    Axis.i.MoveAdd:=TRUE;
+		IF Axis.o.CmdDone OR Axis.o.Error THEN
+		   Axis.i.MoveAdd:=FALSE;
+		   iAxisAct:=42;
+		END_IF
+	
+	42:
+	
+		toncheck(IN:= TRUE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );
+		
+		IF NOT CheckCnt AND toncheck.Q AND CntUp <> CntLost THEN
+		   Error:=TRUE;
+		END_IF	
+		
+		IF (SkipAlarm AND CheckCnt)OR toncheck.Q THEN
+		   toncheck(IN:= FALSE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );
+		   CntLost:=0;
+           iAxisAct:=100;
+		END_IF		
+		
+		
+		
 		
 	100:	
 	    Busy:=FALSE;
@@ -329,13 +375,15 @@ aoi_LowSensor(Admin:= LowSensor);]]></ST>
       <LineId Id="1092" Count="0" />
       <LineId Id="67" Count="0" />
       <LineId Id="1400" Count="0" />
+      <LineId Id="2370" Count="0" />
       <LineId Id="1764" Count="0" />
       <LineId Id="1816" Count="0" />
       <LineId Id="1593" Count="1" />
       <LineId Id="1592" Count="0" />
+      <LineId Id="2376" Count="0" />
       <LineId Id="1756" Count="0" />
       <LineId Id="1822" Count="1" />
-      <LineId Id="2116" Count="0" />
+      <LineId Id="2327" Count="0" />
       <LineId Id="1818" Count="0" />
       <LineId Id="2113" Count="0" />
       <LineId Id="2175" Count="0" />
@@ -346,7 +394,31 @@ aoi_LowSensor(Admin:= LowSensor);]]></ST>
       <LineId Id="1759" Count="1" />
       <LineId Id="1762" Count="0" />
       <LineId Id="1761" Count="0" />
+      <LineId Id="2377" Count="0" />
       <LineId Id="1758" Count="0" />
+      <LineId Id="2329" Count="0" />
+      <LineId Id="2317" Count="0" />
+      <LineId Id="2378" Count="0" />
+      <LineId Id="2325" Count="0" />
+      <LineId Id="2320" Count="1" />
+      <LineId Id="2330" Count="1" />
+      <LineId Id="2324" Count="0" />
+      <LineId Id="2301" Count="2" />
+      <LineId Id="2333" Count="1" />
+      <LineId Id="2337" Count="0" />
+      <LineId Id="2305" Count="3" />
+      <LineId Id="2357" Count="0" />
+      <LineId Id="2360" Count="2" />
+      <LineId Id="2354" Count="1" />
+      <LineId Id="2365" Count="0" />
+      <LineId Id="2356" Count="0" />
+      <LineId Id="2338" Count="1" />
+      <LineId Id="2343" Count="3" />
+      <LineId Id="2366" Count="1" />
+      <LineId Id="2369" Count="0" />
+      <LineId Id="2368" Count="0" />
+      <LineId Id="2310" Count="2" />
+      <LineId Id="2315" Count="1" />
       <LineId Id="1398" Count="0" />
       <LineId Id="1476" Count="0" />
       <LineId Id="1527" Count="1" />
