@@ -2045,7 +2045,7 @@ External Setpoint Generation:
 		</System>
 		<Motion>
 			<NC>
-				<SafTask Priority="4" CycleTime="20000" AmsPort="501" Affinity="#x00000001" IoAtBegin="true">
+				<SafTask Priority="4" CycleTime="20000" AmsPort="501" Affinity="#x00000001" IoAtBegin="true" AmsNetId="192.168.142.221.1.1">
 					<Name>NC-Task 1 SAF</Name>
 					<Vars VarGrpType="1" InsertType="1">
 						<Name>Inputs</Name>

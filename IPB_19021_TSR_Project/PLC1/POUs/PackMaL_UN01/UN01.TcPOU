@@ -107,7 +107,9 @@ VAR CONSTANT
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[//PLC IP地址IP 192.168.1.10 HMI1 IP 192.168.1.12 HMI2 IP 192.168.1.13 路由器 密码IPB19021 账号admin 
+      <ST><![CDATA[//PLC IP地址IP 192.168.1.10 HMI1 IP 192.168.1.12 HMI2 IP 192.168.1.13 路由器 192.168.1.1 密码IPB19021 账号admin
+//plc administrator 1 
+//HMI 2222 
 //激光打标机IP 192.168.1.20 
 Ref_Unit REF=Unit01;
 Ref_MachineStateModel REF= UN01_MachineStateModel;
@@ -4539,7 +4541,9 @@ tonFaultClear(IN:=bClearAllFault , PT:=T#500MS , Q=> , ET=> );
       </Implementation>
     </Action>
     <LineIds Name="UN01">
-      <LineId Id="525" Count="1" />
+      <LineId Id="525" Count="0" />
+      <LineId Id="1360" Count="1" />
+      <LineId Id="526" Count="0" />
       <LineId Id="214" Count="0" />
       <LineId Id="469" Count="0" />
       <LineId Id="731" Count="0" />
