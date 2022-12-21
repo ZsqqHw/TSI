@@ -2045,7 +2045,7 @@ External Setpoint Generation:
 		</System>
 		<Motion>
 			<NC>
-				<SafTask Priority="4" CycleTime="20000" AmsPort="501" Affinity="#x00000001" IoAtBegin="true" AmsNetId="192.168.142.221.1.1">
+				<SafTask Priority="4" CycleTime="20000" AmsPort="501" Affinity="#x00000001" IoAtBegin="true">
 					<Name>NC-Task 1 SAF</Name>
 					<Vars VarGrpType="1" InsertType="1">
 						<Name>Inputs</Name>
@@ -9609,6 +9609,10 @@ External Setpoint Generation:
 					<Vars VarGrpType="1">
 						<Name>MotionTask Inputs</Name>
 						<Var>
+							<Name>ControllerTags.arMS300Admin[1].MS300.StatusWord</Name>
+							<Type>UINT</Type>
+						</Var>
+						<Var>
 							<Name>ControllerTags.arRealAxisAdmin[1].Axis.NcToPlc</Name>
 							<Type GUID="{72F5AAAA-16DF-4ED3-8367-F6C8C3ADAE99}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
@@ -10128,13 +10132,17 @@ External Setpoint Generation:
 							<Name>ControllerTags.arVirtualAxisAdmin[65].Axis.NcToPlc</Name>
 							<Type GUID="{72F5AAAA-16DF-4ED3-8367-F6C8C3ADAE99}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
-						<Var>
-							<Name>ControllerTags.arMS300Admin[1].MS300.StatusWord</Name>
-							<Type>UINT</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>MotionTask Outputs</Name>
+						<Var>
+							<Name>ControllerTags.arMS300Admin[1].MS300.ControlWord</Name>
+							<Type>UINT</Type>
+						</Var>
+						<Var>
+							<Name>ControllerTags.arMS300Admin[1].MS300.TargetVelo</Name>
+							<Type>INT</Type>
+						</Var>
 						<Var>
 							<Name>ControllerTags.arRealAxisAdmin[1].Axis.PlcToNc</Name>
 							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
@@ -10655,14 +10663,6 @@ External Setpoint Generation:
 							<Name>ControllerTags.arVirtualAxisAdmin[65].Axis.PlcToNc</Name>
 							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
-						<Var>
-							<Name>ControllerTags.arMS300Admin[1].MS300.ControlWord</Name>
-							<Type>UINT</Type>
-						</Var>
-						<Var>
-							<Name>ControllerTags.arMS300Admin[1].MS300.TargetVelo</Name>
-							<Type>INT</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="1" ContextId="1" AreaNo="16">
 						<Name>IOTask Inputs</Name>
@@ -10694,6 +10694,14 @@ External Setpoint Generation:
 					</Vars>
 					<Vars VarGrpType="1" ContextId="2" AreaNo="32">
 						<Name>PlcTask1 Inputs</Name>
+						<Var>
+							<Name>ControllerTags.EL3312</Name>
+							<Type GUID="{02CC46B0-9854-419A-A084-3ED62F24F8F4}">ARRAY [1..16,1..2] OF UDT_EL3312</Type>
+						</Var>
+						<Var>
+							<Name>ControllerTags.arErrorCodeDrive</Name>
+							<Type GUID="{236F8EE2-F105-66D4-F854-D8BD8682C414}">ARRAY [1..64] OF UINT</Type>
+						</Var>
 						<Var>
 							<Name>ControllerTags.EncoderAxis[1].NcToPlc</Name>
 							<Type GUID="{72F5AAAA-16DF-4ED3-8367-F6C8C3ADAE99}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
@@ -10757,14 +10765,6 @@ External Setpoint Generation:
 						<Var>
 							<Name>ControllerTags.EncoderAxis[16].NcToPlc</Name>
 							<Type GUID="{72F5AAAA-16DF-4ED3-8367-F6C8C3ADAE99}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>ControllerTags.EL3312</Name>
-							<Type GUID="{02CC46B0-9854-419A-A084-3ED62F24F8F4}">ARRAY [1..16,1..2] OF UDT_EL3312</Type>
-						</Var>
-						<Var>
-							<Name>ControllerTags.arErrorCodeDrive</Name>
-							<Type GUID="{236F8EE2-F105-66D4-F854-D8BD8682C414}">ARRAY [1..64] OF UINT</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="2" ContextId="2" AreaNo="33">
@@ -10842,19 +10842,8 @@ External Setpoint Generation:
 							<InOut>7</InOut>
 						</Var>
 						<Var>
-							<Name>ControllerTags.HMI_PrintNo</Name>
-							<Comment><![CDATA[打印站位号]]></Comment>
-							<Type>INT</Type>
-							<InOut>7</InOut>
-						</Var>
-						<Var>
 							<Name>ControllerTags.HMI_CntCheckTime</Name>
 							<Type>DINT</Type>
-							<InOut>7</InOut>
-						</Var>
-						<Var>
-							<Name>ControllerTags.HMI_CntCheck</Name>
-							<Type GUID="{1D7ECA3B-14B9-A824-321A-B8D06ECFCD05}">ARRAY [1..40] OF BOOL</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -10937,6 +10926,12 @@ External Setpoint Generation:
 							<InOut>7</InOut>
 						</Var>
 						<Var>
+							<Name>ControllerTags.HMI_PrintNo</Name>
+							<Comment><![CDATA[打印站位号]]></Comment>
+							<Type>INT</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
 							<Name>ControllerTags.HMI_DropNo</Name>
 							<Comment><![CDATA[落料站位号]]></Comment>
 							<Type>INT</Type>
@@ -10945,6 +10940,12 @@ External Setpoint Generation:
 						<Var>
 							<Name>ControllerTags.HMI_Check1No</Name>
 							<Comment><![CDATA[铝杯检测1站位号]]></Comment>
+							<Type>INT</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>ControllerTags.HMI_Check2No</Name>
+							<Comment><![CDATA[铝杯检测2站位号	]]></Comment>
 							<Type>INT</Type>
 							<InOut>7</InOut>
 						</Var>
@@ -10989,6 +10990,11 @@ External Setpoint Generation:
 						<Var>
 							<Name>ControllerTags.HMI_B1DropBinNo</Name>
 							<Type>INT</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>ControllerTags.HMI_CntCheck</Name>
+							<Type GUID="{1D7ECA3B-14B9-A824-321A-B8D06ECFCD05}">ARRAY [1..40] OF BOOL</Type>
 							<InOut>7</InOut>
 						</Var>
 					</Vars>
@@ -11051,26 +11057,20 @@ External Setpoint Generation:
 							<InOut>7</InOut>
 						</Var>
 						<Var>
-							<Name>ControllerTags.HMI_PickNo</Name>
-							<Comment><![CDATA[抓取站位号	]]></Comment>
-							<Type>INT</Type>
-							<InOut>7</InOut>
-						</Var>
-						<Var>
 							<Name>ControllerTags.HMI_PrintMaxTime</Name>
 							<Comment><![CDATA[最大打印监控时间]]></Comment>
 							<Type>DINT</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
-							<Name>ControllerTags.HMI_CutNo</Name>
-							<Comment><![CDATA[裁切站位号]]></Comment>
+							<Name>ControllerTags.HMI_PickNo</Name>
+							<Comment><![CDATA[抓取站位号	]]></Comment>
 							<Type>INT</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
-							<Name>ControllerTags.HMI_Check2No</Name>
-							<Comment><![CDATA[铝杯检测2站位号	]]></Comment>
+							<Name>ControllerTags.HMI_CutNo</Name>
+							<Comment><![CDATA[裁切站位号]]></Comment>
 							<Type>INT</Type>
 							<InOut>7</InOut>
 						</Var>
@@ -23911,7 +23911,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 							<Type>INT</Type>
 							<BitOffs>4568</BitOffs>
 							<InOut>7</InOut>
-							<UserHandle>33620064</UserHandle>
+							<UserHandle>33620016</UserHandle>
 						</Var>
 						<Var NotLinkable="true">
 							<Name>ControllerTags.HMI_Seal1No_[851]</Name>
@@ -25928,7 +25928,6 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="IOTask Outputs^ControllerTags.EL2008[28,8]" VarB="Channel 8^Output"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 6 (NOV-DP-RAM)^Box 18 (Retain Handler)">
-				<Link VarA="CommunicationTask Retains^ControllerTags.HMI_Check2No" VarB="Retains^ControllerTags.HMI_Check2No_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="CommunicationTask Retains^ControllerTags.HMI_CutNo" VarB="Retains^ControllerTags.HMI_CutNo_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="CommunicationTask Retains^ControllerTags.HMI_DropPosOffset" VarB="Retains^ControllerTags.HMI_DropPosOffset_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="CommunicationTask Retains^ControllerTags.HMI_EMSelectUN02" VarB="Retains^ControllerTags.HMI_EMSelectUN02_[851]" AutoLink="true" PeerAutoLink="true"/>
@@ -25944,6 +25943,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask1 Retains^ControllerTags.HMI_BeltDec" VarB="Retains^ControllerTags.HMI_BeltDec_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="PlcTask1 Retains^ControllerTags.HMI_BeltVelo" VarB="Retains^ControllerTags.HMI_BeltVelo_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="PlcTask1 Retains^ControllerTags.HMI_Check1No" VarB="Retains^ControllerTags.HMI_Check1No_[851]" AutoLink="true" PeerAutoLink="true"/>
+				<Link VarA="PlcTask1 Retains^ControllerTags.HMI_Check2No" VarB="Retains^ControllerTags.HMI_Check2No_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="PlcTask1 Retains^ControllerTags.HMI_CntCheck" VarB="Retains^ControllerTags.HMI_CntCheck_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="PlcTask1 Retains^ControllerTags.HMI_CntCheckTime" VarB="Retains^ControllerTags.HMI_CntCheckTime_[851]" AutoLink="true" PeerAutoLink="true"/>
 				<Link VarA="PlcTask1 Retains^ControllerTags.HMI_CountersAcc" VarB="Retains^ControllerTags.HMI_CountersAcc_[851]" AutoLink="true" PeerAutoLink="true"/>

@@ -28,6 +28,7 @@ VAR_OUTPUT
 	CntUp: DINT;
 	ProcessTime : DINT;//
 	Speed: REAL;
+	_diLastCnt: ARRAY[0..100] OF DINT;
 END_VAR
 VAR
 	iAxisAct: INT;	
@@ -53,6 +54,8 @@ VAR
 	diFaultCnt: ARRAY[0..64] OF dint;
 	i: INT;
 	CntLost: DINT;
+	
+	rtFaultcnt: R_trig;
 END_VAR
 VAR_IN_OUT
 	Axis: UDT_AxisAdmin;//数粒伺服
@@ -164,35 +167,52 @@ CASE iAxisAct OF
 		IF NOT CheckCnt AND toncheck.Q AND CntUp <> diLastTargetCnt THEN
 		   Error:=TRUE;
 		END_IF	
-*)	
-		IF toncheck.Q AND CntUp <> diLastTargetCnt THEN
-		   diCheckFaultCnt:=diCheckFaultCnt+1;
-		   diFaultCnt[i]:=CntUp;
+	
+        rtFaultcnt(CLK:= toncheck.Q  , Q=> );
+		IF toncheck.Q  THEN
+			
+		   diFaultCnt[i]:= diLastTargetCnt - CntUp;
+		   _diLastCnt[i]:= CntUp;
 		   i:=i+1;
 		   IF i>60 THEN
 			   i:=0;
 		   END_IF
+		    
 		END_IF
 		
-(*		
+		
 		IF (SkipAlarm AND CheckCnt)OR toncheck.Q THEN
 		   toncheck(IN:= FALSE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );
            iAxisAct:=100;
 		END_IF
 *)
 //20221206		
-        CntLost:=diLastTargetCnt-CntUp;
+        
 		IF (SkipAlarm AND CheckCnt)OR 
             toncheck.Q THEN
+			
 		    toncheck(IN:= FALSE, PT:= DINT_TO_TIME(CheckTime), Q=> , ET=> );	
+			CntLost:=diLastTargetCnt-CntUp;
+			
+			
+		   diFaultCnt[i]:= CntLost;
+		   _diLastCnt[i]:= CntUp;
+		   i:=i+1;
+		   IF i>60 THEN
+			   i:=0;
+		   END_IF		
+			
+
 			IF CntLost>0 THEN
 		       iAxisAct:=40;
 			ELSE
                iAxisAct:=100;
 			END_IF
+			
 		END_IF	
 		
 	40:		
+	    diCheckFaultCnt:=diCheckFaultCnt+1;
 		CntUp:=0;
 	    lrPosAdd:=CntLost*360/24;
 	    Axis.i.Pos:=lrPosAdd;
@@ -299,7 +319,15 @@ Warning:= tonHighCheck.Q AND NOT Error ;
 
 aoi_DropSensor(Admin:= DropSensor);
 aoi_HighSensor(Admin:= HighSensor);
-aoi_LowSensor(Admin:= LowSensor);]]></ST>
+aoi_LowSensor(Admin:= LowSensor);
+
+(*
+ rtFaultcnt(CLK:=   , Q=> );
+IF rtFaultcnt.Q THEN
+	MEMSET(destAddr:= ADR(diFaultCnt), fillByte:= 0, n:=SIZEOF(diFaultCnt) );
+	MEMSET(destAddr:= ADR(_diLastCnt), fillByte:= 0, n:=SIZEOF(_diLastCnt) );
+END_IF
+*)]]></ST>
     </Implementation>
     <LineIds Name="AOI_CountersAdmin">
       <LineId Id="328" Count="0" />
@@ -384,10 +412,13 @@ aoi_LowSensor(Admin:= LowSensor);]]></ST>
       <LineId Id="1756" Count="0" />
       <LineId Id="1822" Count="1" />
       <LineId Id="2327" Count="0" />
+      <LineId Id="2441" Count="0" />
       <LineId Id="1818" Count="0" />
-      <LineId Id="2113" Count="0" />
+      <LineId Id="2457" Count="0" />
       <LineId Id="2175" Count="0" />
+      <LineId Id="2444" Count="0" />
       <LineId Id="2178" Count="3" />
+      <LineId Id="2446" Count="0" />
       <LineId Id="2114" Count="0" />
       <LineId Id="2117" Count="0" />
       <LineId Id="2115" Count="0" />
@@ -399,11 +430,20 @@ aoi_LowSensor(Admin:= LowSensor);]]></ST>
       <LineId Id="2329" Count="0" />
       <LineId Id="2317" Count="0" />
       <LineId Id="2378" Count="0" />
+      <LineId Id="2453" Count="0" />
       <LineId Id="2325" Count="0" />
+      <LineId Id="2445" Count="0" />
+      <LineId Id="2454" Count="0" />
+      <LineId Id="2458" Count="0" />
+      <LineId Id="2464" Count="4" />
+      <LineId Id="2459" Count="1" />
+      <LineId Id="2463" Count="0" />
       <LineId Id="2320" Count="1" />
       <LineId Id="2330" Count="1" />
       <LineId Id="2324" Count="0" />
+      <LineId Id="2455" Count="0" />
       <LineId Id="2301" Count="2" />
+      <LineId Id="2456" Count="0" />
       <LineId Id="2333" Count="1" />
       <LineId Id="2337" Count="0" />
       <LineId Id="2305" Count="3" />
@@ -468,6 +508,10 @@ aoi_LowSensor(Admin:= LowSensor);]]></ST>
       <LineId Id="1332" Count="0" />
       <LineId Id="21" Count="0" />
       <LineId Id="549" Count="1" />
+      <LineId Id="2470" Count="4" />
+      <LineId Id="2476" Count="0" />
+      <LineId Id="2475" Count="0" />
+      <LineId Id="2469" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
